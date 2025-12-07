@@ -299,7 +299,7 @@ const ManageJobsPage: React.FC = () => {
                                     <input
                                         name="minSalary"
                                         type="number"
-                                        placeholder="e.g. 8"
+                                        placeholder="e.g. 800,000"
                                         value={form.minSalary || ""}
                                         onChange={(e) => setForm({ ...form, minSalary: e.target.value ? parseFloat(e.target.value) : undefined })}
                                         className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -312,7 +312,7 @@ const ManageJobsPage: React.FC = () => {
                                     <input
                                         name="maxSalary"
                                         type="number"
-                                        placeholder="e.g. 12"
+                                        placeholder="e.g. 1,200,000"
                                         value={form.maxSalary || ""}
                                         onChange={(e) => setForm({ ...form, maxSalary: e.target.value ? parseFloat(e.target.value) : undefined })}
                                         className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"

@@ -1,7 +1,48 @@
-import React from 'react';
-import { Search, Star, Clock, Users, BookOpen } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Search, Clock, Users, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
+import API from '../api/api';
 
 export default function EduleLanding() {
+  const [companyLogos, setCompanyLogos] = useState<string[]>([]);
+  const [loadingLogos, setLoadingLogos] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchCompanies = async () => {
+      try {
+        const res = await API.get("/companies");
+        if (cancelled) return;
+
+        const companies = Array.isArray(res.data) ? res.data : [];
+        const uniqueLogos = Array.from(
+          new Set(
+            companies
+              .map((company: { logo?: string | null }) => company.logo ?? "")
+              .filter((logo): logo is string => Boolean(logo))
+          )
+        );
+
+        setCompanyLogos(uniqueLogos);
+      } catch (error) {
+        console.error("Error fetching company logos:", error);
+      } finally {
+        if (!cancelled) setLoadingLogos(false);
+      }
+    };
+
+    fetchCompanies();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const marqueeLogos: string[] = companyLogos.length
+    ? [...companyLogos, ...companyLogos, ...companyLogos]
+    : [];
+
   const courses = [
     {
       img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=300&fit=crop",
@@ -152,6 +193,53 @@ export default function EduleLanding() {
         </div>
       </section>
 
+      {/* Company Logos Marquee */}
+      <section className="bg-white border-y border-gray-100">
+        <div className="container mx-auto px-4 py-10">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-green-600">
+                Trusted by teams
+              </p>
+              <h3 className="text-2xl font-bold text-gray-900">Companies hiring with us</h3>
+            </div>
+            {loadingLogos && (
+              <p className="text-sm text-gray-500">Loading logos...</p>
+            )}
+          </div>
+
+          {companyLogos.length > 0 ? (
+            <div className="relative mt-6 overflow-hidden">
+              <motion.div
+                className="flex w-max items-center gap-8 py-4"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+              >
+                {marqueeLogos.map((logo: string, idx: number) => (
+                  <div
+                    key={`${logo}-${idx}`}
+                    className="flex h-20 w-40 items-center justify-center rounded-xl border border-gray-100 bg-white shadow-sm"
+                  >
+                    <img
+                      src={logo}
+                      alt={`Company logo ${idx + 1}`}
+                      className="max-h-14 max-w-[8rem] object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+          ) : (
+            !loadingLogos && (
+              <p className="mt-6 text-sm text-gray-500">
+                Logos will appear here once companies start uploading them.
+              </p>
+            )
+          )}
+        </div>
+      </section>
+
       {/* Courses Section */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-4xl font-bold text-center mb-2">
@@ -179,7 +267,7 @@ export default function EduleLanding() {
 
         {/* Category Pills */}
         <div className="flex gap-3 mb-12 overflow-x-auto pb-4 justify-center flex-wrap">
-          <button className="px-2 py-1 text-2xl">‹</button>
+          <button className="px-2 py-1 text-2xl">&lt;</button>
           {categories.map((cat, idx) => (
             <button
               key={idx}
@@ -189,7 +277,7 @@ export default function EduleLanding() {
               {cat}
             </button>
           ))}
-          <button className="px-2 py-1 text-2xl">›</button>
+          <button className="px-2 py-1 text-2xl">&gt;</button>
         </div>
 
         {/* Course Grid */}
@@ -234,8 +322,12 @@ export default function EduleLanding() {
                   <div className="flex items-center gap-1">
                     <span className="text-sm font-semibold">{course.rating}</span>
                     <div className="flex text-yellow-400">
-                      {'★★★★★'.split('').map((star, i) => (
-                        <span key={i} className="text-xs">{star}</span>
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                          strokeWidth={1.5}
+                        />
                       ))}
                     </div>
                   </div>

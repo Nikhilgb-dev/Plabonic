@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import API from "../api/api";
 import logo from "../assets/logo.jpg";
-import { Bell, User, LogOut, Settings, Briefcase, Users, LayoutDashboard, Menu, X } from "lucide-react";
+import { Bell, User, LogOut, Settings, Briefcase, Users, LayoutDashboard, Menu, X, Copy, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const supportEmail = "Plabonic.hq@gmail.com";
@@ -14,6 +14,7 @@ export default function Navbar() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const helpModalRef = useRef<HTMLDivElement>(null);
@@ -119,6 +120,37 @@ export default function Navbar() {
     }
     await API.put(`/notifications/${id}/read`);
     fetchNotifications();
+  };
+
+  const handleNotificationClick = async (n: any) => {
+    setShowNotifications(false);
+    try {
+      await markAsRead(n._id);
+    } catch (err) {
+      console.error("Failed to mark notification as read", err);
+    }
+
+    // Redirect to origin if possible
+    if (n.type === "remark") {
+      navigate("/company/dashboard");
+      return;
+    }
+
+    const jobId = typeof n.job === "string" ? n.job : n.job?._id;
+    const companyId = typeof n.company === "string" ? n.company : n.company?._id;
+
+    if (jobId) {
+      navigate(`/jobs/${jobId}`);
+      return;
+    }
+
+    if (companyId) {
+      navigate(`/companies/${companyId}`);
+      return;
+    }
+
+    // Fallback to dashboard where notifications are relevant
+    navigate("/user/dashboard");
   };
 
   // 🔹 Initial load
@@ -315,7 +347,7 @@ export default function Navbar() {
                               <motion.div
                                 key={n._id}
                                 whileHover={{ backgroundColor: "rgb(249, 250, 251)" }}
-                                onClick={() => markAsRead(n._id)}
+                                onClick={() => handleNotificationClick(n)}
                                 className={`p-3 sm:p-4 border-b border-gray-100 cursor-pointer transition-colors ${n.isRead ? "bg-white" : n.type === "remark"
                                   ? "bg-yellow-50/60"
                                   : "bg-blue-50/50"
@@ -570,12 +602,26 @@ export default function Navbar() {
                 </p>
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input
-                    type="email"
-                    value={supportEmail}
-                    readOnly
-                    className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="email"
+                      value={supportEmail}
+                      readOnly
+                      className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                    />
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(supportEmail);
+                        setCopiedEmail(true);
+                        setTimeout(() => setCopiedEmail(false), 2000);
+                      }}
+                      className="flex items-center gap-1 px-3 py-2 text-xs sm:text-sm rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors"
+                      title="Copy email"
+                    >
+                      {copiedEmail ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-gray-700" />}
+                      <span>{copiedEmail ? "Copied" : "Copy"}</span>
+                    </button>
+                  </div>
                 </div>
                 <a
                   href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(supportEmail)}&su=Support%20request%20from%20Plabonic`}

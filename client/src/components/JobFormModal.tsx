@@ -111,7 +111,7 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
                             <input
                                 name="minSalary"
                                 type="number"
-                                placeholder="e.g. 8"
+                                placeholder="e.g. 800,000"
                                 value={form.minSalary || ""}
                                 onChange={(e) => setForm({ ...form, minSalary: e.target.value ? parseFloat(e.target.value) : undefined })}
                                 className="w-full px-3 py-2 border rounded-md"
@@ -122,7 +122,7 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
                             <input
                                 name="maxSalary"
                                 type="number"
-                                placeholder="e.g. 12"
+                                placeholder="e.g. 1,200,000"
                                 value={form.maxSalary || ""}
                                 onChange={(e) => setForm({ ...form, maxSalary: e.target.value ? parseFloat(e.target.value) : undefined })}
                                 className="w-full px-3 py-2 border rounded-md"
