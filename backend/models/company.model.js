@@ -15,6 +15,11 @@ const companySchema = new mongoose.Schema(
     email: { type: String, required: true },
     contactNumber: { type: String },
     verificationDocs: [String],
+    registrationName: { type: String },
+    panOrTanOrGst: { type: String },
+    dateOfIncorporation: { type: Date },
+    registeredOfficeAddress: { type: String },
+    directorAndKmpDetails: { type: String },
     authorizedSignatory: {
       name: String,
       designation: String,

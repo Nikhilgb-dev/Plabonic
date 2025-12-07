@@ -14,7 +14,6 @@ import {
   Briefcase,
   Building2,
   Users,
-  UsersRound,
   Plus,
   Edit2,
   Trash2,
@@ -220,6 +219,10 @@ const Dashboard = () => {
   };
 
 
+  const pendingAbuseReports = abuseReports.filter(
+    (report) => report.status === "pending"
+  ).length;
+
   const statsData = [
     {
       icon: Briefcase,
@@ -240,13 +243,17 @@ const Dashboard = () => {
       linkText: "Add new company"
     },
     {
-      icon: UsersRound,
-      label: "Total Communities",
-      value: communities.length,
-      bgColor: "bg-cyan-50",
-      iconColor: "text-cyan-600",
-      link: "/communities",
-      linkText: "Manage communities"
+      icon: Shield,
+      label: "Abuse Reports",
+      value: abuseReports.length,
+      subtext: `${pendingAbuseReports} pending`,
+      bgColor: "bg-rose-50",
+      iconColor: "text-rose-600",
+      action: () =>
+        document
+          .getElementById("abuse-reports-section")
+          ?.scrollIntoView({ behavior: "smooth" }),
+      linkText: "Review reports"
     },
     {
       icon: Users,
@@ -309,6 +316,9 @@ const Dashboard = () => {
                   </div>
                   <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
                   <h3 className="text-3xl font-bold text-gray-900 mb-4">{stat.value}</h3>
+                  {stat.subtext && (
+                    <p className="text-xs text-gray-500 -mt-3 mb-4">{stat.subtext}</p>
+                  )}
                   {stat.link ? (
                     <Link
                       to={stat.link}
@@ -1079,6 +1089,7 @@ const Dashboard = () => {
 
             {/* ===== Abuse Reports ===== */}
             <motion.div
+              id="abuse-reports-section"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}

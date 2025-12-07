@@ -71,14 +71,14 @@ const CompanyDetailsModal: React.FC<Props> = ({ company, onClose, onRefresh, isA
                 </div>
 
                 {/* Basic Info */}
-                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                     <div>
                         <h3 className="text-sm font-semibold text-gray-700">Domain</h3>
                         <p className="text-gray-800">{company.domain}</p>
                     </div>
                     <div>
                         <h3 className="text-sm font-semibold text-gray-700">Industry</h3>
-                        <p className="text-gray-800">{company.industry || "—"}</p>
+                        <p className="text-gray-800">{company.industry || "-"}</p>
                     </div>
                     <div>
                         <h3 className="text-sm font-semibold text-gray-700">Company Size</h3>
@@ -87,6 +87,22 @@ const CompanyDetailsModal: React.FC<Props> = ({ company, onClose, onRefresh, isA
                     <div>
                         <h3 className="text-sm font-semibold text-gray-700">Type</h3>
                         <p className="text-gray-800">{company.type}</p>
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-700">Registration Name</h3>
+                        <p className="text-gray-800">{company.registrationName || "-"}</p>
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-700">PAN / TAN / GST</h3>
+                        <p className="text-gray-800">{company.panOrTanOrGst || "-"}</p>
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-700">Incorporation Date</h3>
+                        <p className="text-gray-800">
+                            {company.dateOfIncorporation
+                                ? new Date(company.dateOfIncorporation).toLocaleDateString()
+                                : "-"}
+                        </p>
                     </div>
                 </div>
 
@@ -104,13 +120,26 @@ const CompanyDetailsModal: React.FC<Props> = ({ company, onClose, onRefresh, isA
                     </div>
                     <div>
                         <h3 className="text-sm font-semibold text-gray-700">Contact Number</h3>
-                        <p className="text-gray-800">{company.contactNumber || "—"}</p>
+                        <p className="text-gray-800">{company.contactNumber || "-"}</p>
                     </div>
                     <div className="sm:col-span-2">
-                        <h3 className="text-sm font-semibold text-gray-700">Address</h3>
-                        <p className="text-gray-800">{company.address}</p>
+                        <h3 className="text-sm font-semibold text-gray-700">Registered Office Address</h3>
+                        <p className="text-gray-800">
+                            {company.registeredOfficeAddress || company.address || "-"}
+                        </p>
                     </div>
                 </div>
+
+                {company.directorAndKmpDetails && (
+                    <div className="mb-6">
+                        <h3 className="text-sm font-semibold text-gray-700">
+                            Director & Key Managerial Personnel Details
+                        </h3>
+                        <p className="text-gray-800 mt-1 whitespace-pre-line">
+                            {company.directorAndKmpDetails}
+                        </p>
+                    </div>
+                )}
 
                 {/* Authorized Signatory */}
                 <div className="border-t pt-4 mb-6">
@@ -118,11 +147,11 @@ const CompanyDetailsModal: React.FC<Props> = ({ company, onClose, onRefresh, isA
                     <div className="grid sm:grid-cols-2 gap-3">
                         <div>
                             <h4 className="text-sm font-semibold text-gray-700">Name</h4>
-                            <p className="text-gray-800">{company.authorizedSignatory?.name || "—"}</p>
+                            <p className="text-gray-800">{company.authorizedSignatory?.name || "-"}</p>
                         </div>
                         <div>
                             <h4 className="text-sm font-semibold text-gray-700">Designation</h4>
-                            <p className="text-gray-800">{company.authorizedSignatory?.designation || "—"}</p>
+                            <p className="text-gray-800">{company.authorizedSignatory?.designation || "-"}</p>
                         </div>
                         {company.authorizedSignatory?.signature && (
                             <div className="sm:col-span-2 mt-2">

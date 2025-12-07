@@ -13,6 +13,11 @@ interface CompanyData {
     address?: string;
     isVerified?: boolean;
     createdAt?: string;
+    registrationName?: string;
+    panOrTanOrGst?: string;
+    dateOfIncorporation?: string;
+    registeredOfficeAddress?: string;
+    directorAndKmpDetails?: string;
 }
 
 const CompanyProfilePage: React.FC = () => {
@@ -48,7 +53,7 @@ const CompanyProfilePage: React.FC = () => {
                     />
                     <div>
                         <h2 className="text-2xl font-semibold text-gray-800">{company.name}</h2>
-                        <p className="text-sm text-gray-500">{company.industry || "—"}</p>
+                        <p className="text-sm text-gray-500">{company.industry || "-"}</p>
                     </div>
                 </div>
                 <button
@@ -65,6 +70,10 @@ const CompanyProfilePage: React.FC = () => {
                     <div>{company.email}</div>
                 </div>
                 <div>
+                    <div className="font-medium text-gray-600">Registration Name</div>
+                    <div>{company.registrationName || "-"}</div>
+                </div>
+                <div>
                     <div className="font-medium text-gray-600">Website</div>
                     <a
                         href={company.website}
@@ -72,12 +81,24 @@ const CompanyProfilePage: React.FC = () => {
                         rel="noreferrer"
                         className="text-blue-600 underline"
                     >
-                        {company.website || "—"}
+                        {company.website || "-"}
                     </a>
                 </div>
                 <div>
+                    <div className="font-medium text-gray-600">PAN / TAN / GST</div>
+                    <div>{company.panOrTanOrGst || "-"}</div>
+                </div>
+                <div>
                     <div className="font-medium text-gray-600">Address</div>
-                    <div>{company.address || "—"}</div>
+                    <div>{company.registeredOfficeAddress || company.address || "-"}</div>
+                </div>
+                <div>
+                    <div className="font-medium text-gray-600">Date of Incorporation</div>
+                    <div>
+                        {company.dateOfIncorporation
+                            ? new Date(company.dateOfIncorporation).toLocaleDateString()
+                            : "-"}
+                    </div>
                 </div>
                 <div>
                     <div className="font-medium text-gray-600">Verification</div>
@@ -91,8 +112,18 @@ const CompanyProfilePage: React.FC = () => {
                 </div>
                 <div className="sm:col-span-2">
                     <div className="font-medium text-gray-600">Description</div>
-                    <p className="text-gray-700 mt-1">{company.description || "—"}</p>
+                    <p className="text-gray-700 mt-1">{company.description || "-"}</p>
                 </div>
+                {company.directorAndKmpDetails && (
+                    <div className="sm:col-span-2">
+                        <div className="font-medium text-gray-600">
+                            Director & Key Managerial Personnel Details
+                        </div>
+                        <p className="text-gray-700 mt-1 whitespace-pre-line">
+                            {company.directorAndKmpDetails}
+                        </p>
+                    </div>
+                )}
             </div>
 
             <div className="text-xs text-gray-500 mt-6">

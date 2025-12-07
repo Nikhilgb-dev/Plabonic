@@ -16,15 +16,23 @@ export const registerCompany = async (req, res) => {
       industry,
       size,
       type,
-      address,
       tagline,
       description,
       email,
       contactNumber,
       password,
+      registrationName,
+      panOrTanOrGst,
+      dateOfIncorporation,
+      registeredOfficeAddress,
+      directorAndKmpDetails,
       authorizedSignatory,
       acceptTerms,
     } = req.body;
+
+    const normalizedIncorporationDate = dateOfIncorporation
+      ? new Date(dateOfIncorporation)
+      : undefined;
 
     // Check if company admin email already exists
     const existingUser = await User.findOne({ email });
@@ -53,15 +61,20 @@ export const registerCompany = async (req, res) => {
       industry,
       size,
       type,
-      address,
       tagline,
       description,
       email,
       contactNumber,
+      registrationName,
+      panOrTanOrGst,
+      dateOfIncorporation: normalizedIncorporationDate,
+      registeredOfficeAddress,
+      directorAndKmpDetails,
       authorizedSignatory: JSON.parse(authorizedSignatory || "{}"),
       logo,
       verificationDocs,
       termsAccepted: acceptTerms,
+      address: registeredOfficeAddress || address,
     });
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -102,12 +115,16 @@ export const createCompanyByAdmin = async (req, res) => {
       industry,
       size,
       type,
-      address,
       tagline,
       description,
       email,
       password,
       contactNumber,
+      registrationName,
+      panOrTanOrGst,
+      dateOfIncorporation,
+      registeredOfficeAddress,
+      directorAndKmpDetails,
       authorizedSignatoryName,
       authorizedSignatoryDesignation,
       acceptTerms,
@@ -145,19 +162,28 @@ export const createCompanyByAdmin = async (req, res) => {
       );
     }
 
+    const normalizedIncorporationDate = dateOfIncorporation
+      ? new Date(dateOfIncorporation)
+      : undefined;
+
     const company = await Company.create({
       name,
       domain,
       industry,
       size,
       type,
-      address,
       tagline,
       description,
       email,
       contactNumber,
       logo,
       verificationDocs,
+      address: registeredOfficeAddress || address,
+      registrationName,
+      panOrTanOrGst,
+      dateOfIncorporation: normalizedIncorporationDate,
+      registeredOfficeAddress,
+      directorAndKmpDetails,
       authorizedSignatory: {
         name: authorizedSignatoryName || "",
         designation: authorizedSignatoryDesignation || "",
@@ -281,8 +307,20 @@ export const getMyCompany = async (req, res) => {
 
 export const updateMyCompany = async (req, res) => {
   try {
-    const { name, domain, industry, size, type, tagline, description } =
-      req.body;
+    const {
+      name,
+      domain,
+      industry,
+      size,
+      type,
+      tagline,
+      description,
+      registrationName,
+      panOrTanOrGst,
+      dateOfIncorporation,
+      registeredOfficeAddress,
+      directorAndKmpDetails,
+    } = req.body;
     const company = await Company.findById(req.user.company);
     if (!company) return res.status(404).json({ message: "Company not found" });
 
@@ -293,6 +331,16 @@ export const updateMyCompany = async (req, res) => {
     if (type) company.type = type;
     if (tagline) company.tagline = tagline;
     if (description) company.description = description;
+    if (req.body.address) company.address = req.body.address;
+    if (registrationName) company.registrationName = registrationName;
+    if (panOrTanOrGst) company.panOrTanOrGst = panOrTanOrGst;
+    if (dateOfIncorporation) company.dateOfIncorporation = dateOfIncorporation;
+    if (registeredOfficeAddress) {
+      company.registeredOfficeAddress = registeredOfficeAddress;
+      company.address = registeredOfficeAddress;
+    }
+    if (directorAndKmpDetails)
+      company.directorAndKmpDetails = directorAndKmpDetails;
 
     // optional logo upload
     if (req.file) {

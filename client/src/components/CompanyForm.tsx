@@ -10,7 +10,7 @@ interface CompanyFormData {
     size: string;
     type: string;
     salary: string;
-    address: string;
+    registeredOfficeAddress: string;
     tagline: string;
     description: string;
     email: string;
@@ -19,6 +19,10 @@ interface CompanyFormData {
     authorizedSignatoryName: string;
     authorizedSignatoryDesignation: string;
     acceptTerms: boolean;
+    registrationName: string;
+    panOrTanOrGst: string;
+    dateOfIncorporation: string;
+    directorAndKmpDetails: string;
 }
 
 interface Props {
@@ -39,7 +43,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
         size: "",
         type: "",
         salary: "",
-        address: "",
+        registeredOfficeAddress: "",
         tagline: "",
         description: "",
         email: "",
@@ -48,11 +52,33 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
         authorizedSignatoryName: "",
         authorizedSignatoryDesignation: "",
         acceptTerms: false,
+        registrationName: "",
+        panOrTanOrGst: "",
+        dateOfIncorporation: "",
+        directorAndKmpDetails: "",
     });
 
     useEffect(() => {
         if (initialData) {
-            setForm(prev => ({ ...prev, ...initialData }));
+            let formattedDate = "";
+            if (initialData.dateOfIncorporation) {
+                const dateValue = new Date(
+                    initialData.dateOfIncorporation as unknown as string
+                );
+                if (!isNaN(dateValue.getTime())) {
+                    formattedDate = dateValue.toISOString().slice(0, 10);
+                }
+            }
+
+            setForm(prev => ({
+                ...prev,
+                ...initialData,
+                registeredOfficeAddress:
+                    (initialData as any).registeredOfficeAddress ||
+                    (initialData as any).address ||
+                    prev.registeredOfficeAddress,
+                dateOfIncorporation: formattedDate || prev.dateOfIncorporation,
+            }));
         }
     }, [initialData]);
 
@@ -81,6 +107,8 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
             Object.entries(form).forEach(([key, value]) =>
                 formData.append(key, value)
             );
+            // keep legacy address field in sync with registered office
+            formData.append("address", form.registeredOfficeAddress);
 
             if (logo) formData.append("logo", logo);
             if (signature) formData.append("authorizedSignatory[signature]", signature);
@@ -115,7 +143,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                 size: "",
                 type: "",
                 salary: "",
-                address: "",
+                registeredOfficeAddress: "",
                 tagline: "",
                 description: "",
                 email: "",
@@ -124,6 +152,10 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                 authorizedSignatoryName: "",
                 authorizedSignatoryDesignation: "",
                 acceptTerms: false,
+                registrationName: "",
+                panOrTanOrGst: "",
+                dateOfIncorporation: "",
+                directorAndKmpDetails: "",
             });
             setLogo(null);
             setSignature(null);
@@ -213,11 +245,51 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                 {/* Step 2 — Details */}
                 {step === 2 && (
                     <div className="grid gap-4 sm:gap-5 animate-fadeIn">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input
+                                name="registrationName"
+                                value={form.registrationName}
+                                onChange={handleChange}
+                                placeholder="Company Registration Name (optional)"
+                                className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
+                            />
+                            <input
+                                name="panOrTanOrGst"
+                                value={form.panOrTanOrGst}
+                                onChange={handleChange}
+                                placeholder="PAN / TAN / GST (optional)"
+                                className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
+                            />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input
+                                type="date"
+                                name="dateOfIncorporation"
+                                value={form.dateOfIncorporation}
+                                onChange={handleChange}
+                                placeholder="Date of Incorporation"
+                                className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
+                            />
+                            <input
+                                name="contactNumber"
+                                value={form.contactNumber}
+                                onChange={handleChange}
+                                placeholder="Contact Number"
+                                className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
+                            />
+                        </div>
                         <textarea
-                            name="address"
-                            value={form.address}
+                            name="registeredOfficeAddress"
+                            value={form.registeredOfficeAddress}
                             onChange={handleChange}
                             placeholder="Registered Office Address"
+                            className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
+                        />
+                        <textarea
+                            name="directorAndKmpDetails"
+                            value={form.directorAndKmpDetails}
+                            onChange={handleChange}
+                            placeholder="Director and Key Managerial Personnel Details"
                             className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
                         />
                         <textarea
@@ -255,13 +327,6 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                                 />
                             )}
                         </div>
-                        <input
-                            name="contactNumber"
-                            value={form.contactNumber}
-                            onChange={handleChange}
-                            placeholder="Contact Number"
-                            className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
-                        />
                     </div>
                 )}
 
@@ -269,7 +334,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                 {step === 3 && (
                     <div className="grid gap-4 sm:gap-5 animate-fadeIn">
                         <h3 className="font-semibold text-gray-800 text-sm sm:text-base">
-                            Authorized Signatory
+                            Authorized Person
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <input
@@ -289,7 +354,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                         </div>
                         <div>
                             <label className="block text-sm text-gray-700 mb-1">
-                                Digital Signature (optional)
+                                Authorized persona [ID] (optional)
                             </label>
                             <input
                                 type="file"
