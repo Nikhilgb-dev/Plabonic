@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Sparkles, PlusCircle, CheckCircle2 } from "lucide-react";
+import { Sparkles, PlusCircle, CheckCircle2, Edit, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import MarketingCardModal from "./MarketingCardModal";
+import ConfirmDialog from "./ConfirmDialog";
 import { MarketingCard, MarketingEnquiry } from "@/types/marketing";
 import API from "@/api/api";
 
@@ -15,6 +16,8 @@ const MarketingAdminPanel: React.FC = () => {
   const [cards, setCards] = useState<MarketingCard[]>([]);
   const [enquiries, setEnquiries] = useState<MarketingEnquiry[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [editingCard, setEditingCard] = useState<MarketingCard | null>(null);
+  const [deletingCard, setDeletingCard] = useState<MarketingCard | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
@@ -37,6 +40,25 @@ const MarketingAdminPanel: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleEdit = (card: MarketingCard) => {
+    setEditingCard(card);
+    setShowModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (!deletingCard) return;
+    try {
+      await API.delete(`/marketing/cards/${deletingCard._id}`);
+      setCards((prev) => prev.filter((c) => c._id !== deletingCard._id));
+      toast.success("Marketing card deleted");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete card");
+    } finally {
+      setDeletingCard(null);
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
@@ -94,19 +116,35 @@ const MarketingAdminPanel: React.FC = () => {
                     <span className="text-lg font-semibold text-gray-900">
                       Rs. {Number(card.price || 0).toLocaleString()}
                     </span>
-                    <div className="flex gap-1">
-                      {card.badges?.trusted && (
-                        <span className={`px-2 py-1 text-xs rounded-full border ${badgeColors.trusted}`}>Trusted</span>
-                      )}
-                      {card.badges?.verified && (
-                        <span className={`px-2 py-1 text-xs rounded-full border ${badgeColors.verified}`}>Verified</span>
-                      )}
-                      {card.badges?.recommended && (
-                        <span className={`px-2 py-1 text-xs rounded-full border ${badgeColors.recommended}`}>
-                          Recommended
-                        </span>
-                      )}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(card)}
+                        className="p-1.5 rounded-md hover:bg-gray-100 text-gray-600"
+                        title="Edit"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setDeletingCard(card)}
+                        className="p-1.5 rounded-md hover:bg-red-50 text-red-600"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
+                  </div>
+                  <div className="flex gap-1 mb-2">
+                    {card.badges?.trusted && (
+                      <span className={`px-2 py-1 text-xs rounded-full border ${badgeColors.trusted}`}>Trusted</span>
+                    )}
+                    {card.badges?.verified && (
+                      <span className={`px-2 py-1 text-xs rounded-full border ${badgeColors.verified}`}>Verified</span>
+                    )}
+                    {card.badges?.recommended && (
+                      <span className={`px-2 py-1 text-xs rounded-full border ${badgeColors.recommended}`}>
+                        Recommended
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-gray-600 line-clamp-3">{card.description}</p>
                 </div>
@@ -163,11 +201,29 @@ const MarketingAdminPanel: React.FC = () => {
 
       {showModal && (
         <MarketingCardModal
-          onClose={() => setShowModal(false)}
+          onClose={() => {
+            setShowModal(false);
+            setEditingCard(null);
+          }}
           onSaved={(card) => {
-            setCards((prev) => [card, ...prev]);
+            if (editingCard) {
+              setCards((prev) => prev.map((c) => (c._id === card._id ? card : c)));
+            } else {
+              setCards((prev) => [card, ...prev]);
+            }
+            setEditingCard(null);
             fetchData();
           }}
+          card={editingCard}
+        />
+      )}
+
+      {deletingCard && (
+        <ConfirmDialog
+          title="Delete Marketing Card"
+          message={`Are you sure you want to delete "${deletingCard.name}"? This action cannot be undone.`}
+          onConfirm={handleDelete}
+          onCancel={() => setDeletingCard(null)}
         />
       )}
     </div>

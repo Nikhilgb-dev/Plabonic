@@ -84,6 +84,57 @@ export const createMarketingEnquiry = async (req, res) => {
   }
 };
 
+export const updateMarketingCard = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, title, description, price, coverImage, logo, badges = {}, gallery = [] } = req.body;
+
+    if (!name || !title || !description || !price || !coverImage || !logo) {
+      return res.status(400).json({ message: "name, title, description, price, coverImage, and logo are required" });
+    }
+
+    const normalizedBadges = {
+      trusted: Boolean(badges.trusted),
+      verified: Boolean(badges.verified),
+      recommended: Boolean(badges.recommended),
+    };
+
+    const card = await MarketingCard.findByIdAndUpdate(
+      id,
+      {
+        name,
+        title,
+        description,
+        price,
+        coverImage,
+        logo,
+        gallery,
+        badges: normalizedBadges,
+      },
+      { new: true }
+    );
+
+    if (!card) return res.status(404).json({ message: "Marketing card not found" });
+
+    res.json(card);
+  } catch (err) {
+    console.error("Failed to update marketing card", err);
+    res.status(500).json({ message: "Failed to update marketing card" });
+  }
+};
+
+export const deleteMarketingCard = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const card = await MarketingCard.findByIdAndDelete(id);
+    if (!card) return res.status(404).json({ message: "Marketing card not found" });
+    res.json({ message: "Marketing card deleted successfully" });
+  } catch (err) {
+    console.error("Failed to delete marketing card", err);
+    res.status(500).json({ message: "Failed to delete marketing card" });
+  }
+};
+
 export const getMarketingEnquiries = async (_req, res) => {
   try {
     const enquiries = await MarketingEnquiry.find().sort({ createdAt: -1 });

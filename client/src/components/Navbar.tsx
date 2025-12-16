@@ -61,7 +61,7 @@ export default function Navbar() {
         const remarks = remarksRes.value.data.remarksHistory;
         remarkNotifications = remarks.map((r: any) => ({
           _id: `remark-${r._id || Math.random().toString(36).substring(2)}`,
-          message: `📝 Admin Remark: ${r.text}`,
+          message: `📝 Plabonic Remark: ${r.text}`,
           createdAt: r.date,
           isRead: false,
           type: "remark",
@@ -91,7 +91,7 @@ export default function Navbar() {
 
       const formattedRemarks = remarks.map((r: any) => ({
         _id: `remark-${r._id || Math.random().toString(36).substring(2)}`,
-        message: `📝 Admin Remark: ${r.text}`,
+        message: `📝 Plabonic Remark: ${r.text}`,
         createdAt: r.date,
         isRead: false,
         type: "remark",

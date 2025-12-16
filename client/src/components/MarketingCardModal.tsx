@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Upload } from "lucide-react";
 import toast from "react-hot-toast";
 import { MarketingCard } from "@/types/marketing";
@@ -7,6 +7,7 @@ import API from "@/api/api";
 type Props = {
   onClose: () => void;
   onSaved: (card: MarketingCard) => void;
+  card?: MarketingCard | null;
 };
 
 const uploadFile = async (file: File): Promise<string> => {
@@ -20,20 +21,30 @@ const uploadFile = async (file: File): Promise<string> => {
   return url;
 };
 
-const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved }) => {
+const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
   const [cover, setCover] = useState<File | null>(null);
   const [logo, setLogo] = useState<File | null>(null);
   const [gallery, setGallery] = useState<(File | null)[]>([null, null, null, null]);
-  const [name, setName] = useState("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState<string>("");
-  const [badges, setBadges] = useState({
+  const [name, setName] = useState(card?.name || "");
+  const [title, setTitle] = useState(card?.title || "");
+  const [description, setDescription] = useState(card?.description || "");
+  const [price, setPrice] = useState<string>(card?.price?.toString() || "");
+  const [badges, setBadges] = useState(card?.badges || {
     trusted: false,
     verified: false,
     recommended: false,
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (card) {
+      setName(card.name);
+      setTitle(card.title);
+      setDescription(card.description);
+      setPrice(card.price.toString());
+      setBadges(card.badges);
+    }
+  }, [card]);
 
   const handleGalleryChange = (index: number, file: File | null) => {
     setGallery((prev) => prev.map((item, i) => (i === index ? file : item)));
@@ -41,46 +52,52 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!cover || !logo) {
-      toast.error("Cover and logo are required.");
-      return;
-    }
-    if (gallery.some((img) => !img)) {
-      toast.error("Please add all 4 gallery images.");
-      return;
-    }
     if (!name || !title || !description || !price) {
       toast.error("All fields are required.");
       return;
     }
     setLoading(true);
     try {
-      const [coverUrl, logoUrl, ...galleryUrls] = await Promise.all([
-        uploadFile(cover),
-        uploadFile(logo),
-        ...gallery.map((file) => uploadFile(file as File)),
-      ]);
+      let coverUrl = card?.coverImage || "";
+      let logoUrl = card?.logo || "";
+      let galleryUrls = card?.gallery || [];
 
-      const { data } = await API.post<MarketingCard>("/marketing/cards", {
+      if (cover) coverUrl = await uploadFile(cover);
+      if (logo) logoUrl = await uploadFile(logo);
+
+      const newGalleryUrls = await Promise.all(
+        gallery.map((file) => file ? uploadFile(file) : Promise.resolve(null))
+      );
+      const updatedGallery = galleryUrls.map((existing, idx) => newGalleryUrls[idx] || existing);
+
+      if (cover || logo || gallery.some(f => f)) {
+        toast.success("Images uploaded successfully");
+      }
+
+      const payload = {
         name,
         title,
         description,
         price: Number(price),
         coverImage: coverUrl,
         logo: logoUrl,
-        gallery: galleryUrls,
+        gallery: updatedGallery,
         badges,
-      });
+      };
+
+      const { data } = card
+        ? await API.put<MarketingCard>(`/marketing/cards/${card._id}`, payload)
+        : await API.post<MarketingCard>("/marketing/cards", payload);
 
       onSaved(data);
-      toast.success("Marketing card saved");
+      toast.success(`Marketing card ${card ? 'updated' : 'saved'}`);
       onClose();
     } catch (err) {
       console.error(err);
       const message =
         (err as any)?.response?.data?.message ||
         (err as Error)?.message ||
-        "Failed to save card. Please try again.";
+        `Failed to ${card ? 'update' : 'save'} card. Please try again.`;
       toast.error(message);
     } finally {
       setLoading(false);
@@ -108,11 +125,11 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved }) => {
   );
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4 py-8">
-      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
+      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden max-h-[90vh] mt-20 overflow-y-auto">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Add Marketing Card</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{card ? 'Edit' : 'Add'} Marketing Card</h3>
             <p className="text-sm text-gray-500">Upload assets and details for the marketing spotlight</p>
           </div>
           <button
@@ -179,12 +196,11 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {gallery.map((file, idx) => (
               <label key={idx} className="block">
-                <span className="text-sm font-medium text-gray-700">Gallery Image {idx + 1}</span>
+                <span className="text-sm font-medium text-gray-700">Gallery Image {idx + 1} (Optional)</span>
                 <div className="mt-2 flex items-center gap-3">
                   <input
                     type="file"
                     accept="image/*"
-                    required
                     onChange={(e) => handleGalleryChange(idx, e.target.files?.[0] || null)}
                     className="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer"
                   />
@@ -222,7 +238,7 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved }) => {
               disabled={loading}
               className="px-5 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-60"
             >
-              {loading ? "Saving..." : "Save Card"}
+              {loading ? "Saving..." : card ? "Update Card" : "Save Card"}
             </button>
           </div>
         </form>
