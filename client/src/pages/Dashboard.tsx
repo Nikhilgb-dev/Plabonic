@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ApplicantDetailsModal from "@/components/ApplicantDetailsModal";
 import FreelancerList from "./FreelancerList";
 import MarketingAdminPanel from "@/components/MarketingAdminPanel";
+import AdminJobDetailsModal from "@/components/AdminJobDetailsModal";
 
 import {
   Briefcase,
@@ -46,6 +47,7 @@ const Dashboard = () => {
   const [selectedCommunityId, setSelectedCommunityId] = useState<string | null>(null);
   const [showCreateCompanyModal, setShowCreateCompanyModal] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
+  const [selectedJob, setSelectedJob] = useState<any | null>(null);
 
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
@@ -91,7 +93,7 @@ const Dashboard = () => {
 
   const fetchJobs = async () => {
     try {
-      const res = await API.get("/jobs");
+      const res = await API.get("/admin/jobs");
       setJobs(res.data);
     } catch (err) {
       console.error(err);
@@ -120,7 +122,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user?.role === "admin") {
-      API.get("/jobs").then((res) => setJobs(res.data));
+      fetchJobs();
       API.get("/communities").then((res) => setCommunities(res.data));
       fetchUsers();
       fetchCompanies();
@@ -538,6 +540,14 @@ const Dashboard = () => {
                   isAdmin={user.role === "admin"}
                 />
               )}
+
+              {selectedJob && (
+                <AdminJobDetailsModal
+                  job={selectedJob}
+                  onClose={() => setSelectedJob(null)}
+                  onRefresh={fetchJobs}
+                />
+              )}
             </motion.div>
 
             {/* ===== Manage Jobs ===== */}
@@ -620,6 +630,9 @@ const Dashboard = () => {
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                   Applicants
                                 </th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                  Remarks
+                                </th>
                                 <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                   Actions
                                 </th>
@@ -634,7 +647,8 @@ const Dashboard = () => {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ delay: index * 0.03 }}
-                                    className="hover:bg-blue-50/30 transition-colors"
+                                    className="hover:bg-blue-50/30 transition-colors cursor-pointer"
+                                    onClick={() => setSelectedJob(job)}
                                   >
                                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                                       {job.title}
@@ -686,7 +700,10 @@ const Dashboard = () => {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                       {applications.filter(a => a.job._id === job._id).length}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 max-w-xs truncate" title={job.remarks}>
+                                      {job.remarks || "-"}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
                                       <div className="flex items-center justify-end gap-1.5">
                                         <motion.button
                                           whileHover={{ scale: 1.05 }}
@@ -1085,6 +1102,9 @@ const Dashboard = () => {
                         Email
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Phone
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Role
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -1111,6 +1131,9 @@ const Dashboard = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             {u.email}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {u.phone || "-"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm capitalize text-gray-600">
                             {u.role}

@@ -25,6 +25,7 @@ const jobSchema = new mongoose.Schema(
     isExpired: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
     blocked: { type: Boolean, default: false },
+    remarks: { type: String, default: "" },
   },
   { timestamps: true }
 );
