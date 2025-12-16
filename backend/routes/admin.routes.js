@@ -25,6 +25,10 @@ import {
   verifyFreelancer,
   deleteFreelancer,
   getAllAbuseReports,
+  updateAbuseReportStatus,
+  blockCompany,
+  reviewCompanyResponse,
+  blockJob,
 } from "../controllers/admin.controller.js";
 import { protect, adminOnly } from "../middlewares/auth.middleware.js";
 import { upload } from "../utils/cloudinary.util.js";
@@ -81,5 +85,13 @@ router.delete("/freelancers/:id", protect, adminOnly, deleteFreelancer);
 
 // ABUSE REPORTS
 router.get("/abuse-reports", protect, adminOnly, getAllAbuseReports);
+router.put("/abuse-reports/:id/status", protect, adminOnly, updateAbuseReportStatus);
+router.put("/abuse-reports/:id/review", protect, adminOnly, reviewCompanyResponse);
+
+// COMPANIES
+router.put("/companies/:id/block", protect, adminOnly, blockCompany);
+
+// JOBS
+router.put("/jobs/:id/block", protect, adminOnly, blockJob);
 
 export default router;

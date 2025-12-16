@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import API from "../api/api";
+import toast from "react-hot-toast";
 
 interface Props {
   jobId: string;
@@ -28,6 +29,10 @@ const ReportAbuseModal: React.FC<Props> = ({ jobId, jobTitle, onClose, onSuccess
       setError("Please select a reason");
       return;
     }
+    if (!description.trim()) {
+      setError("Please provide additional details");
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -35,8 +40,9 @@ const ReportAbuseModal: React.FC<Props> = ({ jobId, jobTitle, onClose, onSuccess
     try {
       await API.post(`/jobs/${jobId}/report-abuse`, {
         reason,
-        description: description.trim() || undefined,
+        description: description.trim(),
       });
+      toast.success("Report submitted successfully");
       onSuccess();
       onClose();
     } catch (err: any) {
@@ -86,7 +92,7 @@ const ReportAbuseModal: React.FC<Props> = ({ jobId, jobTitle, onClose, onSuccess
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Additional details (optional)
+                Additional details *
               </label>
               <textarea
                 value={description}
@@ -94,6 +100,7 @@ const ReportAbuseModal: React.FC<Props> = ({ jobId, jobTitle, onClose, onSuccess
                 placeholder="Provide more details about the issue..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
                 rows={3}
+                required
               />
             </div>
 

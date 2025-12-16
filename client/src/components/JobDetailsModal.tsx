@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ReportAbuseModal from "./ReportAbuseModal";
+import toast from "react-hot-toast";
 
 interface Props {
     job: any;
@@ -125,8 +126,7 @@ const JobDetailsModal: React.FC<Props> = ({ job, onClose, onApply }) => {
                     jobTitle={job.title}
                     onClose={() => setShowReportModal(false)}
                     onSuccess={() => {
-                        // Could show a success message here
-                        alert("Report submitted successfully");
+                        toast.success("Report submitted successfully");
                     }}
                 />
             )}

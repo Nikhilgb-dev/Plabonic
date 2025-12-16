@@ -3,6 +3,7 @@ import Application from "../models/application.model.js";
 import { uploadToCloudinary } from "../utils/cloudinary.util.js";
 import ApplicationProfile from "../models/applicationProfile.model.js";
 import AbuseReport from "../models/abuseReport.model.js";
+import Company from "../models/company.model.js";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
@@ -252,6 +253,7 @@ export const getJobs = async (req, res) => {
       $or: [{ isExpired: false }, { isExpired: { $exists: false } }],
       $or: [{ expiresAt: { $gte: now } }, { expiresAt: { $exists: false } }],
       status: "open",
+      blocked: { $ne: true },
     };
 
     if (req.user) {
@@ -373,6 +375,13 @@ export const reportAbuse = async (req, res) => {
       reason,
       description,
     });
+
+    // Block the specific job
+    job.blocked = true;
+    await job.save();
+
+    // Block the company from posting new jobs
+    await Company.findByIdAndUpdate(job.company, { blocked: true });
 
     res.status(201).json({ message: "Abuse report submitted successfully", report });
   } catch (err) {

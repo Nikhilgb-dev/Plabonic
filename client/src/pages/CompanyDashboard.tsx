@@ -7,6 +7,7 @@ import FeedbackButton from "@/components/FeedbackButton";
 import ApplicantDetailsModal from "@/components/ApplicantDetailsModal";
 import EditJobModal from "@/components/EditJobModal";
 import CompanyForm from "@/components/CompanyForm";
+import toast from "react-hot-toast";
 
 type DashboardData = {
     employeesCount: number;
@@ -45,6 +46,9 @@ const CompanyDashboard: React.FC = () => {
     const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
     const [showEditCompanyModal, setShowEditCompanyModal] = useState(false);
     const [abuseReports, setAbuseReports] = useState<any[]>([]);
+    const [showAbuseResponseModal, setShowAbuseResponseModal] = useState(false);
+    const [selectedAbuseReport, setSelectedAbuseReport] = useState<any>(null);
+    const [companyResponse, setCompanyResponse] = useState("");
 
     const fetchDashboard = async () => {
         const res = await API.get("/companies/me/dashboard");
@@ -123,6 +127,30 @@ const CompanyDashboard: React.FC = () => {
         API.get("/companies/me/jobs").then((res) =>
             setCompanyJobs(res.data.jobs || [])
         );
+    };
+
+    const handleAbuseResponse = async () => {
+        if (!selectedAbuseReport || !companyResponse.trim()) return;
+
+        try {
+            await API.put(`/companies/me/abuse-reports/${selectedAbuseReport._id}`, {
+                companyResponse: companyResponse.trim(),
+            });
+            toast.success("Response submitted successfully");
+            setShowAbuseResponseModal(false);
+            setSelectedAbuseReport(null);
+            setCompanyResponse("");
+            fetchAbuseReports();
+        } catch (err: any) {
+            console.error("Failed to submit response", err);
+            toast.error(err.response?.data?.message || "Failed to submit response");
+        }
+    };
+
+    const openAbuseResponseModal = (report: any) => {
+        setSelectedAbuseReport(report);
+        setCompanyResponse(report.companyResponse || "");
+        setShowAbuseResponseModal(true);
     };
 
     if (loading)
@@ -695,6 +723,9 @@ const CompanyDashboard: React.FC = () => {
                                             <th className="p-2 sm:p-3 text-left hidden md:table-cell">
                                                 Reported On
                                             </th>
+                                            <th className="p-2 sm:p-3 text-left">
+                                                Actions
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -744,6 +775,14 @@ const CompanyDashboard: React.FC = () => {
                                                     {new Date(
                                                         report.createdAt
                                                     ).toLocaleDateString()}
+                                                </td>
+                                                <td className="p-2 sm:p-3">
+                                                    <button
+                                                        onClick={() => openAbuseResponseModal(report)}
+                                                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                                    >
+                                                        {report.companyResponse ? "Update Response" : "Respond"}
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -810,6 +849,73 @@ const CompanyDashboard: React.FC = () => {
                                 setShowEditCompanyModal(false);
                             }}
                         />
+                    </div>
+                </div>
+            )}
+
+            {showAbuseResponseModal && selectedAbuseReport && (
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 px-3">
+                    <div className="bg-white p-4 sm:p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg sm:text-xl font-bold">
+                                Respond to Abuse Report
+                            </h2>
+                            <button
+                                onClick={() => {
+                                    setShowAbuseResponseModal(false);
+                                    setSelectedAbuseReport(null);
+                                    setCompanyResponse("");
+                                }}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div className="mb-4">
+                            <h3 className="font-semibold text-gray-900 mb-2">Report Details</h3>
+                            <div className="bg-gray-50 p-3 rounded-lg text-sm">
+                                <p><strong>Job:</strong> {selectedAbuseReport.job?.title}</p>
+                                <p><strong>Reported By:</strong> {selectedAbuseReport.reportedBy?.name || "Anonymous"}</p>
+                                <p><strong>Reason:</strong> {selectedAbuseReport.reason}</p>
+                                <p><strong>Description:</strong> {selectedAbuseReport.description}</p>
+                                <p><strong>Status:</strong> {selectedAbuseReport.status}</p>
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Your Response *
+                            </label>
+                            <textarea
+                                value={companyResponse}
+                                onChange={(e) => setCompanyResponse(e.target.value)}
+                                placeholder="Provide your response to this abuse report..."
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 resize-none"
+                                rows={6}
+                                required
+                            />
+                        </div>
+
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowAbuseResponseModal(false);
+                                    setSelectedAbuseReport(null);
+                                    setCompanyResponse("");
+                                }}
+                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleAbuseResponse}
+                                disabled={!companyResponse.trim()}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Submit Response
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

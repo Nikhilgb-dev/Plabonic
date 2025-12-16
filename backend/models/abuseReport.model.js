@@ -9,12 +9,17 @@ const abuseReportSchema = new mongoose.Schema(
       enum: ["Spam", "Inappropriate Content", "Misleading Information", "Harassment", "Other"],
       required: true,
     },
-    description: { type: String },
+    description: { type: String, required: true },
     status: {
       type: String,
-      enum: ["pending", "reviewed", "resolved"],
+      enum: ["pending", "responded", "reviewed", "resolved"],
       default: "pending",
     },
+    companyResponse: { type: String },
+    responseReviewed: { type: Boolean, default: false },
+    responseReviewDate: { type: Date },
+    resolutionDate: { type: Date },
+    resolvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

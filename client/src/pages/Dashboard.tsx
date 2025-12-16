@@ -197,6 +197,53 @@ const Dashboard = () => {
     }
   };
 
+  const handleBlockCompany = async (companyId: string, currentStatus: boolean) => {
+    const action = currentStatus ? "unblock" : "block";
+    if (window.confirm(`Are you sure you want to ${action} this company?`)) {
+      try {
+        await API.put(`/admin/companies/${companyId}/block`);
+        toast.success(`Company ${action}ed successfully`);
+        fetchCompanies();
+        fetchAbuseReports();
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || `Failed to ${action} company`);
+      }
+    }
+  };
+
+  const handleBlockJob = async (jobId: string, currentStatus: boolean) => {
+    const action = currentStatus ? "unblock" : "block";
+    if (window.confirm(`Are you sure you want to ${action} this job?`)) {
+      try {
+        await API.put(`/admin/jobs/${jobId}/block`);
+        toast.success(`Job ${action}ed successfully`);
+        fetchAbuseReports();
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || `Failed to ${action} job`);
+      }
+    }
+  };
+
+  const handleUpdateAbuseReportStatus = async (reportId: string, status: string) => {
+    try {
+      await API.put(`/admin/abuse-reports/${reportId}/status`, { status });
+      fetchAbuseReports();
+      toast.success("Abuse report status updated");
+    } catch (err) {
+      toast.error("Failed to update report status");
+    }
+  };
+
+  const handleReviewCompanyResponse = async (reportId: string, action: string) => {
+    try {
+      await API.put(`/admin/abuse-reports/${reportId}/review`, { action });
+      fetchAbuseReports();
+      toast.success(`Company response ${action}d`);
+    } catch (err) {
+      toast.error("Failed to review response");
+    }
+  };
+
 
   const handleDeleteUser = (userId: string) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
@@ -1129,10 +1176,19 @@ const Dashboard = () => {
                         Reason
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Description
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Company Response
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Status
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Reported On
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Actions
                       </th>
                     </tr>
                   </thead>
@@ -1166,11 +1222,19 @@ const Dashboard = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">
                             {report.reason}
                           </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 max-w-xs truncate" title={report.description}>
+                            {report.description}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 max-w-xs truncate" title={report.companyResponse}>
+                            {report.companyResponse || "No response yet"}
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
                               className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                                 report.status === "pending"
                                   ? "bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20"
+                                  : report.status === "responded"
+                                  ? "bg-purple-50 text-purple-700 ring-1 ring-purple-600/20"
                                   : report.status === "reviewed"
                                   ? "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20"
                                   : "bg-green-50 text-green-700 ring-1 ring-green-600/20"
@@ -1181,6 +1245,72 @@ const Dashboard = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {new Date(report.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <select
+                                value={report.status}
+                                onChange={(e) => handleUpdateAbuseReportStatus(report._id, e.target.value)}
+                                className="text-xs px-2 py-1 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="responded">Responded</option>
+                                <option value="reviewed">Reviewed</option>
+                                <option value="resolved">Resolved</option>
+                              </select>
+                              {report.status === "responded" && (
+                                <div className="flex gap-1">
+                                  <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => handleReviewCompanyResponse(report._id, "approve")}
+                                    className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                                    title="Approve Response"
+                                  >
+                                    ✓
+                                  </motion.button>
+                                  <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => handleReviewCompanyResponse(report._id, "reject")}
+                                    className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+                                    title="Reject Response"
+                                  >
+                                    ✗
+                                  </motion.button>
+                                </div>
+                              )}
+                              {report.job && (
+                                <motion.button
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  onClick={() => handleBlockJob(report.job._id, report.job.blocked)}
+                                  className={`p-1 rounded transition-colors ${
+                                    report.job.blocked
+                                      ? "text-green-600 hover:bg-green-50"
+                                      : "text-orange-600 hover:bg-orange-50"
+                                  }`}
+                                  title={report.job.blocked ? "Unblock Job" : "Block Job"}
+                                >
+                                  {report.job.blocked ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                                </motion.button>
+                              )}
+                              {report.job?.company && (
+                                <motion.button
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  onClick={() => handleBlockCompany(report.job.company._id, report.job.company.blocked)}
+                                  className={`p-1 rounded transition-colors ${
+                                    report.job.company.blocked
+                                      ? "text-green-600 hover:bg-green-50"
+                                      : "text-red-600 hover:bg-red-50"
+                                  }`}
+                                  title={report.job.company.blocked ? "Unblock Company" : "Block Company"}
+                                >
+                                  {report.job.company.blocked ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                                </motion.button>
+                              )}
+                            </div>
                           </td>
                         </motion.tr>
                       ))}

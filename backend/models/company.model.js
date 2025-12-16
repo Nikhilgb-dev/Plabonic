@@ -27,6 +27,7 @@ const companySchema = new mongoose.Schema(
     },
     verified: { type: Boolean, default: false },
     termsAccepted: { type: Boolean, default: false },
+    blocked: { type: Boolean, default: false },
     admins: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     remarks: { type: String, default: "" },
     remarksHistory: [

@@ -24,6 +24,7 @@ interface Job {
 interface Company {
     _id: string;
     name: string;
+    blocked?: boolean;
 }
 
 const ManageJobsPage: React.FC = () => {
@@ -169,7 +170,7 @@ const ManageJobsPage: React.FC = () => {
             toast.success("Job deleted successfully");
             loadJobs();
         } catch (err: any) {
-            toast.error("Failed to delete job");
+            toast.error(err.response?.data?.message || "Failed to delete job");
         }
     };
 
@@ -192,12 +193,13 @@ const ManageJobsPage: React.FC = () => {
                                 resetForm();
                                 setShowForm(true);
                             }}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-medium flex items-center gap-2"
+                            disabled={role === "company_admin" && company?.blocked}
+                            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:transform-none shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-medium flex items-center gap-2"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                             </svg>
-                            Post New Job
+                            {role === "company_admin" && company?.blocked ? "Posting Disabled - Contact Admin" : "Post New Job"}
                         </button>
                     </div>
                 </div>
@@ -386,9 +388,10 @@ const ManageJobsPage: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-medium"
+                                    disabled={role === "company_admin" && company?.blocked}
+                                    className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:transform-none shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-medium"
                                 >
-                                    {editingJob ? "Update Job" : "Post Job"}
+                                    {role === "company_admin" && company?.blocked ? "Posting Disabled" : (editingJob ? "Update Job" : "Post Job")}
                                 </button>
                             </div>
                         </form>

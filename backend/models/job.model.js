@@ -24,6 +24,7 @@ const jobSchema = new mongoose.Schema(
     expiresAt: { type: Date },
     isExpired: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
+    blocked: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

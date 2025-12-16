@@ -16,6 +16,7 @@ export interface Company {
     phone?: string;
     isVerified?: boolean;
     termsAccepted?: boolean;
+    blocked?: boolean;
 }
 
 /**

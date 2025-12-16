@@ -592,6 +592,13 @@ export const createJobForCompany = async (req, res) => {
         .status(400)
         .json({ message: "No company linked to this account" });
 
+    const company = await Company.findById(req.user.company);
+    if (!company) return res.status(404).json({ message: "Company not found" });
+
+    if (company.blocked) {
+      return res.status(403).json({ message: "Company is blocked from posting jobs. Please contact admin." });
+    }
+
     const {
       title,
       description,
@@ -796,11 +803,38 @@ export const getCompanyAbuseReports = async (req, res) => {
     const reports = await AbuseReport.find({ job: { $in: jobIds } })
       .sort({ createdAt: -1 })
       .populate("reportedBy", "name email")
-      .populate("job", "title");
+      .populate("job", "title")
+      .populate("resolvedBy", "name email");
 
     res.json(reports);
   } catch (err) {
     console.error("Error in getCompanyAbuseReports:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const updateAbuseReport = async (req, res) => {
+  try {
+    const { companyResponse } = req.body;
+    const reportId = req.params.id;
+    const companyId = req.user.company;
+
+    const report = await AbuseReport.findById(reportId).populate("job");
+    if (!report) return res.status(404).json({ message: "Abuse report not found" });
+
+    // Ensure the report belongs to this company's job
+    if (report.job.company.toString() !== companyId.toString()) {
+      return res.status(403).json({ message: "Not authorized to update this report" });
+    }
+
+    report.companyResponse = companyResponse;
+    report.status = "responded";
+
+    await report.save();
+
+    res.json({ message: "Abuse report updated", report });
+  } catch (err) {
+    console.error("Error in updateAbuseReport:", err);
     res.status(500).json({ message: err.message });
   }
 };

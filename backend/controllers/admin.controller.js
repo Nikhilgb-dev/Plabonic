@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import Application from "../models/application.model.js";
 import Job from "../models/job.model.js";
+import Company from "../models/company.model.js";
 import Community from "../models/community.model.js";
 import Notification from "../models/notification.model.js";
 import Post from "../models/post.model.js";
@@ -376,15 +377,92 @@ export const getAllAbuseReports = async (req, res) => {
     const reports = await AbuseReport.find()
       .sort({ createdAt: -1 })
       .populate("reportedBy", "name email")
-      .populate("job", "title")
+      .populate("job", "title blocked")
       .populate({
         path: "job",
-        populate: { path: "company", select: "name" },
-      });
+        populate: { path: "company", select: "name blocked" },
+      })
+      .populate("resolvedBy", "name email");
 
     res.json(reports);
   } catch (err) {
     console.error("Error in getAllAbuseReports:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const updateAbuseReportStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const report = await AbuseReport.findById(req.params.id);
+
+    if (!report) return res.status(404).json({ message: "Abuse report not found" });
+
+    if (!["pending", "reviewed", "resolved"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    report.status = status;
+    await report.save();
+
+    res.json({ message: "Abuse report status updated", report });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const blockCompany = async (req, res) => {
+  try {
+    const company = await Company.findById(req.params.id);
+    if (!company) return res.status(404).json({ message: "Company not found" });
+
+    company.blocked = !company.blocked;
+    await company.save();
+
+    res.json({ message: `Company ${company.blocked ? 'blocked' : 'unblocked'}`, company });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const reviewCompanyResponse = async (req, res) => {
+  try {
+    const { action } = req.body; // "approve" or "reject"
+    const report = await AbuseReport.findById(req.params.id);
+
+    if (!report) return res.status(404).json({ message: "Abuse report not found" });
+
+    if (action === "approve") {
+      report.responseReviewed = true;
+      report.responseReviewDate = new Date();
+      report.status = "resolved";
+      report.resolvedBy = req.user._id;
+      report.resolutionDate = new Date();
+    } else if (action === "reject") {
+      report.responseReviewed = false;
+      report.status = "pending"; // or keep as responded, but require new response
+    } else {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    await report.save();
+
+    res.json({ message: "Company response reviewed", report });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const blockJob = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ message: "Job not found" });
+
+    job.blocked = !job.blocked;
+    await job.save();
+
+    res.json({ message: `Job ${job.blocked ? 'blocked' : 'unblocked'}`, job });
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
