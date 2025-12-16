@@ -10,6 +10,7 @@ const FreelancerList: React.FC = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [viewingFreelancer, setViewingFreelancer] = useState<any | null>(null);
+    const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
 
     const fetchFreelancers = async () => {
         const res = await API.get("/freelancers");
@@ -35,80 +36,143 @@ const FreelancerList: React.FC = () => {
         fetchFreelancers();
     };
 
+    const toggleExpand = (id: string) => {
+        setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));
+    };
+
+    const getDescriptionText = (text: string, expanded: boolean) => {
+        if (!text) return "";
+        const limit = 150;
+        if (expanded || text.length <= limit) return text;
+        return `${text.slice(0, limit)}...`;
+    };
+
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 bg-gradient-to-br from-indigo-50 via-white to-indigo-50 rounded-2xl">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">Freelancers</h2>
                 <button
                     onClick={() => setShowAddModal(true)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-sm"
                 >
                     + Add Freelancer
                 </button>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {freelancers.map((freelancer) => (
                     <div
                         key={freelancer._id}
-                        className="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition-all border border-gray-100"
+                        className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-indigo-100 overflow-hidden flex flex-col ${expandedCards[freelancer._id] ? "h-auto" : "h-[440px]"}`}
                     >
-                        <img
-                            src={freelancer.photo}
-                            alt={freelancer.name}
-                            className="w-full h-40 object-cover rounded-xl mb-3"
-                        />
-                        <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-bold text-gray-800">{freelancer.name}</h3>
-                            {freelancer.isVerified && (
-                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">
-                                    <CheckCircle className="w-3 h-3" />
-                                    Verified
-                                </span>
-                            )}
+                        <div className="p-5 flex items-start gap-4">
+                            <img
+                                src={freelancer.photo || "https://via.placeholder.com/160"}
+                                alt={freelancer.name}
+                                className="w-20 h-20 rounded-full border border-gray-200 object-cover shadow-sm"
+                            />
+                            <div className="flex-1">
+                                <div className="flex items-center justify-between gap-2">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-900 leading-tight">
+                                            {freelancer.name}
+                                        </h3>
+                                        <p className="text-sm text-gray-600">{freelancer.qualification}</p>
+                                    </div>
+                                    {freelancer.isVerified && (
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">
+                                            <CheckCircle className="w-3 h-3" />
+                                            Verified
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="mt-2 text-sm text-gray-600 space-y-1">
+                                    {freelancer.location && (
+                                        <div className="flex items-center gap-2">
+                                            <MapPin className="w-4 h-4 text-indigo-500" /> {freelancer.location}
+                                        </div>
+                                    )}
+                                    {freelancer.email && (
+                                        <div className="flex items-center gap-2">
+                                            <Mail className="w-4 h-4 text-indigo-500" /> {freelancer.email}
+                                        </div>
+                                    )}
+                                    {freelancer.contact && (
+                                        <div className="flex items-center gap-2">
+                                            <Phone className="w-4 h-4 text-indigo-500" /> {freelancer.contact}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                        <p className="text-sm text-gray-500 mb-2">{freelancer.qualification}</p>
-                        <div className="text-sm text-gray-600 flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-blue-600" /> {freelancer.location}
-                        </div>
-                        <div className="text-sm text-gray-600 flex items-center gap-2">
-                            <Mail className="w-4 h-4 text-blue-600" /> {freelancer.email}
-                        </div>
-                        <div className="text-sm text-gray-600 flex items-center gap-2">
-                            <Phone className="w-4 h-4 text-blue-600" /> {freelancer.contact}
-                        </div>
-                        <p className="mt-3 text-gray-700 line-clamp-3">{freelancer.descriptionOfWork}</p>
 
-                        <div className="grid grid-cols-2 gap-2 mt-4">
-                            <button
-                                onClick={() => setViewingFreelancer(freelancer)}
-                                className="flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 text-sm"
-                            >
-                                <Eye className="w-4 h-4" /> View
-                            </button>
-                            <button
-                                onClick={() => handleVerify(freelancer._id, freelancer.isVerified)}
-                                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm ${
-                                    freelancer.isVerified
-                                        ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
-                                        : "bg-green-50 text-green-700 hover:bg-green-100"
-                                }`}
-                            >
-                                {freelancer.isVerified ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
-                                {freelancer.isVerified ? "Unverify" : "Verify"}
-                            </button>
-                            <button
-                                onClick={() => setEditingId(freelancer._id)}
-                                className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-sm"
-                            >
-                                <Edit2 className="w-4 h-4" /> Edit
-                            </button>
-                            <button
-                                onClick={() => handleDelete(freelancer._id)}
-                                className="flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-sm"
-                            >
-                                <Trash2 className="w-4 h-4" /> Delete
-                            </button>
+                        <div className="px-5 pb-5 flex flex-col flex-1">
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                {freelancer.preferences?.map((pref: string, idx: number) => (
+                                    <span
+                                        key={idx}
+                                        className="text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 uppercase tracking-wide"
+                                    >
+                                        {pref}
+                                    </span>
+                                ))}
+                            </div>
+
+                            {freelancer.descriptionOfWork && (
+                                <div className="mb-3 text-sm text-gray-700">
+                                    <p>{getDescriptionText(freelancer.descriptionOfWork, !!expandedCards[freelancer._id])}</p>
+                                    {freelancer.descriptionOfWork.length > 150 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleExpand(freelancer._id)}
+                                            className="mt-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+                                        >
+                                            {expandedCards[freelancer._id] ? "Show less" : "Read more"}
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+
+                            <div className="text-sm text-gray-800 font-semibold mb-4">
+                                Pricing:{" "}
+                                {freelancer.pricing?.min && freelancer.pricing?.max ? (
+                                    <>INR {freelancer.pricing.min} - INR {freelancer.pricing.max} LPA</>
+                                ) : (
+                                    <span className="font-normal text-gray-500">Not specified</span>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2 mt-auto pt-2">
+                                <button
+                                    onClick={() => setViewingFreelancer(freelancer)}
+                                    className="flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 text-sm"
+                                >
+                                    <Eye className="w-4 h-4" /> View
+                                </button>
+                                <button
+                                    onClick={() => handleVerify(freelancer._id, freelancer.isVerified)}
+                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm ${
+                                        freelancer.isVerified
+                                            ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                                            : "bg-green-50 text-green-700 hover:bg-green-100"
+                                    }`}
+                                >
+                                    {freelancer.isVerified ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+                                    {freelancer.isVerified ? "Unverify" : "Verify"}
+                                </button>
+                                <button
+                                    onClick={() => setEditingId(freelancer._id)}
+                                    className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-sm"
+                                >
+                                    <Edit2 className="w-4 h-4" /> Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(freelancer._id)}
+                                    className="flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-sm"
+                                >
+                                    <Trash2 className="w-4 h-4" /> Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                 ))}

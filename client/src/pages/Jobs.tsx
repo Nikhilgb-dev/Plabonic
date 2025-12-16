@@ -11,10 +11,9 @@ const Jobs = () => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
   const [companyFilter, setCompanyFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
-  const [degreeFilter, setDegreeFilter] = useState("");
+  const [jobTypeFilter, setJobTypeFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
   const [selectedJob, setSelectedJob] = useState<string | null>(null);
@@ -25,29 +24,26 @@ const Jobs = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    const q = searchParams.get("q") || "";
     const company = searchParams.get("company") || "";
     const loc = searchParams.get("location") || "";
-    const deg = searchParams.get("degree") || "";
-    if (q !== search) setSearch(q);
+    const type = searchParams.get("type") || "";
     if (company !== companyFilter) setCompanyFilter(company);
     if (loc !== locationFilter) setLocationFilter(loc);
-    if (deg !== degreeFilter) setDegreeFilter(deg);
+    if (type !== jobTypeFilter) setJobTypeFilter(type);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   useEffect(() => {
     const params = new URLSearchParams();
-    if (search.trim()) params.set("q", search.trim());
     if (companyFilter.trim()) params.set("company", companyFilter.trim());
     if (locationFilter.trim()) params.set("location", locationFilter.trim());
-    if (degreeFilter.trim()) params.set("degree", degreeFilter.trim());
+    if (jobTypeFilter.trim()) params.set("type", jobTypeFilter.trim());
     const next = params.toString();
     const current = searchParams.toString();
     if (next !== current) {
       setSearchParams(params, { replace: true });
     }
-  }, [search, companyFilter, locationFilter, degreeFilter, searchParams, setSearchParams]);
+  }, [companyFilter, locationFilter, jobTypeFilter, searchParams, setSearchParams]);
 
   const markJobApplied = (jobId: string) => {
     setJobs((prev) =>
@@ -135,20 +131,10 @@ const Jobs = () => {
   };
 
   const filtered = jobs.filter((j) => {
-    const searchQuery = search.trim().toLowerCase();
     const companyQuery = companyFilter.trim().toLowerCase();
     const locationQuery = locationFilter.trim().toLowerCase();
-    const degreeQuery = degreeFilter.trim().toLowerCase();
-
-    const titleField = (j.title || "").toLowerCase();
-    const descField = (j.description || "").toLowerCase();
+    const typeQuery = jobTypeFilter.trim().toLowerCase();
     const locationField = (j.location || "").toLowerCase();
-
-    const matchesSearch =
-      !searchQuery ||
-      titleField.includes(searchQuery) ||
-      descField.includes(searchQuery) ||
-      locationField.includes(searchQuery);
 
     const matchesCompany =
       !companyQuery ||
@@ -156,16 +142,33 @@ const Jobs = () => {
 
     const matchesLocation = !locationQuery || locationField.includes(locationQuery);
 
-    const degreeField =
-      (j.preferredQualifications ||
-        j.qualification ||
-        j.degreeType ||
-        "") as string;
-    const matchesDegree =
-      !degreeQuery || degreeField.toLowerCase().includes(degreeQuery);
+    const jobTypeField = (j.employmentType || j.jobType || "").toLowerCase();
+    const matchesJobType = !typeQuery || jobTypeField.includes(typeQuery);
 
-    return matchesSearch && matchesCompany && matchesLocation && matchesDegree;
+    return matchesCompany && matchesLocation && matchesJobType;
   });
+
+  const companyOptions = Array.from(
+    new Set(
+      jobs
+        .map((j) => j.company?.name)
+        .filter((name): name is string => !!name)
+    )
+  );
+  const locationOptions = Array.from(
+    new Set(
+      jobs
+        .map((j) => j.location)
+        .filter((loc): loc is string => !!loc)
+    )
+  );
+  const jobTypeOptions = Array.from(
+    new Set(
+      jobs
+        .map((j) => j.employmentType || j.jobType)
+        .filter((type): type is string => !!type)
+    )
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
@@ -182,78 +185,54 @@ const Jobs = () => {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        {/* Search Bar */}
-        <div className="mb-6 sm:mb-10">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <svg
-                className="w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+        {/* Filters */}
+        <div className="mb-6 sm:mb-10 space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="relative">
+              <select
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-sm text-gray-700 bg-white"
+                value={companyFilter}
+                onChange={(e) => setCompanyFilter(e.target.value)}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+                <option value="">All companies</option>
+                {companyOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
             </div>
-            <input
-              type="text"
-              placeholder="Search by title, description, or location..."
-              className="w-full pl-12 pr-10 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-gray-700 placeholder-gray-400 text-sm sm:text-base"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+            <div className="relative">
+              <select
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-sm text-gray-700 bg-white"
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            )}
+                <option value="">All locations</option>
+                {locationOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="relative">
+              <select
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-sm text-gray-700 bg-white"
+                value={jobTypeFilter}
+                onChange={(e) => setJobTypeFilter(e.target.value)}
+              >
+                <option value="">All job types</option>
+                {jobTypeOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <input
-              type="text"
-              placeholder="Filter by company name"
-              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-sm text-gray-700 placeholder-gray-400"
-              value={companyFilter}
-              onChange={(e) => setCompanyFilter(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Filter by location"
-              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-sm text-gray-700 placeholder-gray-400"
-              value={locationFilter}
-              onChange={(e) => setLocationFilter(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Filter by degree / qualification"
-              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-sm text-gray-700 placeholder-gray-400"
-              value={degreeFilter}
-              onChange={(e) => setDegreeFilter(e.target.value)}
-            />
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center justify-between text-xs sm:text-sm text-gray-600">
+          <div className="flex flex-wrap items-center justify-between text-xs sm:text-sm text-gray-600">
             <span className="flex items-center gap-2">
               <svg
                 className="w-4 h-4 text-green-600"
@@ -271,12 +250,12 @@ const Jobs = () => {
               <strong>{filtered.length}</strong>{" "}
               {filtered.length === 1 ? "job" : "jobs"} found
             </span>
-            {(companyFilter || locationFilter || degreeFilter) && (
+            {(companyFilter || locationFilter || jobTypeFilter) && (
               <button
                 onClick={() => {
                   setCompanyFilter("");
                   setLocationFilter("");
-                  setDegreeFilter("");
+                  setJobTypeFilter("");
                 }}
                 className="text-blue-600 hover:underline"
               >
@@ -317,16 +296,8 @@ const Jobs = () => {
               No Jobs Found
             </h3>
             <p className="text-gray-600 mb-6 text-sm sm:text-base">
-              Try adjusting your search criteria
+              Try adjusting the filters
             </p>
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="px-5 py-2 sm:px-6 sm:py-3 bg-green-600 text-white rounded-lg sm:rounded-xl hover:bg-green-700 font-medium transition-all text-sm sm:text-base"
-              >
-                Clear Search
-              </button>
-            )}
           </div>
         ) : (
           // Job Cards (Responsive Grid)
