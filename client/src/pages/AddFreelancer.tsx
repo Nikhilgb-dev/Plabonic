@@ -35,6 +35,7 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({ onAdded, onClose, isPubli
     const [acceptTerms, setAcceptTerms] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const preferenceOptions = ["Remote", "On-site", "Contract", "Agreement", "MOU"];
 
@@ -149,7 +150,22 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({ onAdded, onClose, isPubli
                     <input type="text" value={qualification} onChange={(e) => setQualification(e.target.value)} placeholder="Qualification" className="input" />
                     <input type="text" value={contact} onChange={(e) => setContact(e.target.value)} placeholder="Contact" className="input" />
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="input" />
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="input" />
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Password"
+                            className="input pr-24"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute inset-y-0 right-2 px-3 text-sm text-gray-600 hover:text-gray-800"
+                        >
+                            {showPassword ? "Hide" : "Show"}
+                        </button>
+                    </div>
                     <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Location" className="input" />
                 </div>
 

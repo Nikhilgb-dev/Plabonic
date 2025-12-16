@@ -10,6 +10,7 @@ const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -82,14 +83,21 @@ const Login = () => {
         <div className="relative mb-4">
           <Lock className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
-            className="w-full p-2 pl-10 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full p-2 pl-10 pr-24 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute inset-y-0 right-2 px-3 text-sm text-gray-600 hover:text-gray-800"
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
         </div>
 
         {/* Forgot Password Link */}

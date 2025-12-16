@@ -16,6 +16,7 @@ const Signup = () => {
   });
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -91,15 +92,24 @@ const Signup = () => {
             required
             className="w-full p-2 border rounded"
           />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password *"
-            value={form.password}
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password *"
+              value={form.password}
+              onChange={handleChange}
+              required
+              className="w-full p-2 pr-24 border rounded"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute inset-y-0 right-2 px-3 text-sm text-gray-600 hover:text-gray-800"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
           <div className="flex items-center mt-4">
             <input
               type="checkbox"

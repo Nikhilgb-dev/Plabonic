@@ -19,6 +19,7 @@ const AddEmployeeModal: React.FC<Props> = ({ onClose, onCreated }) => {
     });
     const [photo, setPhoto] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -80,15 +81,24 @@ const AddEmployeeModal: React.FC<Props> = ({ onClose, onCreated }) => {
                         />
                     </div>
 
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Temporary Password"
-                        value={form.password}
-                        onChange={handleChange}
-                        className="border rounded-md p-2 w-full"
-                        required
-                    />
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            placeholder="Temporary Password"
+                            value={form.password}
+                            onChange={handleChange}
+                            className="border rounded-md p-2 w-full pr-24"
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute inset-y-0 right-2 px-3 text-sm text-gray-600 hover:text-gray-800"
+                        >
+                            {showPassword ? "Hide" : "Show"}
+                        </button>
+                    </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <input

@@ -35,6 +35,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const [form, setForm] = useState<CompanyFormData>({
         name: "",
@@ -316,15 +317,24 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                                 className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
                             />
                             {mode !== "edit" && (
-                                <input
-                                    type="password"
-                                    name="password"
-                                    value={form.password}
-                                    onChange={handleChange}
-                                    placeholder="Set Company Account Password"
-                                    required
-                                    className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        value={form.password}
+                                        onChange={handleChange}
+                                        placeholder="Set Company Account Password"
+                                        required
+                                        className="border rounded-md px-3 py-2 text-sm sm:text-base w-full pr-24"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                        className="absolute inset-y-0 right-1 px-3 text-xs font-medium text-gray-600 hover:text-gray-800"
+                                    >
+                                        {showPassword ? "Hide" : "Show"}
+                                    </button>
+                                </div>
                             )}
                         </div>
                     </div>

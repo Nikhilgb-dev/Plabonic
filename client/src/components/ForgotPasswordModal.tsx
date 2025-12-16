@@ -17,6 +17,8 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -63,25 +65,43 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">New Password</label>
-            <input
-              type="password"
-              name="newPassword"
-              value={form.newPassword}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border rounded-md"
-            />
+            <div className="relative">
+              <input
+                type={showNewPassword ? "text" : "password"}
+                name="newPassword"
+                value={form.newPassword}
+                onChange={handleChange}
+                required
+                className="w-full p-2 pr-24 border rounded-md"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-2 px-3 text-sm text-gray-600 hover:text-gray-800"
+              >
+                {showNewPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Confirm New Password</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border rounded-md"
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                required
+                className="w-full p-2 pr-24 border rounded-md"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-2 px-3 text-sm text-gray-600 hover:text-gray-800"
+              >
+                {showConfirmPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
           <div className="flex justify-end gap-2">
             <button
