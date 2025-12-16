@@ -7,8 +7,8 @@ const links = [
   { label: 'Careers', to: '#' },
   { label: 'Blog', to: '#' },
   { label: 'Support', to: '#' },
-  { label: 'Privacy', to: '#' },
-  { label: 'Terms', to: '#' }
+  { label: 'Privacy', to: '/tandc_privacy_policy.pdf' },
+  { label: 'Terms', to: '/tandc_privacy_policy.pdf' }
 ]
 
 export default function Footer() {
