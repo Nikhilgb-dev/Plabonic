@@ -11,6 +11,8 @@ const FreelancerList: React.FC = () => {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [viewingFreelancer, setViewingFreelancer] = useState<any | null>(null);
     const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+    const [locationFilter, setLocationFilter] = useState("");
+    const [preferenceFilter, setPreferenceFilter] = useState("");
 
     const fetchFreelancers = async () => {
         const res = await API.get("/freelancers");
@@ -47,6 +49,27 @@ const FreelancerList: React.FC = () => {
         return `${text.slice(0, limit)}...`;
     };
 
+    const locationOptions = Array.from(new Set(freelancers.map((f) => f.location).filter(Boolean)));
+    const preferenceOptions = Array.from(
+        new Set(
+            freelancers
+                .flatMap((f) => f.preferences || [])
+                .filter((p): p is string => !!p)
+        )
+    );
+
+    const hasFilters = locationFilter || preferenceFilter;
+    const filteredFreelancers = freelancers.filter((f) => {
+        const matchesLocation =
+            !locationFilter || (f.location || "").toLowerCase() === locationFilter.toLowerCase();
+        const matchesPreference =
+            !preferenceFilter ||
+            (f.preferences || []).some(
+                (pref: string) => pref && pref.toLowerCase() === preferenceFilter.toLowerCase()
+            );
+        return matchesLocation && matchesPreference;
+    });
+
     return (
         <div className="p-6 space-y-6 bg-gradient-to-br from-indigo-50 via-white to-indigo-50 rounded-2xl">
             <div className="flex justify-between items-center">
@@ -59,8 +82,48 @@ const FreelancerList: React.FC = () => {
                 </button>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <select
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm text-gray-700 bg-white"
+                    value={locationFilter}
+                    onChange={(e) => setLocationFilter(e.target.value)}
+                >
+                    <option value="">All locations</option>
+                    {locationOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                            {opt}
+                        </option>
+                    ))}
+                </select>
+                <select
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm text-gray-700 bg-white"
+                    value={preferenceFilter}
+                    onChange={(e) => setPreferenceFilter(e.target.value)}
+                >
+                    <option value="">All preferences</option>
+                    {preferenceOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                            {opt}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="flex items-center justify-end">
+                <button
+                    onClick={() => {
+                        setLocationFilter("");
+                        setPreferenceFilter("");
+                    }}
+                    className={`text-indigo-600 hover:underline text-sm transition-opacity ${hasFilters ? "opacity-100" : "opacity-60"}`}
+                    disabled={!hasFilters}
+                >
+                    Clear filters
+                </button>
+            </div>
+
             <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {freelancers.map((freelancer) => (
+                {filteredFreelancers.map((freelancer) => (
                     <div
                         key={freelancer._id}
                         className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-indigo-100 overflow-hidden flex flex-col ${expandedCards[freelancer._id] ? "h-auto" : "h-[440px]"}`}

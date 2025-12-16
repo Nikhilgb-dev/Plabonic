@@ -248,6 +248,8 @@ export const createJob = async (req, res) => {
  */
 export const getJobs = async (req, res) => {
   try {
+    // Public endpoint: try to decode user from token if provided to preserve flags
+    const requestUser = req.user || (await getUserFromRequest(req));
     const now = new Date();
     let query = {
       $or: [{ isExpired: false }, { isExpired: { $exists: false } }],
@@ -256,11 +258,11 @@ export const getJobs = async (req, res) => {
       blocked: { $ne: true },
     };
 
-    if (req.user) {
-      if (req.user.role === "admin") {
+    if (requestUser) {
+      if (requestUser.role === "admin") {
         query = {};
-      } else if (req.user.role === "company_admin") {
-        query = { company: req.user.company };
+      } else if (requestUser.role === "company_admin" && requestUser.company) {
+        query = { company: requestUser.company };
       }
     }
 
@@ -270,9 +272,9 @@ export const getJobs = async (req, res) => {
       .populate("company", "name logo");
 
     let appliedJobs = [];
-    if (req.user && req.user._id) {
+    if (requestUser?._id) {
       const applications = await Application.find({
-        user: req.user._id,
+        user: requestUser._id,
       }).select("job");
       appliedJobs = applications.map((a) => a.job.toString());
     }

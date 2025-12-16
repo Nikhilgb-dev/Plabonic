@@ -22,6 +22,7 @@ const Jobs = () => {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportJob, setReportJob] = useState<any>(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const hasFilters = companyFilter || locationFilter || jobTypeFilter;
 
   useEffect(() => {
     const company = searchParams.get("company") || "";
@@ -81,6 +82,10 @@ const Jobs = () => {
   }, []);
 
   const handleApply = (jobId: string) => {
+    if (!user) {
+      toast.error("Please login to apply for jobs");
+      return;
+    }
     setSelectedJobId(jobId);
     setShowModal(true);
   };
@@ -250,18 +255,17 @@ const Jobs = () => {
               <strong>{filtered.length}</strong>{" "}
               {filtered.length === 1 ? "job" : "jobs"} found
             </span>
-            {(companyFilter || locationFilter || jobTypeFilter) && (
-              <button
-                onClick={() => {
-                  setCompanyFilter("");
-                  setLocationFilter("");
-                  setJobTypeFilter("");
-                }}
-                className="text-blue-600 hover:underline"
-              >
-                Clear filters
-              </button>
-            )}
+            <button
+              onClick={() => {
+                setCompanyFilter("");
+                setLocationFilter("");
+                setJobTypeFilter("");
+              }}
+              className={`text-blue-600 hover:underline transition-opacity ${hasFilters ? "opacity-100" : "opacity-60"}`}
+              disabled={!hasFilters}
+            >
+              Clear filters
+            </button>
           </div>
         </div>
 

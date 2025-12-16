@@ -21,7 +21,7 @@ router.post("/", protect, createJob);
 
 router.post("/:id/apply", protect, upload.single("resume"), applyJob);
 router.post("/:id/report-abuse", protect, reportAbuse);
-router.get("/", protect, getJobs);
+router.get("/", getJobs);
 router.get("/my-profile", protect, getMyApplicationProfile);
 router.get("/:id", getJobById);
 router.get("/categories", getJobCategories);
