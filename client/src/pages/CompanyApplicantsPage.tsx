@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "@/api/api";
 import { toast } from "react-hot-toast";
+import ApplicationStatusDropdown from "@/components/ApplicationStatusDropdown";
 
 interface Applicant {
     _id: string;
@@ -78,12 +79,11 @@ const CompanyApplicantsPage: React.FC = () => {
                                         : `${a.experience?.years || 0} yrs`}
                                 </td>
                                 <td className="p-2">
-                                    <span
-                                        className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[a.status] || "bg-gray-100 text-gray-700"
-                                            }`}
-                                    >
-                                        {a.status}
-                                    </span>
+                                    <ApplicationStatusDropdown
+                                        id={a._id}
+                                        currentStatus={a.status}
+                                        onUpdated={loadApplicants}
+                                    />
                                 </td>
                                 <td className="p-2 text-gray-500">
                                     {new Date(a.createdAt || "").toLocaleDateString()}

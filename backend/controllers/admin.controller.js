@@ -158,7 +158,7 @@ export const getAllApplications = async (req, res) => {
 
 export const updateApplicationStatus = async (req, res) => {
   try {
-    const { status, notes } = req.body;
+    const { status, notes, rejectionReason } = req.body;
     const application = await Application.findById(req.params.id);
 
     if (!application)
@@ -194,6 +194,7 @@ export const updateApplicationStatus = async (req, res) => {
 
     application.status = status;
     if (notes) application.metadata.notes = notes;
+    if (rejectionReason !== undefined) application.rejectionReason = rejectionReason;
     await application.save();
 
     res.json({ message: "Application status updated", application });

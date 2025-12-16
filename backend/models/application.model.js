@@ -127,6 +127,11 @@ const applicationSchema = new mongoose.Schema(
       },
     ],
 
+    rejectionReason: {
+      type: String,
+      default: "",
+    },
+
     isActive: {
       type: Boolean,
       default: true,

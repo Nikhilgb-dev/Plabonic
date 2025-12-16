@@ -67,6 +67,11 @@ const JobAppCard = ({ a, onView, onWithdraw, onViewOffer }: { a: AnyObj; onView:
                     >
                         {a.status || "applied"}
                     </span>
+                    {a.status === "rejected" && a.rejectionReason && (
+                        <div className="mt-1 text-xs text-red-600">
+                            Reason: {a.rejectionReason}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -146,6 +151,11 @@ const FreelancerAppCard = ({ a, onView, onWithdraw, onViewOffer }: { a: AnyObj; 
                     >
                         {a.status || "applied"}
                     </span>
+                    {a.status === "rejected" && a.rejectionReason && (
+                        <div className="mt-1 text-xs text-red-600">
+                            Reason: {a.rejectionReason}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -408,6 +418,11 @@ const UserDashboard: React.FC = () => {
                                                 <XCircle className="w-4 h-4 text-red-600 inline-block mr-1" />
                                             ) : null}
                                             {a.status || "applied"}
+                                            {a.status === "rejected" && a.rejectionReason && (
+                                                <div className="text-xs text-red-600 mt-1">
+                                                    Reason: {a.rejectionReason}
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="p-3 text-gray-500">{formatDate(a.createdAt || a.appliedAt)}</td>
                                         <td className="p-3 text-gray-500">
@@ -498,6 +513,11 @@ const UserDashboard: React.FC = () => {
                                                 <XCircle className="w-4 h-4 text-red-600 inline-block mr-1" />
                                             ) : null}
                                             {a.status || "applied"}
+                                            {a.status === "rejected" && a.rejectionReason && (
+                                                <div className="text-xs text-red-600 mt-1">
+                                                    Reason: {a.rejectionReason}
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="p-3 text-gray-500">{formatDate(a.appliedAt || a.createdAt)}</td>
                                         <td className="p-3 text-gray-500">

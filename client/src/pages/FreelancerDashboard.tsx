@@ -45,6 +45,9 @@ const FreelancerDashboard: React.FC = () => {
     "applications"
   );
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectingApplicationId, setRejectingApplicationId] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   useEffect(() => {
     fetchFreelancerData();
@@ -70,11 +73,13 @@ const FreelancerDashboard: React.FC = () => {
 
   const updateApplicationStatus = async (
     applicationId: string,
-    status: string
+    status: string,
+    rejectionReason?: string
   ) => {
     try {
       await API.put(`/freelancers/applications/${applicationId}/status`, {
         status,
+        rejectionReason,
       });
       toast.success("Application status updated");
       fetchFreelancerData();
@@ -223,12 +228,15 @@ const FreelancerDashboard: React.FC = () => {
 
                       <select
                         value={application.status}
-                        onChange={(e) =>
-                          updateApplicationStatus(
-                            application._id,
-                            e.target.value
-                          )
-                        }
+                        onChange={(e) => {
+                          if (e.target.value === "rejected") {
+                            setRejectingApplicationId(application._id);
+                            setShowRejectModal(true);
+                            e.target.value = application.status; // reset
+                          } else {
+                            updateApplicationStatus(application._id, e.target.value);
+                          }
+                        }}
                         className="px-3 py-1 border border-gray-300 rounded-md text-sm"
                       >
                         <option value="applied">Applied</option>
@@ -404,6 +412,54 @@ const FreelancerDashboard: React.FC = () => {
             onClose={() => setShowEditModal(false)}
             onUpdated={fetchFreelancerData}
           />
+        )}
+
+        {showRejectModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+              <h3 className="text-lg font-semibold mb-4">Reject Application</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Please provide a reason for rejection (optional):
+              </p>
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Enter rejection reason..."
+                className="w-full border rounded-md p-2 text-sm mb-4 resize-none"
+                rows={3}
+                required
+              />
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => {
+                    setShowRejectModal(false);
+                    setRejectingApplicationId(null);
+                    setRejectionReason("");
+                  }}
+                  className="px-4 py-2 text-gray-600 border rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    if (!rejectionReason.trim()) {
+                      toast.error("Please provide a rejection reason");
+                      return;
+                    }
+                    if (rejectingApplicationId) {
+                      updateApplicationStatus(rejectingApplicationId, "rejected", rejectionReason);
+                      setShowRejectModal(false);
+                      setRejectingApplicationId(null);
+                      setRejectionReason("");
+                    }
+                  }}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

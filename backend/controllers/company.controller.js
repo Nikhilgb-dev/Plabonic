@@ -476,7 +476,10 @@ export const createEmployeeForCompany = async (req, res) => {
 export const updateCompanyApplicationStatus = async (req, res) => {
   try {
     const applicationId = req.params.id;
+    console.log("req.body:", req.body);
     const payload = req.body || {};
+    console.log("Backend payload:", payload);
+    console.log("Rejection reason:", payload.rejectionReason);
 
     // Load application with job + company and user for notifications
     const application = await Application.findById(applicationId)
@@ -509,6 +512,7 @@ export const updateCompanyApplicationStatus = async (req, res) => {
     // Allowed fields to update
     const allowed = [
       "status",
+      "rejectionReason",
       "metadata.notes",
       "metadata.interviewDate",
       "metadata.feedback",
@@ -533,6 +537,7 @@ export const updateCompanyApplicationStatus = async (req, res) => {
 
     // Save application
     await application.save();
+    console.log("After save, rejectionReason:", application.rejectionReason);
 
     // If status changed -> create notification (only for meaningful statuses)
     const newStatus = application.status;

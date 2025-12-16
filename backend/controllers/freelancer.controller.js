@@ -326,10 +326,14 @@ export const updateMyFreelancerProfile = async (req, res) => {
 
 export const updateApplicationStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, rejectionReason } = req.body;
+    const updateData = { status };
+    if (rejectionReason !== undefined) {
+      updateData.rejectionReason = rejectionReason;
+    }
     const application = await FreelancerApplication.findByIdAndUpdate(
       req.params.id,
-      { status },
+      updateData,
       { new: true }
     ).populate("user", "name email");
 

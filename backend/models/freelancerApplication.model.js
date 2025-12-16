@@ -46,6 +46,10 @@ const freelancerApplicationSchema = new mongoose.Schema(
       enum: ["applied", "reviewed", "shortlisted", "hired", "accepted", "rejected"],
       default: "applied",
     },
+    rejectionReason: {
+      type: String,
+      default: "",
+    },
     appliedAt: {
       type: Date,
       default: Date.now,
