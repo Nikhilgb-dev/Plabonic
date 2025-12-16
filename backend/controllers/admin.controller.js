@@ -8,6 +8,15 @@ import Post from "../models/post.model.js";
 import Freelancer from "../models/freelancer.model.js";
 import AbuseReport from "../models/abuseReport.model.js";
 import bcrypt from "bcryptjs";
+import ExcelJS from "exceljs";
+
+const setExcelHeaders = (res, filename) => {
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
+};
 
 // ====================== USERS ======================
 export const createUser = async (req, res) => {
@@ -96,7 +105,9 @@ export const createJob = async (req, res) => {
 
 export const getAllJobs = async (req, res) => {
   try {
-    const jobs = await Job.find().populate("postedBy", "name email").populate("company", "name logo");
+    const jobs = await Job.find()
+      .populate("postedBy", "name email")
+      .populate("company", "name logo");
     res.json(jobs);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -144,7 +155,10 @@ export const getAllApplications = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("user", "name email profilePhoto headline location termsAccepted")
+      .populate(
+        "user",
+        "name email profilePhoto headline location termsAccepted"
+      )
       .populate("job", "title location company")
       .populate({
         path: "job",
@@ -195,7 +209,8 @@ export const updateApplicationStatus = async (req, res) => {
 
     application.status = status;
     if (notes) application.metadata.notes = notes;
-    if (rejectionReason !== undefined) application.rejectionReason = rejectionReason;
+    if (rejectionReason !== undefined)
+      application.rejectionReason = rejectionReason;
     await application.save();
 
     res.json({ message: "Application status updated", application });
@@ -225,7 +240,10 @@ export const verifyJob = async (req, res) => {
     job.isVerified = !job.isVerified;
     await job.save();
 
-    res.json({ message: `Job ${job.isVerified ? 'verified' : 'unverified'}`, job });
+    res.json({
+      message: `Job ${job.isVerified ? "verified" : "unverified"}`,
+      job,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -340,7 +358,10 @@ export const deletePost = async (req, res) => {
 // ====================== FREELANCERS ======================
 export const getAllFreelancers = async (req, res) => {
   try {
-    const freelancers = await Freelancer.find().populate("createdBy", "name email");
+    const freelancers = await Freelancer.find().populate(
+      "createdBy",
+      "name email"
+    );
     res.json(freelancers);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -350,12 +371,18 @@ export const getAllFreelancers = async (req, res) => {
 export const verifyFreelancer = async (req, res) => {
   try {
     const freelancer = await Freelancer.findById(req.params.id);
-    if (!freelancer) return res.status(404).json({ message: "Freelancer not found" });
+    if (!freelancer)
+      return res.status(404).json({ message: "Freelancer not found" });
 
     freelancer.isVerified = !freelancer.isVerified;
     await freelancer.save();
 
-    res.json({ message: `Freelancer ${freelancer.isVerified ? 'verified' : 'unverified'}`, freelancer });
+    res.json({
+      message: `Freelancer ${
+        freelancer.isVerified ? "verified" : "unverified"
+      }`,
+      freelancer,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -364,7 +391,8 @@ export const verifyFreelancer = async (req, res) => {
 export const deleteFreelancer = async (req, res) => {
   try {
     const freelancer = await Freelancer.findByIdAndDelete(req.params.id);
-    if (!freelancer) return res.status(404).json({ message: "Freelancer not found" });
+    if (!freelancer)
+      return res.status(404).json({ message: "Freelancer not found" });
     res.json({ message: "Freelancer deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -396,7 +424,8 @@ export const updateAbuseReportStatus = async (req, res) => {
     const { status } = req.body;
     const report = await AbuseReport.findById(req.params.id);
 
-    if (!report) return res.status(404).json({ message: "Abuse report not found" });
+    if (!report)
+      return res.status(404).json({ message: "Abuse report not found" });
 
     if (!["pending", "reviewed", "resolved"].includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
@@ -419,7 +448,10 @@ export const blockCompany = async (req, res) => {
     company.blocked = !company.blocked;
     await company.save();
 
-    res.json({ message: `Company ${company.blocked ? 'blocked' : 'unblocked'}`, company });
+    res.json({
+      message: `Company ${company.blocked ? "blocked" : "unblocked"}`,
+      company,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -430,7 +462,8 @@ export const reviewCompanyResponse = async (req, res) => {
     const { action } = req.body; // "approve" or "reject"
     const report = await AbuseReport.findById(req.params.id);
 
-    if (!report) return res.status(404).json({ message: "Abuse report not found" });
+    if (!report)
+      return res.status(404).json({ message: "Abuse report not found" });
 
     if (action === "approve") {
       report.responseReviewed = true;
@@ -461,7 +494,231 @@ export const blockJob = async (req, res) => {
     job.blocked = !job.blocked;
     await job.save();
 
-    res.json({ message: `Job ${job.blocked ? 'blocked' : 'unblocked'}`, job });
+    res.json({ message: `Job ${job.blocked ? "blocked" : "unblocked"}`, job });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ====================== EXPORTS ======================
+export const exportUsersExcel = async (req, res) => {
+  try {
+    const users = await User.find()
+      .select("-password")
+      .populate("company", "name");
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Users");
+    sheet.columns = [
+      { header: "Name", key: "name", width: 20 },
+      { header: "Email", key: "email", width: 25 },
+      { header: "Role", key: "role", width: 15 },
+      { header: "Phone", key: "phone", width: 15 },
+      { header: "Location", key: "location", width: 20 },
+      { header: "Company", key: "company", width: 20 },
+      // { header: "Terms Accepted", key: "termsAccepted", width: 15 },
+    ];
+    sheet.views = [{ state: "frozen", ySplit: 1 }];
+
+    sheet.addRows(
+      users.map((u) => ({
+        name: u.name || "",
+        email: u.email || "",
+        role: u.role || "",
+        phone: u.phone || "",
+        location: u.location || "",
+        company: u.company?.name || "",
+        // termsAccepted: u.termsAccepted ? "Yes" : "No",
+      }))
+    );
+
+    setExcelHeaders(res, "users.xlsx");
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const exportCompaniesExcel = async (req, res) => {
+  try {
+    const companies = await Company.find().select("-password");
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Companies");
+    sheet.columns = [
+      { header: "Name", key: "name", width: 25 },
+      { header: "Email", key: "email", width: 25 },
+      { header: "Domain", key: "domain", width: 20 },
+      { header: "Industry", key: "industry", width: 20 },
+      { header: "Size", key: "size", width: 12 },
+      { header: "Type", key: "type", width: 15 },
+      { header: "Tagline", key: "tagline", width: 25 },
+      { header: "Description", key: "description", width: 35 },
+      { header: "Contact Number", key: "contactNumber", width: 18 },
+      { header: "Registered Office Address", key: "registeredOfficeAddress", width: 30 },
+      { header: "Address", key: "address", width: 30 },
+      { header: "Registration Name", key: "registrationName", width: 24 },
+      { header: "PAN/TAN/GST", key: "panOrTanOrGst", width: 20 },
+      { header: "Date of Incorporation", key: "dateOfIncorporation", width: 22 },
+      { header: "Director/KMP Details", key: "directorAndKmpDetails", width: 28 },
+      {
+        header: "Authorized Signatory Name",
+        key: "authorizedSignatoryName",
+        width: 26,
+      },
+      {
+        header: "Authorized Signatory Designation",
+        key: "authorizedSignatoryDesignation",
+        width: 32,
+      },
+      {
+        header: "Authorized Signatory Signature",
+        key: "authorizedSignatorySignature",
+        width: 32,
+      },
+      { header: "Verification Docs", key: "verificationDocs", width: 30 },
+      { header: "Logo", key: "logo", width: 30 },
+      { header: "Verified", key: "verified", width: 12 },
+      { header: "Blocked", key: "blocked", width: 12 },
+      // { header: "Terms Accepted", key: "termsAccepted", width: 15 },
+    ];
+    sheet.views = [{ state: "frozen", ySplit: 1 }];
+
+    sheet.addRows(
+      companies.map((c) => ({
+        name: c.name || "",
+        email: c.email || "",
+        domain: c.domain || "",
+        industry: c.industry || "",
+        size: c.size || "",
+        type: c.type || "",
+        tagline: c.tagline || "",
+        description: c.description || "",
+        contactNumber: c.contactNumber || "",
+        registeredOfficeAddress: c.registeredOfficeAddress || "",
+        address: c.address || "",
+        registrationName: c.registrationName || "",
+        panOrTanOrGst: c.panOrTanOrGst || "",
+        dateOfIncorporation: c.dateOfIncorporation
+          ? new Date(c.dateOfIncorporation).toISOString().split("T")[0]
+          : "",
+        directorAndKmpDetails: c.directorAndKmpDetails || "",
+        authorizedSignatoryName: c.authorizedSignatory?.name || "",
+        authorizedSignatoryDesignation: c.authorizedSignatory?.designation || "",
+        authorizedSignatorySignature: c.authorizedSignatory?.signature || "",
+        verificationDocs: Array.isArray(c.verificationDocs)
+          ? c.verificationDocs.join(", ")
+          : "",
+        logo: c.logo || "",
+        verified: c.verified ? "Yes" : "No",
+        blocked: c.blocked ? "Yes" : "No",
+        // termsAccepted: c.termsAccepted ? "Yes" : "No",
+      })),
+    );
+
+    setExcelHeaders(res, "companies.xlsx");
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const exportJobsExcel = async (req, res) => {
+  try {
+    const jobs = await Job.find()
+      .populate("postedBy", "name email")
+      .populate("company", "name");
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Jobs");
+    sheet.columns = [
+      { header: "Title", key: "title", width: 30 },
+      { header: "Company", key: "company", width: 20 },
+      { header: "Posted By", key: "postedBy", width: 20 },
+      { header: "Poster Email", key: "posterEmail", width: 25 },
+      { header: "Location", key: "location", width: 18 },
+      { header: "Employment Type", key: "employmentType", width: 18 },
+      { header: "Min Salary", key: "minSalary", width: 12 },
+      { header: "Max Salary", key: "maxSalary", width: 12 },
+      { header: "Status", key: "status", width: 12 },
+      { header: "Verified", key: "isVerified", width: 12 },
+      { header: "Blocked", key: "blocked", width: 12 },
+      { header: "Expires At", key: "expiresAt", width: 20 },
+    ];
+    sheet.views = [{ state: "frozen", ySplit: 1 }];
+
+    sheet.addRows(
+      jobs.map((j) => ({
+        title: j.title || "",
+        company: j.company?.name || "",
+        postedBy: j.postedBy?.name || "",
+        posterEmail: j.postedBy?.email || "",
+        location: j.location || "",
+        employmentType: j.employmentType || "",
+        minSalary: j.minSalary ?? "",
+        maxSalary: j.maxSalary ?? "",
+        status: j.status || "",
+        isVerified: j.isVerified ? "Yes" : "No",
+        blocked: j.blocked ? "Yes" : "No",
+        expiresAt: j.expiresAt ? new Date(j.expiresAt).toISOString() : "",
+      }))
+    );
+
+    setExcelHeaders(res, "jobs.xlsx");
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const exportFreelancersExcel = async (req, res) => {
+  try {
+    const freelancers = await Freelancer.find().populate(
+      "createdBy",
+      "name email"
+    );
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Freelancers");
+    sheet.columns = [
+      { header: "Name", key: "name", width: 22 },
+      { header: "Email", key: "email", width: 25 },
+      { header: "Contact", key: "contact", width: 18 },
+      { header: "Location", key: "location", width: 18 },
+      { header: "Qualification", key: "qualification", width: 20 },
+      { header: "Preferences", key: "preferences", width: 20 },
+      { header: "Pricing (Min)", key: "pricingMin", width: 14 },
+      { header: "Pricing (Max)", key: "pricingMax", width: 14 },
+      { header: "Verified", key: "isVerified", width: 12 },
+      { header: "Active", key: "isActive", width: 12 },
+      { header: "Created By", key: "createdBy", width: 20 },
+    ];
+    sheet.views = [{ state: "frozen", ySplit: 1 }];
+
+    sheet.addRows(
+      freelancers.map((f) => ({
+        name: f.name || "",
+        email: f.email || "",
+        contact: f.contact || "",
+        location: f.location || "",
+        qualification: f.qualification || "",
+        preferences: Array.isArray(f.preferences)
+          ? f.preferences.join(", ")
+          : "",
+        pricingMin: f.pricing?.min ?? "",
+        pricingMax: f.pricing?.max ?? "",
+        isVerified: f.isVerified ? "Yes" : "No",
+        isActive: f.isActive ? "Yes" : "No",
+        createdBy: f.createdBy?.name || "",
+      }))
+    );
+
+    setExcelHeaders(res, "freelancers.xlsx");
+    await workbook.xlsx.write(res);
+    res.end();
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -23,7 +23,8 @@ import {
   XCircle,
   Shield,
   ArrowRight,
-  Star
+  Star,
+  Download
 } from "lucide-react";
 import ApplicationStatusDropdown from "@/components/ApplicationStatusDropdown";
 import ViewResumeModal from "@/components/ViewResumeModal";
@@ -97,6 +98,24 @@ const Dashboard = () => {
       setJobs(res.data);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleExport = async (endpoint: string, filename: string) => {
+    try {
+      const res = await API.get(endpoint, { responseType: "blob" });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success(`Exported ${filename}`);
+    } catch (err: any) {
+      console.error("Failed to export data", err);
+      toast.error(err?.response?.data?.message || "Failed to export data");
     }
   };
 
@@ -316,6 +335,13 @@ const Dashboard = () => {
     }
   ];
 
+  const exportOptions = [
+    { label: "Jobs", endpoint: "/admin/export/jobs", filename: "jobs.xlsx" },
+    { label: "Companies", endpoint: "/admin/export/companies", filename: "companies.xlsx" },
+    { label: "Users", endpoint: "/admin/export/users", filename: "users.xlsx" },
+    { label: "Freelancers", endpoint: "/admin/export/freelancers", filename: "freelancers.xlsx" },
+  ];
+
 
   // ===== Render =====
   return (
@@ -388,6 +414,41 @@ const Dashboard = () => {
                   )}
                 </motion.div>
               ))}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="bg-white rounded-xl shadow-sm border border-gray-100 mb-8 overflow-hidden"
+            >
+              <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-slate-50 p-2.5 rounded-lg">
+                    <Download className="w-5 h-5 text-slate-700" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Data Exports</h2>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      Download admin Excel snapshots without sensitive credentials
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {exportOptions.map((opt) => (
+                  <motion.button
+                    key={opt.label}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleExport(opt.endpoint, opt.filename)}
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-800 font-medium transition-colors"
+                  >
+                    <Download className="w-4 h-4" />
+                    Export {opt.label}
+                  </motion.button>
+                ))}
+              </div>
             </motion.div>
 
             <MarketingAdminPanel />

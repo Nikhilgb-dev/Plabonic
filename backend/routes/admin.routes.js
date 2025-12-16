@@ -29,6 +29,10 @@ import {
   blockCompany,
   reviewCompanyResponse,
   blockJob,
+  exportUsersExcel,
+  exportCompaniesExcel,
+  exportJobsExcel,
+  exportFreelancersExcel,
 } from "../controllers/admin.controller.js";
 import { protect, adminOnly } from "../middlewares/auth.middleware.js";
 import { upload } from "../utils/cloudinary.util.js";
@@ -64,6 +68,8 @@ router.put(
 );
 
 router.get("/jobs/stats", protect, adminOnly, getAdminJobStats);
+router.get("/export/jobs", protect, adminOnly, exportJobsExcel);
+router.get("/export/users", protect, adminOnly, exportUsersExcel);
 
 
 // COMMUNITY CRUD
@@ -82,6 +88,7 @@ router.delete("/posts/:id", protect, adminOnly, deletePost);
 router.get("/freelancers", protect, adminOnly, getAllFreelancers);
 router.put("/freelancers/:id/verify", protect, adminOnly, verifyFreelancer);
 router.delete("/freelancers/:id", protect, adminOnly, deleteFreelancer);
+router.get("/export/freelancers", protect, adminOnly, exportFreelancersExcel);
 
 // ABUSE REPORTS
 router.get("/abuse-reports", protect, adminOnly, getAllAbuseReports);
@@ -90,6 +97,7 @@ router.put("/abuse-reports/:id/review", protect, adminOnly, reviewCompanyRespons
 
 // COMPANIES
 router.put("/companies/:id/block", protect, adminOnly, blockCompany);
+router.get("/export/companies", protect, adminOnly, exportCompaniesExcel);
 
 // JOBS
 router.put("/jobs/:id/block", protect, adminOnly, blockJob);
