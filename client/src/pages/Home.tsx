@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Clock, Users, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import API from '../api/api';
+import { Link } from 'react-router-dom';
+import { MarketingCard } from '@/types/marketing';
 
 export default function EduleLanding() {
   const [companyLogos, setCompanyLogos] = useState<string[]>([]);
   const [loadingLogos, setLoadingLogos] = useState(true);
+  const [marketingCards, setMarketingCards] = useState<MarketingCard[]>([]);
+  const [marketingLoading, setMarketingLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,93 +42,32 @@ export default function EduleLanding() {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchCards = async () => {
+      try {
+        const res = await API.get("/marketing/cards");
+        setMarketingCards(Array.isArray(res.data) ? res.data : []);
+      } catch (err) {
+        console.error("Error fetching marketing cards", err);
+      } finally {
+        setMarketingLoading(false);
+      }
+    };
+    fetchCards();
+  }, []);
+
   const marqueeLogos: string[] = companyLogos.length
     ? [...companyLogos, ...companyLogos, ...companyLogos]
     : [];
 
-  const courses = [
-    {
-      img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=300&fit=crop",
-      instructor: "Jason Williams",
-      category: "Science",
-      categoryColor: "bg-blue-100 text-blue-600",
-      title: "Data Science and Machine Learning with Python - Hands On!",
-      duration: "09 hr 30 mins",
-      students: "29 Lectures",
-      price: "$385.00",
-      oldPrice: "$440.00",
-      rating: 4.9
-    },
-    {
-      img: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop",
-      instructor: "Pariah Foster",
-      category: "Science",
-      categoryColor: "bg-blue-100 text-blue-600",
-      title: "Create Amazing Color Schemes for Your UX Design Projects",
-      duration: "08 hr 15 mins",
-      students: "29 Lectures",
-      price: "$420.00",
-      oldPrice: null,
-      rating: 4.9
-    },
-    {
-      img: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400&h=300&fit=crop",
-      instructor: "Ross Simmons",
-      category: "Science",
-      categoryColor: "bg-blue-100 text-blue-600",
-      title: "Culture & Leadership: Strategies for a Successful Business",
-      duration: "09 hr 10 mins",
-      students: "29 Lectures",
-      price: "$295.00",
-      oldPrice: "$340.00",
-      rating: 4.9
-    },
-    {
-      img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop",
-      instructor: "Jason Williams",
-      category: "Finance",
-      categoryColor: "bg-purple-100 text-purple-600",
-      title: "Finance Series: Learn to Budget and Calculate your Net Worth.",
-      duration: "04 hr 30 mins",
-      students: "29 Lectures",
-      price: "Free",
-      oldPrice: null,
-      rating: 4.9
-    },
-    {
-      img: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=300&fit=crop",
-      instructor: "Jason Williams",
-      category: "Marketing",
-      categoryColor: "bg-pink-100 text-pink-600",
-      title: "Build Brand Into Marketing: Tackling the New Marketing Landscape",
-      duration: "09 hr 30 mins",
-      students: "29 Lectures",
-      price: "$136.00",
-      oldPrice: null,
-      rating: 4.9
-    },
-    {
-      img: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=300&fit=crop",
-      instructor: "Jason Williams",
-      category: "Design",
-      categoryColor: "bg-green-100 text-green-600",
-      title: "Graphic Design: Illustrating Badges and Icons with Geometric Shapes",
-      duration: "07 hr 30 mins",
-      students: "29 Lectures",
-      price: "$237.00",
-      oldPrice: null,
-      rating: 4.9
-    }
-  ];
-
-  const categories = [
-    "UI/UX Design",
-    "Development",
-    "Data Science",
-    "Business",
-    "Financial",
-    "Marketing"
-  ];
+  // const categories = [
+  //   "UI/UX Design",
+  //   "Development",
+  //   "Data Science",
+  //   "Business",
+  //   "Financial",
+  //   "Marketing"
+  // ];
 
   return (
     <div className="min-h-screen bg-white">
@@ -141,8 +83,8 @@ export default function EduleLanding() {
 
             <p className="text-gray-600 mb-2">Start your favourite course</p>
             <h1 className="text-5xl font-bold leading-tight mb-4">
-              Now learning from<br />
-              anywhere, and build<br />
+              Build Your Career<br />
+              Right here<br />
               your <span className="text-green-600 relative">
                 bright career
                 <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none">
@@ -152,13 +94,13 @@ export default function EduleLanding() {
             </h1>
 
             <p className="text-gray-600 mb-6">
-              It has survived not only five centuries but also<br />
-              the leap into electronic typesetting.
+              Job search made simple.<br />
+              Apply easily and connect directly with top jobproviders on our platform.
             </p>
 
-            <button className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
-              Start A Course
-            </button>
+            <Link to="/jobs" className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
+              Search Jobs
+            </Link>
           </div>
 
           <div className="relative">
@@ -218,12 +160,12 @@ export default function EduleLanding() {
                 {marqueeLogos.map((logo: string, idx: number) => (
                   <div
                     key={`${logo}-${idx}`}
-                    className="flex h-20 w-40 items-center justify-center rounded-xl border border-gray-100 bg-white shadow-sm"
+                    className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl"
                   >
                     <img
                       src={logo}
                       alt={`Company logo ${idx + 1}`}
-                      className="max-h-14 max-w-[8rem] object-contain"
+                      className="h-16 w-16 object-contain"
                       loading="lazy"
                     />
                   </div>
@@ -243,7 +185,7 @@ export default function EduleLanding() {
       {/* Courses Section */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-4xl font-bold text-center mb-2">
-          All <span className="text-green-600 relative">
+          Marketing <span className="text-green-600 relative">
             Courses
             <svg className="absolute -bottom-1 left-0 w-full" height="6" viewBox="0 0 120 6">
               <path d="M0 3 Q 60 6 120 3" stroke="#10b981" strokeWidth="2" fill="none" />
@@ -253,7 +195,7 @@ export default function EduleLanding() {
 
         {/* Search Bar */}
         <div className="max-w-md mx-auto mt-8 mb-12">
-          <div className="relative">
+          {/* <div className="relative">
             <input
               type="text"
               placeholder="Search your course"
@@ -262,11 +204,11 @@ export default function EduleLanding() {
             <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-600 text-white p-2 rounded">
               <Search className="w-5 h-5" />
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Category Pills */}
-        <div className="flex gap-3 mb-12 overflow-x-auto pb-4 justify-center flex-wrap">
+        {/* <div className="flex gap-3 mb-12 overflow-x-auto pb-4 justify-center flex-wrap">
           <button className="px-2 py-1 text-2xl">&lt;</button>
           {categories.map((cat, idx) => (
             <button
@@ -278,74 +220,70 @@ export default function EduleLanding() {
             </button>
           ))}
           <button className="px-2 py-1 text-2xl">&gt;</button>
-        </div>
+        </div> */}
 
         {/* Course Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {courses.map((course, idx) => (
-            <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition">
-              <img src={course.img} alt={course.title} className="w-full h-48 object-cover" />
+          {marketingLoading && (
+            <p className="text-sm text-gray-500">Loading marketing courses...</p>
+          )}
+          {!marketingLoading && marketingCards.length === 0 && (
+            <p className="text-sm text-gray-500">No marketing courses yet.</p>
+          )}
+          {marketingCards.map((card) => (
+            <Link
+              to={`/marketing/${card._id || card.id}`}
+              key={card._id || card.id}
+              className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition bg-white group"
+            >
+              <img src={card.coverImage} alt={card.title} className="w-full h-48 object-cover" />
 
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
+              <div className="p-4 space-y-3">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-                    <span className="text-sm text-gray-600">{course.instructor}</span>
+                    <img src={card.logo} alt={card.name} className="w-8 h-8 rounded-full object-cover" />
+                    <span className="text-sm text-gray-600">{card.name}</span>
                   </div>
-                  <span className={`text-xs px-3 py-1 rounded-full ${course.categoryColor}`}>
-                    {course.category}
-                  </span>
+                  <span className="text-lg font-bold text-green-600">Rs. {card.price.toLocaleString()}</span>
                 </div>
 
-                <h3 className="font-semibold text-gray-900 mb-3 line-clamp-2">
-                  {course.title}
+                <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-green-600 transition">
+                  {card.title}
                 </h3>
 
-                <div className="flex items-center gap-4 text-xs text-gray-600 mb-3">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {course.duration}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Users className="w-4 h-4" />
-                    {course.students}
-                  </span>
-                </div>
+                <p className="text-sm text-gray-600 line-clamp-2">{card.description}</p>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-lg font-bold text-green-600">{course.price}</span>
-                    {course.oldPrice && (
-                      <span className="text-sm text-gray-400 line-through ml-2">{course.oldPrice}</span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm font-semibold">{course.rating}</span>
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                          strokeWidth={1.5}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                <div className="flex flex-wrap gap-2">
+                  {card.badges?.trusted && (
+                    <span className="text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+                      Trusted
+                    </span>
+                  )}
+                  {card.badges?.verified && (
+                    <span className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+                      Verified
+                    </span>
+                  )}
+                  {card.badges?.recommended && (
+                    <span className="text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
+                      Recommended
+                    </span>
+                  )}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
-        <div className="text-center">
+        {/* <div className="text-center">
           <button className="px-6 py-3 border-2 border-green-600 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition">
             Other Course
           </button>
-        </div>
+        </div> */}
       </section>
 
       {/* Instructor CTA */}
-      <section className="bg-gradient-to-br from-green-50 to-blue-50 relative overflow-hidden">
+      {/* <section className="bg-gradient-to-br from-green-50 to-blue-50 relative overflow-hidden">
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-2xl">
             <p className="text-green-600 mb-2">Become A Instructor</p>
@@ -363,7 +301,6 @@ export default function EduleLanding() {
             </button>
           </div>
 
-          {/* Decorative elements */}
           <div className="absolute bottom-8 right-8">
             <div className="flex gap-2">
               <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
@@ -371,7 +308,7 @@ export default function EduleLanding() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

@@ -9,6 +9,7 @@ import CompanyDetailsModal from "../components/CompanyDetailsModal";
 import { motion, AnimatePresence } from "framer-motion";
 import ApplicantDetailsModal from "@/components/ApplicantDetailsModal";
 import FreelancerList from "./FreelancerList";
+import MarketingAdminPanel from "@/components/MarketingAdminPanel";
 
 import {
   Briefcase,
@@ -339,6 +340,8 @@ const Dashboard = () => {
                 </motion.div>
               ))}
             </motion.div>
+
+            <MarketingAdminPanel />
 
             {/* ===== Manage Companies ===== */}
             <motion.div

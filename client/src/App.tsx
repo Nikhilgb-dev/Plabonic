@@ -41,6 +41,7 @@ import Freelancers from "./pages/Freelancers";
 import AddFreelancer from "./pages/AddFreelancer";
 import FreelancerRegister from "./pages/FreelancerRegister";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
+import MarketingDetail from "./pages/MarketingDetail";
 
 export default function App() {
   return (
@@ -54,6 +55,7 @@ export default function App() {
             <Routes>
               {/* 🌍 Public Routes */}
               <Route path="/" element={<Home />} />
+              <Route path="/marketing/:id" element={<MarketingDetail />} />
               <Route path="/jobs" element={<Jobs />} />
               <Route path="/jobs/:id" element={<JobDetails />} />
               <Route path="/companies" element={<Companies />} />
