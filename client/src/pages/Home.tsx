@@ -84,9 +84,8 @@ export default function EduleLanding() {
             <p className="text-gray-600 mb-2">Start your favourite course</p>
             <h1 className="text-5xl font-bold leading-tight mb-4">
               Build Your Career<br />
-              Right here<br />
-              your <span className="text-green-600 relative">
-                bright career
+               <span className="text-green-600 relative">
+                Right here
                 <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none">
                   <path d="M0 4 Q 100 8 200 4" stroke="#10b981" strokeWidth="2" fill="none" />
                 </svg>
@@ -94,8 +93,8 @@ export default function EduleLanding() {
             </h1>
 
             <p className="text-gray-600 mb-6">
-              Job search made simple.<br />
-              Apply easily and connect directly with top jobproviders on our platform.
+              Job search made simple Apply easily and connect directly with top jobproviders on our platform.<br />
+
             </p>
 
             <Link to="/jobs" className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
