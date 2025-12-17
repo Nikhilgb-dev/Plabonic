@@ -256,6 +256,19 @@ const UserDashboard: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Scroll to hash after loading
+    useEffect(() => {
+        if (!loading) {
+            const hash = window.location.hash;
+            if (hash) {
+                const element = document.getElementById(hash.substring(1));
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+    }, [loading]);
+
     const withdrawApplication = async (id: string) => {
         if (!window.confirm("Withdraw this application?")) return;
         await API.delete(`/applications/${id}`);
@@ -368,7 +381,7 @@ const UserDashboard: React.FC = () => {
             </section>
 
             {/* Applications block */}
-            <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+            <section id="applications" className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
                 <h2 className="text-lg font-semibold mb-4">My Applications</h2>
 
                 {/* MOBILE: card list */}

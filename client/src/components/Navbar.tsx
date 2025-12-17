@@ -136,21 +136,8 @@ export default function Navbar() {
       return;
     }
 
-    const jobId = typeof n.job === "string" ? n.job : n.job?._id;
-    const companyId = typeof n.company === "string" ? n.company : n.company?._id;
-
-    if (jobId) {
-      navigate(`/jobs/${jobId}`);
-      return;
-    }
-
-    if (companyId) {
-      navigate(`/companies/${companyId}`);
-      return;
-    }
-
-    // Fallback to dashboard where notifications are relevant
-    navigate("/user/dashboard");
+    // For application-related notifications, redirect to user dashboard applications section
+    navigate("/user/dashboard#applications");
   };
 
   // 🔹 Initial load
