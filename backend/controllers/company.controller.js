@@ -320,6 +320,7 @@ export const updateMyCompany = async (req, res) => {
       dateOfIncorporation,
       registeredOfficeAddress,
       directorAndKmpDetails,
+      authorizedSignatory,
     } = req.body;
     const company = await Company.findById(req.user.company);
     if (!company) return res.status(404).json({ message: "Company not found" });
@@ -341,6 +342,15 @@ export const updateMyCompany = async (req, res) => {
     }
     if (directorAndKmpDetails)
       company.directorAndKmpDetails = directorAndKmpDetails;
+    if (authorizedSignatory) {
+      try {
+        company.authorizedSignatory = typeof authorizedSignatory === "string"
+          ? JSON.parse(authorizedSignatory)
+          : authorizedSignatory;
+      } catch (err) {
+        console.warn("Invalid authorizedSignatory data:", err);
+      }
+    }
 
     // optional logo upload
     if (req.file) {

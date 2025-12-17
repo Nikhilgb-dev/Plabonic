@@ -375,7 +375,7 @@ const Jobs = () => {
                           {job.company.name}
                         </h4>
                         <p className="text-xs text-gray-500">
-                          Posted by {job.postedBy?.name || "Company"}
+                          Posted by {job.company.authorizedSignatory?.name || "Company"}
                         </p>
                       </div>
                     </div>

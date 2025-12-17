@@ -9,6 +9,7 @@ const Signup = () => {
     name: "",
     email: "",
     password: "",
+    phone: "",
     linkedin: "",
     github: "",
     twitter: "",
@@ -29,7 +30,7 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.password) {
+    if (!form.name || !form.email || !form.password || !form.phone) {
       toast.error("Please fill in all required fields");
       return;
     }

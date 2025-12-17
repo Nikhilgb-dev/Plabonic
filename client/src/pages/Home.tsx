@@ -184,12 +184,12 @@ export default function EduleLanding() {
       {/* Courses Section */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-4xl font-bold text-center mb-2">
-          Marketing <span className="text-green-600 relative">
-            Courses
+          Discover <span className="text-green-600 relative">
+            Products
             <svg className="absolute -bottom-1 left-0 w-full" height="6" viewBox="0 0 120 6">
               <path d="M0 3 Q 60 6 120 3" stroke="#10b981" strokeWidth="2" fill="none" />
             </svg>
-          </span> of Edule
+          </span> 
         </h2>
 
         {/* Search Bar */}

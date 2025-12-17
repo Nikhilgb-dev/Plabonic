@@ -34,6 +34,7 @@ export const register = async (req, res) => {
       name,
       email,
       password: hashed,
+      phone,
       profilePhoto: profilePhotoUrl,
       role: "user",
       headline,

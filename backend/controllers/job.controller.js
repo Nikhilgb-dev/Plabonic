@@ -269,7 +269,7 @@ export const getJobs = async (req, res) => {
     const jobs = await Job.find(query)
       .sort({ createdAt: -1 })
       .populate("postedBy", "name email")
-      .populate("company", "name logo");
+      .populate("company", "name logo authorizedSignatory");
 
     let appliedJobs = [];
     if (requestUser?._id) {
@@ -297,7 +297,7 @@ export const getJobs = async (req, res) => {
 export const getJobById = async (req, res) => {
   try {
     const [job, user] = await Promise.all([
-      Job.findById(req.params.id).populate("postedBy", "name email"),
+      Job.findById(req.params.id).populate("postedBy", "name email").populate("company"),
       getUserFromRequest(req),
     ]);
 
