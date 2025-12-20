@@ -408,9 +408,9 @@ const Jobs = () => {
                         🕒 {job.employmentType}
                       </span>
                     )}
-                    {job.salary && (
+                    {job.minSalary && (
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700">
-                        ₹{job.salary} LPA
+                        ₹{job.minSalary}{job.maxSalary ? ` - ${job.maxSalary}` : ''} LPA
                       </span>
                     )}
                   </div>
