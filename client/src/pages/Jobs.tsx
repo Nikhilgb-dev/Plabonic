@@ -310,14 +310,20 @@ const Jobs = () => {
               <div
                 key={job._id}
                 onClick={() => {
-                  setSelectedJob(job._id);
-                  setShowDetails(true);
+                  if (!job.blocked) {
+                    setSelectedJob(job._id);
+                    setShowDetails(true);
+                  }
                 }}
-                className="cursor-pointer bg-white rounded-xl sm:rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden group flex flex-col justify-between"
+                className={`${
+                  job.blocked
+                    ? "bg-gray-50 border-gray-200 cursor-not-allowed opacity-60"
+                    : "cursor-pointer bg-white hover:shadow-xl"
+                } rounded-xl sm:rounded-2xl shadow-md transition-all duration-300 border border-gray-100 overflow-hidden group flex flex-col justify-between`}
               >
                 <div className="p-5 sm:p-6 flex-1 flex flex-col relative">
                   {/* Save, Share, and Report Buttons - Top Right */}
-                  {user && (
+                  {user && !job.blocked && (
                     <div className="absolute top-4 right-4 flex gap-2">
                       <button
                         onClick={(e) => {
@@ -413,6 +419,11 @@ const Jobs = () => {
                         ₹{job.minSalary}{job.maxSalary ? ` - ${job.maxSalary}` : ''} LPA
                       </span>
                     )}
+                    {job.blocked && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-red-100 text-red-700">
+                        🚫 Blocked
+                      </span>
+                    )}
                   </div>
 
                   {/* Description */}
@@ -449,6 +460,13 @@ const Jobs = () => {
                           className="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg text-sm font-semibold cursor-not-allowed flex items-center gap-1"
                         >
                           ✓ Applied
+                        </button>
+                      ) : job.blocked ? (
+                        <button
+                          disabled
+                          className="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg text-sm font-semibold cursor-not-allowed"
+                        >
+                          Blocked
                         </button>
                       ) : (
                         <button

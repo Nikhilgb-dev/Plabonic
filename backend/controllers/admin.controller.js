@@ -448,6 +448,9 @@ export const blockCompany = async (req, res) => {
     company.blocked = !company.blocked;
     await company.save();
 
+    // Block or unblock all jobs of this company
+    await Job.updateMany({ company: company._id }, { blocked: company.blocked });
+
     res.json({
       message: `Company ${company.blocked ? "blocked" : "unblocked"}`,
       company,

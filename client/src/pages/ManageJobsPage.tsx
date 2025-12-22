@@ -19,6 +19,7 @@ interface Job {
     status?: string;
     createdAt?: string;
     expiresAt?: string;
+    blocked?: boolean;
 }
 
 interface Company {
@@ -465,6 +466,14 @@ const ManageJobsPage: React.FC = () => {
                                                                 {job.minSalary && job.maxSalary ? `${job.minSalary}-${job.maxSalary} LPA` : job.minSalary ? `${job.minSalary} LPA` : `${job.maxSalary} LPA`}
                                                             </span>
                                                         )}
+                                                        {job.blocked && (
+                                                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                                                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                                                </svg>
+                                                                Blocked
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -500,7 +509,13 @@ const ManageJobsPage: React.FC = () => {
                                         <div className="flex flex-col gap-2">
                                             <button
                                                 onClick={() => handleEdit(job)}
-                                                className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-medium text-sm transition-all flex items-center gap-2"
+                                                disabled={job.blocked}
+                                                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2 ${
+                                                    job.blocked
+                                                        ? "bg-gray-50 text-gray-400 cursor-not-allowed"
+                                                        : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                                                }`}
+                                                title={job.blocked ? "Job is blocked" : "Edit Job"}
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -509,7 +524,13 @@ const ManageJobsPage: React.FC = () => {
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(job._id!)}
-                                                className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-medium text-sm transition-all flex items-center gap-2"
+                                                disabled={job.blocked}
+                                                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2 ${
+                                                    job.blocked
+                                                        ? "bg-gray-50 text-gray-400 cursor-not-allowed"
+                                                        : "bg-red-50 text-red-600 hover:bg-red-100"
+                                                }`}
+                                                title={job.blocked ? "Job is blocked" : "Delete Job"}
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

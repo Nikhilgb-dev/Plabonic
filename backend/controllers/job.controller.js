@@ -236,6 +236,13 @@ export const getMyApplicationProfile = async (req, res) => {
  */
 export const createJob = async (req, res) => {
   try {
+    // Check if the company is blocked
+    if (req.user.company) {
+      const company = await Company.findById(req.user.company);
+      if (company && company.blocked) {
+        return res.status(403).json({ message: "Your company is blocked and cannot post jobs" });
+      }
+    }
     const job = await Job.create({ ...req.body, postedBy: req.user._id });
     res.status(201).json(job);
   } catch (err) {
@@ -255,7 +262,6 @@ export const getJobs = async (req, res) => {
       $or: [{ isExpired: false }, { isExpired: { $exists: false } }],
       $or: [{ expiresAt: { $gte: now } }, { expiresAt: { $exists: false } }],
       status: "open",
-      blocked: { $ne: true },
     };
 
     if (requestUser) {

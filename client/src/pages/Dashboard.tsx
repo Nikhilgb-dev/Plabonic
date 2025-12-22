@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import API from "../api/api";
 import { Link, useNavigate } from "react-router-dom";
 import CreateCandidateModal from "../components/CreateCandidateModal";
@@ -199,6 +199,14 @@ const Dashboard = () => {
     });
     return filtered;
   }, [abuseReports, abuseCompanyFilter, abuseStatusFilter, abuseOrderFilter]);
+
+  const abuseTableRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // always reset horizontal scroll so first column is visible
+    abuseTableRef.current?.scrollTo({ left: 0 });
+  }, [abuseCompanyFilter, abuseStatusFilter, abuseOrderFilter, filteredAbuseReports.length]);
+
 
   const handleExport = async (endpoint: string, filename: string) => {
     try {
@@ -445,17 +453,17 @@ const Dashboard = () => {
   // ===== Render =====
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
             Welcome back, {user.name}! 👋
           </h1>
-          <p className="text-gray-600">Here's an overview of your platform</p>
+          <p className="text-sm sm:text-base text-gray-600">Here's an overview of your platform</p>
         </motion.div>
 
         <Link
@@ -473,7 +481,7 @@ const Dashboard = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
             >
               {statsData.map((stat, index) => (
                 <motion.div
@@ -482,33 +490,33 @@ const Dashboard = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all"
+                  className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-all"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`${stat.bgColor} p-3 rounded-lg`}>
-                      <stat.icon className={`w-6 h-6 ${stat.iconColor}`} />
+                  <div className="flex items-start justify-between mb-3 sm:mb-4">
+                    <div className={`${stat.bgColor} p-2 sm:p-3 rounded-lg`}>
+                      <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.iconColor}`} />
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-4">{stat.value}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-1">{stat.label}</p>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">{stat.value}</h3>
                   {stat.subtext && (
-                    <p className="text-xs text-gray-500 -mt-3 mb-4">{stat.subtext}</p>
+                    <p className="text-xs text-gray-500 -mt-2 sm:-mt-3 mb-3 sm:mb-4">{stat.subtext}</p>
                   )}
                   {stat.link ? (
                     <Link
                       to={stat.link}
-                      className={`${stat.iconColor} text-sm font-medium hover:underline flex items-center gap-1 group`}
+                      className={`${stat.iconColor} text-xs sm:text-sm font-medium hover:underline flex items-center gap-1 group`}
                     >
                       {stat.linkText}
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   ) : (
                     <button
                       onClick={stat.action}
-                      className={`${stat.iconColor} text-sm font-medium hover:underline flex items-center gap-1 group`}
+                      className={`${stat.iconColor} text-xs sm:text-sm font-medium hover:underline flex items-center gap-1 group`}
                     >
                       {stat.linkText}
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                   )}
                 </motion.div>
@@ -519,31 +527,33 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 mb-8 overflow-hidden"
+              className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100 mb-6 sm:mb-8 overflow-hidden"
             >
-              <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="bg-slate-50 p-2.5 rounded-lg">
-                    <Download className="w-5 h-5 text-slate-700" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900">Data Exports</h2>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      Download admin Excel snapshots without sensitive credentials
-                    </p>
+              <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-slate-50 p-2 sm:p-2.5 rounded-lg">
+                      <Download className="w-4 h-4 sm:w-5 sm:h-5 text-slate-700" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg sm:text-xl font-bold text-gray-900">Data Exports</h2>
+                      <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                        Download admin Excel snapshots without sensitive credentials
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="px-4 sm:px-6 py-4 sm:py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {exportOptions.map((opt) => (
                   <motion.button
                     key={opt.label}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleExport(opt.endpoint, opt.filename)}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-800 font-medium transition-colors"
+                    className="w-full inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-800 font-medium transition-colors text-sm sm:text-base"
                   >
-                    <Download className="w-4 h-4" />
+                    <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                     Export {opt.label}
                   </motion.button>
                 ))}
@@ -557,46 +567,46 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 mb-8 overflow-hidden"
+              className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100 mb-6 sm:mb-8 overflow-hidden"
             >
-              <div className="px-6 py-5 border-b border-gray-100">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="bg-indigo-50 p-2.5 rounded-lg">
-                      <Building2 className="w-5 h-5 text-indigo-600" />
+                    <div className="bg-indigo-50 p-2 sm:p-2.5 rounded-lg">
+                      <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Manage Companies</h2>
-                      <p className="text-sm text-gray-500 mt-0.5">Verify and manage all companies</p>
+                      <h2 className="text-lg sm:text-xl font-bold text-gray-900">Manage Companies</h2>
+                      <p className="text-xs sm:text-sm text-gray-500 mt-0.5">Verify and manage all companies</p>
                     </div>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setShowCreateCompanyModal(true)}
-                    className="flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm"
+                    className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm text-sm sm:text-base"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                     Add Company
                   </motion.button>
                 </div>
-                <div className="mt-4 flex flex-wrap gap-4">
+                <div className="mt-3 sm:mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Company Name</label>
                     <input
                       type="text"
                       value={companyNameFilter}
                       onChange={(e) => setCompanyNameFilter(e.target.value)}
                       placeholder="Search by name"
-                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Industry</label>
                     <select
                       value={companyIndustryFilter}
                       onChange={(e) => setCompanyIndustryFilter(e.target.value)}
-                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                     >
                       <option value="all">All Industries</option>
                       {Array.from(new Set(companies.map(c => c.industry).filter(Boolean))).map(industry => (
@@ -605,11 +615,11 @@ const Dashboard = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Status</label>
                     <select
                       value={companyStatusFilter}
                       onChange={(e) => setCompanyStatusFilter(e.target.value)}
-                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                     >
                       <option value="all">All</option>
                       <option value="verified">Verified</option>
@@ -617,11 +627,11 @@ const Dashboard = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Order</label>
                     <select
                       value={companyOrderFilter}
                       onChange={(e) => setCompanyOrderFilter(e.target.value as "asc" | "desc")}
-                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                     >
                       <option value="desc">Newest First</option>
                       <option value="asc">Oldest First</option>
@@ -631,22 +641,22 @@ const Dashboard = () => {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full min-w-[600px]">
                   <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Company
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden sm:table-cell">
                         Domain
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">
                         Industry
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -663,50 +673,53 @@ const Dashboard = () => {
                           className="hover:bg-blue-50/30 transition-colors cursor-pointer"
                           onClick={() => setSelectedCompany(company)}
                         >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-3">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2 sm:gap-3">
                               {company.logo ? (
                                 <img
                                   src={company.logo}
                                   alt={company.name}
-                                  className="h-10 w-10 rounded-full object-cover ring-2 ring-gray-100"
+                                  className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover ring-2 ring-gray-100"
                                 />
                               ) : (
-                                <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm ring-2 ring-gray-100">
+                                <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm ring-2 ring-gray-100">
                                   {company.name.charAt(0).toUpperCase()}
                                 </div>
                               )}
-                              <span className="font-medium text-gray-900">{company.name}</span>
+                              <div className="min-w-0">
+                                <span className="font-medium text-gray-900 text-sm sm:text-base block truncate max-w-[120px] sm:max-w-none">{company.name}</span>
+                                <span className="text-xs text-gray-500 sm:hidden">{company.domain}</span>
+                              </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden sm:table-cell">
                             {company.domain}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden md:table-cell">
                             {company.industry || "-"}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${company.verified
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${company.verified
                                 ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20"
                                 : "bg-amber-50 text-amber-700 ring-1 ring-amber-600/20"
                                 }`}
                             >
                               {company.verified ? (
                                 <>
-                                  <CheckCircle className="w-3.5 h-3.5" />
-                                  Verified
+                                  <CheckCircle className="w-3 h-3" />
+                                  <span className="hidden sm:inline">Verified</span>
                                 </>
                               ) : (
                                 <>
-                                  <Shield className="w-3.5 h-3.5" />
-                                  Pending
+                                  <Shield className="w-3 h-3" />
+                                  <span className="hidden sm:inline">Pending</span>
                                 </>
                               )}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-end gap-1.5">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-end gap-1">
                               <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -714,10 +727,10 @@ const Dashboard = () => {
                                   e.stopPropagation();
                                   handleVerifyCompany(company._id, company.verified);
                                 }}
-                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                 title={company.verified ? "Unverify" : "Verify"}
                               >
-                                {company.verified ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+                                {company.verified ? <XCircle className="w-3 h-3 sm:w-4 sm:h-4" /> : <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />}
                               </motion.button>
                               <motion.button
                                 whileHover={{ scale: 1.05 }}
@@ -726,10 +739,10 @@ const Dashboard = () => {
                                   e.stopPropagation();
                                   handleDeleteCompany(company._id);
                                 }}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Delete"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                               </motion.button>
                             </div>
                           </td>
@@ -794,14 +807,14 @@ const Dashboard = () => {
                         transition={{ delay: 0.4 }}
                         className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
                       >
-                        <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                        <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            <div className="bg-blue-50 p-2.5 rounded-lg">
-                              <Briefcase className="w-5 h-5 text-blue-600" />
+                            <div className="bg-blue-50 p-2 sm:p-2.5 rounded-lg">
+                              <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                             </div>
                             <div>
-                              <h2 className="text-xl font-bold text-gray-900">Manage Jobs</h2>
-                              <p className="text-sm text-gray-500 mt-0.5">
+                              <h2 className="text-lg sm:text-xl font-bold text-gray-900">Manage Jobs</h2>
+                              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                                 View, post, and manage all job openings
                               </p>
                             </div>
@@ -812,21 +825,21 @@ const Dashboard = () => {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setShowForm(true)}
-                            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm"
+                            className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm text-sm sm:text-base"
                           >
-                            <Plus className="w-4 h-4" />
+                            <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                             Post New Job
                           </motion.button>
                         </div>
 
-                        <div className="px-6 py-4 border-b border-gray-100">
-                          <div className="flex flex-wrap gap-4">
+                        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Company</label>
                               <select
                                 value={companyFilter}
                                 onChange={(e) => setCompanyFilter(e.target.value)}
-                                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                               >
                                 <option value="all">All Companies</option>
                                 {companies.map((c) => (
@@ -837,22 +850,22 @@ const Dashboard = () => {
                               </select>
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Order</label>
                               <select
                                 value={orderFilter}
                                 onChange={(e) => setOrderFilter(e.target.value as "asc" | "desc")}
-                                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                               >
                                 <option value="desc">Newest First</option>
                                 <option value="asc">Oldest First</option>
                               </select>
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Status</label>
                               <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
-                                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                               >
                                 <option value="all">All</option>
                                 <option value="open">Open</option>
@@ -861,11 +874,11 @@ const Dashboard = () => {
                               </select>
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">Verified</label>
+                              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Verified</label>
                               <select
                                 value={verifiedFilter}
                                 onChange={(e) => setVerifiedFilter(e.target.value)}
-                                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                               >
                                 <option value="all">All</option>
                                 <option value="pending">Pending</option>
@@ -876,34 +889,34 @@ const Dashboard = () => {
                         </div>
 
                         <div className="overflow-x-auto">
-                          <table className="w-full">
+                          <table className="w-full min-w-[800px]">
                             <thead className="bg-gray-50 border-b border-gray-100">
                               <tr>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                   Title
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden sm:table-cell">
                                   Location
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">
                                   Type
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                   Status
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">
                                   Verified
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden xl:table-cell">
                                   Expires On
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">
                                   Applicants
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden xl:table-cell">
                                   Remarks
                                 </th>
-                                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                   Actions
                                 </th>
                               </tr>
@@ -920,41 +933,44 @@ const Dashboard = () => {
                                     className="hover:bg-blue-50/30 transition-colors cursor-pointer"
                                     onClick={() => setSelectedJob(job)}
                                   >
-                                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                                      {job.title}
+                                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                      <div className="min-w-0">
+                                        <div className="font-medium text-gray-900 text-sm sm:text-base truncate max-w-[150px] sm:max-w-none">{job.title}</div>
+                                        <div className="text-xs text-gray-500 sm:hidden">{job.location || "N/A"}</div>
+                                      </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden sm:table-cell">
                                       {job.location || "N/A"}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden md:table-cell">
                                       {job.employmentType || "N/A"}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">
+                                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">
                                         {job.status || "open"}
                                       </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
                                       <span
-                                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${job.isVerified
+                                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${job.isVerified
                                           ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20"
                                           : "bg-amber-50 text-amber-700 ring-1 ring-amber-600/20"
                                           }`}
                                       >
                                         {job.isVerified ? (
                                           <>
-                                            <CheckCircle className="w-3.5 h-3.5" />
-                                            Verified
+                                            <CheckCircle className="w-3 h-3" />
+                                            <span className="hidden xl:inline">Verified</span>
                                           </>
                                         ) : (
                                           <>
-                                            <Shield className="w-3.5 h-3.5" />
-                                            Pending
+                                            <Shield className="w-3 h-3" />
+                                            <span className="hidden xl:inline">Pending</span>
                                           </>
                                         )}
                                       </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden xl:table-cell">
                                       {(() => {
                                         if (!job.expiresAt) {
                                           const fallback = new Date(job.createdAt);
@@ -967,39 +983,39 @@ const Dashboard = () => {
                                           : expDate.toLocaleDateString();
                                       })()}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden lg:table-cell">
                                       {applications.filter(a => a.job._id === job._id).length}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 max-w-xs truncate" title={job.remarks}>
+                                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 max-w-xs truncate hidden xl:table-cell" title={job.remarks}>
                                       {job.remarks || "-"}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
-                                      <div className="flex items-center justify-end gap-1.5">
+                                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
+                                      <div className="flex items-center justify-end gap-1">
                                         <motion.button
                                           whileHover={{ scale: 1.05 }}
                                           whileTap={{ scale: 0.95 }}
                                           onClick={() => handleVerifyJob(job._id, job.isVerified)}
-                                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                          className="p-1.5 sm:p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                           title={job.isVerified ? "Unverify" : "Verify"}
                                         >
-                                          {job.isVerified ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+                                          {job.isVerified ? <XCircle className="w-3 h-3 sm:w-4 sm:h-4" /> : <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />}
                                         </motion.button>
                                         <motion.button
                                           whileHover={{ scale: 1.05 }}
                                           whileTap={{ scale: 0.95 }}
-                                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                          className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                           title="Edit"
                                           onClick={() => navigate("/dashboard/manage-jobs")}
                                         >
-                                          <Edit2 className="w-4 h-4" />
+                                          <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                         </motion.button>
                                         <motion.button
                                           whileHover={{ scale: 1.05 }}
                                           whileTap={{ scale: 0.95 }}
-                                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                          className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                           title="Delete"
                                         >
-                                          <Trash2 className="w-4 h-4" />
+                                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                         </motion.button>
                                       </div>
                                     </td>
@@ -1208,27 +1224,27 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-8"
+              className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-6 sm:mt-8"
             >
-              <div className="px-6 py-5 border-b border-gray-100">
+              <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="bg-emerald-50 p-2.5 rounded-lg">
-                    <CheckCircle className="w-5 h-5 text-emerald-600" />
+                  <div className="bg-emerald-50 p-2 sm:p-2.5 rounded-lg">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">Recent Applications</h2>
-                    <p className="text-sm text-gray-500 mt-0.5">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900">Recent Applications</h2>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                       View all job applications across the platform
                     </p>
                   </div>
                 </div>
-                <div className="mt-4 flex flex-wrap gap-4">
+                <div className="mt-3 sm:mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Status</label>
                     <select
                       value={appStatusFilter}
                       onChange={(e) => setAppStatusFilter(e.target.value)}
-                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                     >
                       <option value="all">All Statuses</option>
                       <option value="applied">Applied</option>
@@ -1239,11 +1255,11 @@ const Dashboard = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Company</label>
                     <select
                       value={appCompanyFilter}
                       onChange={(e) => setAppCompanyFilter(e.target.value)}
-                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                     >
                       <option value="all">All Companies</option>
                       {companies.map((c) => (
@@ -1254,11 +1270,11 @@ const Dashboard = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Order</label>
                     <select
                       value={appOrderFilter}
                       onChange={(e) => setAppOrderFilter(e.target.value as "asc" | "desc")}
-                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
                     >
                       <option value="desc">Newest First</option>
                       <option value="asc">Oldest First</option>
@@ -1266,113 +1282,145 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full">
+              <div
+                ref={abuseTableRef}
+                className="overflow-x-auto"
+              >
+                <table className="w-full table-fixed min-w-[1100px]">
                   <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Candidate</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Job Title</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Company</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Resume</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Applied On</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Details</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[200px]">
+                        Job / Company
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[160px]">
+                        Reason
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[320px]">
+                        Description
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[220px]">
+                        Company Response
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[120px]">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[140px]">
+                        Reported On
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[320px]">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
+
                   <tbody className="divide-y divide-gray-100">
                     <AnimatePresence>
-                      {filteredApplications.map((a, index) => (
+                      {filteredAbuseReports.map((report, index) => (
                         <motion.tr
-                          key={a._id}
+                          key={report._id}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           transition={{ delay: index * 0.03 }}
-                          className="hover:bg-blue-50/30 transition-colors"
+                          className="hover:bg-blue-50/30 transition-colors align-top"
                         >
-                          <td className="px-6 py-4 flex items-center gap-3 whitespace-nowrap">
-                            {a.user?.profilePhoto ? (
-                              <img
-                                src={a.user.profilePhoto}
-                                alt={a.user.name}
-                                className="w-9 h-9 rounded-full object-cover ring-1 ring-gray-200"
-                              />
-                            ) : (
-                              <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-medium">
-                                {a.user?.name?.charAt(0)}
-                              </div>
-                            )}
-                            <div>
-                              <div className="font-medium text-gray-900">{a.user?.name}</div>
-                              <div className="text-xs text-gray-500">{a.user?.email}</div>
+                          <td className="px-6 py-4 align-top">
+                            <div className="font-medium text-gray-900 text-sm truncate">
+                              {report.job?.title || "N/A"}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate">
+                              {report.job?.company?.name || "N/A"}
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
-                            {a.job?.title || "-"}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap flex items-center gap-2">
-                            {a.job?.company?.logo && (
-                              <img
-                                src={a.job.company.logo}
-                                alt={a.job.company.name}
-                                className="w-6 h-6 rounded-full ring-1 ring-gray-200"
-                              />
-                            )}
-                            {a.job?.company?.name || "-"}
-                          </td>
-                          <td className="px-6 py-4 text-sm whitespace-nowrap">
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              <ApplicationStatusDropdown
-                                id={a._id}
-                                currentStatus={a.status}
-                                isAdmin
-                                onUpdated={fetchApplications}
-                              />
-                            </td>
 
-                          </td>
-                          <td
-                            className="px-6 py-4 text-sm text-blue-600 underline cursor-pointer"
-                            onClick={() => handleResumeView(a)}
-                          >
-                            View Resume
+                          <td className="px-6 py-4 align-top text-sm text-gray-700 capitalize">
+                            {report.reason || "-"}
                           </td>
 
-                          <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                            {new Date(a.createdAt).toLocaleDateString()}
-                          </td>
-                          {resumeUrl && (
-                            <ViewResumeModal resumeUrl={resumeUrl} onClose={() => setResumeUrl(null)} />
-                          )}
-
-
-                          <td
-                            className="px-6 py-4 text-sm text-blue-600 underline cursor-pointer"
-                            onClick={() => setSelectedApplicant(a)}
-                          >
-                            View Details
+                          <td className="px-6 py-4 align-top text-sm text-gray-600">
+                            <div className="line-clamp-2 break-words">
+                              {report.description || "-"}
+                            </div>
                           </td>
 
-                          {selectedApplicant && (
-                            <ApplicantDetailsModal
-                              applicant={selectedApplicant}
-                              onClose={() => setSelectedApplicant(null)}
-                            />
-                          )}
+                          <td className="px-6 py-4 align-top text-sm text-gray-600">
+                            <div className="line-clamp-2 break-words">
+                              {report.companyResponse || "No response yet"}
+                            </div>
+                          </td>
 
+                          <td className="px-6 py-4 align-top">
+                            <span
+                              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${report.status === "pending"
+                                  ? "bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20"
+                                  : report.status === "responded"
+                                    ? "bg-purple-50 text-purple-700 ring-1 ring-purple-600/20"
+                                    : report.status === "reviewed"
+                                      ? "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20"
+                                      : "bg-green-50 text-green-700 ring-1 ring-green-600/20"
+                                }`}
+                            >
+                              {report.status}
+                            </span>
+                          </td>
+
+                          <td className="px-6 py-4 align-top text-sm text-gray-500 whitespace-nowrap">
+                            {new Date(report.createdAt).toLocaleDateString()}
+                          </td>
+
+                          <td className="px-6 py-4 align-top">
+                            <div className="flex items-center justify-end gap-2">
+                              <select
+                                value={report.status}
+                                onChange={(e) =>
+                                  handleUpdateAbuseReportStatus(report._id, e.target.value)
+                                }
+                                className="text-xs px-2 py-1 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 bg-white"
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="responded">Responded</option>
+                                <option value="reviewed">Reviewed</option>
+                                <option value="resolved">Resolved</option>
+                              </select>
+
+                              {report.job && (
+                                <motion.button
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  onClick={() => handleBlockJob(report.job._id, report.job.blocked)}
+                                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${report.job.blocked
+                                      ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                      : "bg-orange-100 text-orange-700 hover:bg-orange-200"
+                                    }`}
+                                >
+                                  {report.job.blocked ? "Unblock Job" : "Block Job"}
+                                </motion.button>
+                              )}
+
+                              {report.job?.company && (
+                                <motion.button
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  onClick={() =>
+                                    handleBlockCompany(report.job.company._id, report.job.company.blocked)
+                                  }
+                                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${report.job.company.blocked
+                                      ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                      : "bg-red-100 text-red-700 hover:bg-red-200"
+                                    }`}
+                                >
+                                  {report.job.company.blocked ? "Unblock Company" : "Block Company"}
+                                </motion.button>
+                              )}
+                            </div>
+                          </td>
                         </motion.tr>
                       ))}
                     </AnimatePresence>
                   </tbody>
                 </table>
-
-                {filteredApplications.length === 0 && (
-                  <div className="text-center py-6 text-gray-500 text-sm">
-                    No applications found.
-                  </div>
-                )}
               </div>
+
             </motion.div>
 
             <motion.div
@@ -1623,15 +1671,14 @@ const Dashboard = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
-                              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                                report.status === "pending"
-                                  ? "bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20"
-                                  : report.status === "responded"
+                              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${report.status === "pending"
+                                ? "bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20"
+                                : report.status === "responded"
                                   ? "bg-purple-50 text-purple-700 ring-1 ring-purple-600/20"
                                   : report.status === "reviewed"
-                                  ? "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20"
-                                  : "bg-green-50 text-green-700 ring-1 ring-green-600/20"
-                              }`}
+                                    ? "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20"
+                                    : "bg-green-50 text-green-700 ring-1 ring-green-600/20"
+                                }`}
                             >
                               {report.status}
                             </span>
@@ -1639,12 +1686,12 @@ const Dashboard = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {new Date(report.createdAt).toLocaleDateString()}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right">
-                            <div className="flex items-center justify-end gap-1.5">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right">
+                            <div className="flex items-center justify-end gap-2 sm:gap-3">
                               <select
                                 value={report.status}
                                 onChange={(e) => handleUpdateAbuseReportStatus(report._id, e.target.value)}
-                                className="text-xs px-2 py-1 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
+                                className="text-xs px-2 py-1 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 bg-white min-w-[100px]"
                               >
                                 <option value="pending">Pending</option>
                                 <option value="responded">Responded</option>
@@ -1678,14 +1725,12 @@ const Dashboard = () => {
                                   whileHover={{ scale: 1.05 }}
                                   whileTap={{ scale: 0.95 }}
                                   onClick={() => handleBlockJob(report.job._id, report.job.blocked)}
-                                  className={`p-1 rounded transition-colors ${
-                                    report.job.blocked
-                                      ? "text-green-600 hover:bg-green-50"
-                                      : "text-orange-600 hover:bg-orange-50"
-                                  }`}
-                                  title={report.job.blocked ? "Unblock Job" : "Block Job"}
+                                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${report.job.blocked
+                                    ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                    : "bg-orange-100 text-orange-700 hover:bg-orange-200"
+                                    }`}
                                 >
-                                  {report.job.blocked ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                                  {report.job.blocked ? "Unblock Job" : "Block Job"}
                                 </motion.button>
                               )}
                               {report.job?.company && (
@@ -1693,14 +1738,12 @@ const Dashboard = () => {
                                   whileHover={{ scale: 1.05 }}
                                   whileTap={{ scale: 0.95 }}
                                   onClick={() => handleBlockCompany(report.job.company._id, report.job.company.blocked)}
-                                  className={`p-1 rounded transition-colors ${
-                                    report.job.company.blocked
-                                      ? "text-green-600 hover:bg-green-50"
-                                      : "text-red-600 hover:bg-red-50"
-                                  }`}
-                                  title={report.job.company.blocked ? "Unblock Company" : "Block Company"}
+                                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${report.job.company.blocked
+                                    ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                    : "bg-red-100 text-red-700 hover:bg-red-200"
+                                    }`}
                                 >
-                                  {report.job.company.blocked ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                                  {report.job.company.blocked ? "Unblock Company" : "Block Company"}
                                 </motion.button>
                               )}
                             </div>
