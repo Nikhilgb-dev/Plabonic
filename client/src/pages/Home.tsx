@@ -254,17 +254,17 @@ export default function EduleLanding() {
 
                 <div className="flex flex-wrap gap-2">
                   {card.badges?.trusted && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <span className="text-xs px-2 py-1 rounded-full bg-[#0080ff] text-white border border-[#0080ff]">
                       Trusted
                     </span>
                   )}
                   {card.badges?.verified && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+                    <span className="text-xs px-2 py-1 rounded-full bg-[#80ff00] text-black border border-[#80ff00]">
                       Verified
                     </span>
                   )}
                   {card.badges?.recommended && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
+                    <span className="text-xs px-2 py-1 rounded-full bg-black text-white border border-black">
                       Recommended
                     </span>
                   )}

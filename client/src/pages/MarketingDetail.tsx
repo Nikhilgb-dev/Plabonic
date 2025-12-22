@@ -213,15 +213,22 @@ const MarketingDetail: React.FC = () => {
             {/* Badges */}
             {enabledBadges.length > 0 && (
               <div className="flex flex-wrap items-center gap-2">
-                {enabledBadges.map(([key]) => (
-                  <span
-                    key={key}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-100"
-                  >
-                    {badgeMap[key as keyof MarketingCard["badges"]]?.icon}
-                    {badgeMap[key as keyof MarketingCard["badges"]]?.label}
-                  </span>
-                ))}
+                {enabledBadges.map(([key]) => {
+                  const badgeClasses = {
+                    trusted: "bg-[#0080ff] text-white border-[#0080ff]",
+                    verified: "bg-[#80ff00] text-black border-[#80ff00]",
+                    recommended: "bg-black text-white border-black",
+                  }[key] || "bg-emerald-50 text-emerald-700 border-emerald-100";
+                  return (
+                    <span
+                      key={key}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs ${badgeClasses}`}
+                    >
+                      {badgeMap[key as keyof MarketingCard["badges"]]?.icon}
+                      {badgeMap[key as keyof MarketingCard["badges"]]?.label}
+                    </span>
+                  );
+                })}
               </div>
             )}
 

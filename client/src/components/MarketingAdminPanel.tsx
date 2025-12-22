@@ -7,9 +7,9 @@ import { MarketingCard, MarketingEnquiry } from "@/types/marketing";
 import API from "@/api/api";
 
 const badgeColors: Record<string, string> = {
-  trusted: "bg-emerald-50 text-emerald-700 border-emerald-100",
-  verified: "bg-blue-50 text-blue-700 border-blue-100",
-  recommended: "bg-amber-50 text-amber-700 border-amber-100",
+  trusted: "bg-[#0080ff] text-white border-[#0080ff]",
+  verified: "bg-[#80ff00] text-black border-[#80ff00]",
+  recommended: "bg-black text-white border-black",
 };
 
 const MarketingAdminPanel: React.FC = () => {
