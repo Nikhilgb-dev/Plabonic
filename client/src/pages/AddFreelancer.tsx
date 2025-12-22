@@ -23,6 +23,7 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({ onAdded, onClose, isPubli
     const [contact, setContact] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [location, setLocation] = useState("");
     const [preferences, setPreferences] = useState<string[]>([]);
     const [descriptionOfWork, setDescriptionOfWork] = useState("");
@@ -62,8 +63,13 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({ onAdded, onClose, isPubli
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!name || !qualification || !email || !password || !descriptionOfWork) {
+        if (!name || !qualification || !email || !password || !confirmPassword || !descriptionOfWork) {
             toast.error("Please fill all required fields");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match");
             return;
         }
 
@@ -108,6 +114,7 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({ onAdded, onClose, isPubli
             setContact("");
             setEmail("");
             setPassword("");
+            setConfirmPassword("");
             setLocation("");
             setPreferences([]);
             setDescriptionOfWork("");
@@ -166,6 +173,13 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({ onAdded, onClose, isPubli
                             {showPassword ? "Hide" : "Show"}
                         </button>
                     </div>
+                    <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm Password"
+                        className="input"
+                    />
                     <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Location" className="input" />
                 </div>
 

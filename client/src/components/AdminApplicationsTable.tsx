@@ -16,6 +16,7 @@ interface Application {
     resume: string;
     coverLetter: string;
     status: string;
+    rejectionReason?: string;
     createdAt: string;
 }
 
@@ -56,6 +57,11 @@ const AdminApplicationsTable = ({ applications }: { applications: Application[] 
                                     }`}>
                                     {app.status}
                                 </span>
+                                {app.status === 'rejected' && app.rejectionReason && (
+                                    <div className="text-xs text-red-600 mt-1">
+                                        Reason: {app.rejectionReason}
+                                    </div>
+                                )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">{formatDate(app.createdAt)}</td>
                             <td className="px-6 py-4 whitespace-nowrap">

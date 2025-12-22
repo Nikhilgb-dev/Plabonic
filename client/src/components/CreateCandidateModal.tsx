@@ -13,6 +13,8 @@ const CreateCandidateModal: React.FC<CreateCandidateModalProps> = ({ onClose, on
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
+    phone: "",
     role: "user",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -23,6 +25,14 @@ const CreateCandidateModal: React.FC<CreateCandidateModalProps> = ({ onClose, on
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.name || !form.email || !form.password || !form.confirmPassword || !form.phone) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
     try {
       await API.post("/admin/users", form);
       toast.success("Candidate created successfully!");
@@ -88,6 +98,34 @@ const CreateCandidateModal: React.FC<CreateCandidateModalProps> = ({ onClose, on
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
+          </div>
+          <div className="mb-4">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              id="confirmPassword"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              id="phone"
+              value={form.phone}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              required
+            />
           </div>
           <div className="flex justify-end gap-4">
             <button

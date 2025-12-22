@@ -10,6 +10,7 @@ export const register = async (req, res) => {
       name,
       email,
       password,
+      phone,
       headline,
       description,
       location,

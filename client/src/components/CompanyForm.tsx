@@ -16,6 +16,7 @@ interface CompanyFormData {
     email: string;
     contactNumber: string;
     password: string;
+    confirmPassword: string;
     authorizedSignatoryName: string;
     authorizedSignatoryDesignation: string;
     acceptTerms: boolean;
@@ -50,6 +51,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
         email: "",
         contactNumber: "",
         password: "",
+        confirmPassword: "",
         authorizedSignatoryName: "",
         authorizedSignatoryDesignation: "",
         acceptTerms: false,
@@ -98,6 +100,10 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (form.password !== form.confirmPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
         if (!form.acceptTerms) {
             toast.error("Please accept the terms and conditions");
             return;
@@ -150,6 +156,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                 email: "",
                 contactNumber: "",
                 password: "",
+                confirmPassword: "",
                 authorizedSignatoryName: "",
                 authorizedSignatoryDesignation: "",
                 acceptTerms: false,
@@ -317,24 +324,35 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                                 className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
                             />
                             {mode !== "edit" && (
-                                <div className="relative">
+                                <>
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            name="password"
+                                            value={form.password}
+                                            onChange={handleChange}
+                                            placeholder="Set Company Account Password"
+                                            required
+                                            className="border rounded-md px-3 py-2 text-sm sm:text-base w-full pr-24"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword((prev) => !prev)}
+                                            className="absolute inset-y-0 right-1 px-3 text-xs font-medium text-gray-600 hover:text-gray-800"
+                                        >
+                                            {showPassword ? "Hide" : "Show"}
+                                        </button>
+                                    </div>
                                     <input
-                                        type={showPassword ? "text" : "password"}
-                                        name="password"
-                                        value={form.password}
+                                        type="password"
+                                        name="confirmPassword"
+                                        value={form.confirmPassword}
                                         onChange={handleChange}
-                                        placeholder="Set Company Account Password"
+                                        placeholder="Confirm Password"
                                         required
-                                        className="border rounded-md px-3 py-2 text-sm sm:text-base w-full pr-24"
+                                        className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword((prev) => !prev)}
-                                        className="absolute inset-y-0 right-1 px-3 text-xs font-medium text-gray-600 hover:text-gray-800"
-                                    >
-                                        {showPassword ? "Hide" : "Show"}
-                                    </button>
-                                </div>
+                                </>
                             )}
                         </div>
                     </div>

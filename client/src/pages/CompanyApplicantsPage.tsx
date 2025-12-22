@@ -12,6 +12,7 @@ interface Applicant {
         years: number;
     };
     status: string;
+    rejectionReason?: string;
     resume: string;
     createdAt?: string;
 }
@@ -84,6 +85,11 @@ const CompanyApplicantsPage: React.FC = () => {
                                         currentStatus={a.status}
                                         onUpdated={loadApplicants}
                                     />
+                                    {a.status === 'rejected' && a.rejectionReason && (
+                                        <div className="text-xs text-red-600 mt-1">
+                                            Reason: {a.rejectionReason}
+                                        </div>
+                                    )}
                                 </td>
                                 <td className="p-2 text-gray-500">
                                     {new Date(a.createdAt || "").toLocaleDateString()}

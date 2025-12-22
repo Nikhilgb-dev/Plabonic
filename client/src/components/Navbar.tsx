@@ -571,7 +571,7 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[1000] bg-black bg-opacity-60 flex items-center justify-center p-4 sm:p-6"
+            className="fixed inset-0 z-[1000] bg-black bg-opacity-60 flex items-center justify-center mt-40"
             onClick={() => setShowHelpModal(false)}
           >
             <motion.div
@@ -579,7 +579,7 @@ export default function Navbar() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-xl shadow-xl p-4 sm:p-6 w-full max-w-md max-h-[85vh] overflow-y-auto"
+              className="bg-white rounded-xl shadow-xl p-4 sm:p-6 w-full max-w-sm sm:max-w-md max-h-[85vh] overflow-y-auto mx-4"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="space-y-3 sm:space-y-4">

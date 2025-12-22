@@ -9,6 +9,7 @@ const Signup = () => {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
     phone: "",
     linkedin: "",
     github: "",
@@ -30,8 +31,12 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.password || !form.phone) {
+    if (!form.name || !form.email || !form.password || !form.confirmPassword || !form.phone) {
       toast.error("Please fill in all required fields");
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      toast.error("Passwords do not match");
       return;
     }
     if (!form.acceptTerms) {
@@ -111,6 +116,24 @@ const Signup = () => {
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password *"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded"
+          />
+          <input
+            type="tel"
+            name="phone"
+            placeholder="Phone Number *"
+            value={form.phone}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded"
+          />
           <div className="flex items-center mt-4">
             <input
               type="checkbox"
