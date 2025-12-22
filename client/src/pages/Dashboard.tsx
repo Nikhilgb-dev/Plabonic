@@ -1341,42 +1341,42 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div
-                ref={abuseTableRef}
-                className="overflow-x-auto"
-              >
-                <table className="w-full table-fixed min-w-[1100px]">
+              <div className="overflow-x-auto">
+                <table className="w-full table-fixed min-w-[1200px]">
                   <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[200px]">
-                        Job / Company
+                        Candidate
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[180px]">
+                        Job
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[180px]">
+                        Title
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[180px]">
+                        Company
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[160px]">
-                        Reason
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[320px]">
-                        Description
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[220px]">
-                        Company Response
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[120px]">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[140px]">
-                        Reported On
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[120px]">
+                        Resume
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[320px]">
-                        Actions
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[140px]">
+                        Applied On
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[120px]">
+                        Details
                       </th>
                     </tr>
                   </thead>
 
                   <tbody className="divide-y divide-gray-100">
                     <AnimatePresence>
-                      {filteredAbuseReports.map((report, index) => (
+                      {filteredApplications.map((application, index) => (
                         <motion.tr
-                          key={report._id}
+                          key={application._id}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
@@ -1385,93 +1385,69 @@ const Dashboard = () => {
                         >
                           <td className="px-6 py-4 align-top">
                             <div className="font-medium text-gray-900 text-sm truncate">
-                              {report.job?.title || "N/A"}
+                              {application.user?.name || "N/A"}
                             </div>
                             <div className="text-xs text-gray-500 truncate">
-                              {report.job?.company?.name || "N/A"}
+                              {application.user?.email || "-"}
                             </div>
                           </td>
 
-                          <td className="px-6 py-4 align-top text-sm text-gray-700 capitalize">
-                            {report.reason || "-"}
-                          </td>
-
-                          <td className="px-6 py-4 align-top text-sm text-gray-600">
-                            <div className="line-clamp-2 break-words">
-                              {report.description || "-"}
-                            </div>
+                          <td className="px-6 py-4 align-top text-sm text-gray-700">
+                            {application.job?.title || "N/A"}
                           </td>
 
                           <td className="px-6 py-4 align-top text-sm text-gray-600">
-                            <div className="line-clamp-2 break-words">
-                              {report.companyResponse || "No response yet"}
+                            <div className="line-clamp-2 break-words" title={application.user?.headline}>
+                              {application.user?.headline || "-"}
                             </div>
+                          </td>
+
+                          <td className="px-6 py-4 align-top text-sm text-gray-600">
+                            {application.job?.company?.name || "N/A"}
                           </td>
 
                           <td className="px-6 py-4 align-top">
-                            <span
-                              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${report.status === "pending"
-                                  ? "bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20"
-                                  : report.status === "responded"
-                                    ? "bg-purple-50 text-purple-700 ring-1 ring-purple-600/20"
-                                    : report.status === "reviewed"
-                                      ? "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20"
-                                      : "bg-green-50 text-green-700 ring-1 ring-green-600/20"
-                                }`}
-                            >
-                              {report.status}
-                            </span>
+                            <div className="flex flex-col gap-1">
+                              <ApplicationStatusDropdown
+                                id={application._id}
+                                currentStatus={application.status}
+                                isAdmin
+                                onUpdated={fetchApplications}
+                              />
+                              {application.status === "rejected" && application.rejectionReason && (
+                                <span className="text-xs text-red-600">
+                                  Reason: {application.rejectionReason}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+
+                          <td className="px-6 py-4 align-top text-sm text-gray-500">
+                            {application.resume ? (
+                              <button
+                                onClick={() => handleResumeView(application)}
+                                className="text-blue-600 hover:underline text-sm"
+                              >
+                                View
+                              </button>
+                            ) : (
+                              "-"
+                            )}
                           </td>
 
                           <td className="px-6 py-4 align-top text-sm text-gray-500 whitespace-nowrap">
-                            {new Date(report.createdAt).toLocaleDateString()}
+                            {application.createdAt
+                              ? new Date(application.createdAt).toLocaleDateString()
+                              : "-"}
                           </td>
 
-                          <td className="px-6 py-4 align-top">
-                            <div className="flex items-center justify-end gap-2">
-                              <select
-                                value={report.status}
-                                onChange={(e) =>
-                                  handleUpdateAbuseReportStatus(report._id, e.target.value)
-                                }
-                                className="text-xs px-2 py-1 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 bg-white"
-                              >
-                                <option value="pending">Pending</option>
-                                <option value="responded">Responded</option>
-                                <option value="reviewed">Reviewed</option>
-                                <option value="resolved">Resolved</option>
-                              </select>
-
-                              {report.job && (
-                                <motion.button
-                                  whileHover={{ scale: 1.05 }}
-                                  whileTap={{ scale: 0.95 }}
-                                  onClick={() => handleBlockJob(report.job._id, report.job.blocked)}
-                                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${report.job.blocked
-                                      ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                      : "bg-orange-100 text-orange-700 hover:bg-orange-200"
-                                    }`}
-                                >
-                                  {report.job.blocked ? "Unblock Job" : "Block Job"}
-                                </motion.button>
-                              )}
-
-                              {report.job?.company && (
-                                <motion.button
-                                  whileHover={{ scale: 1.05 }}
-                                  whileTap={{ scale: 0.95 }}
-                                  onClick={() =>
-                                    handleBlockCompany(report.job.company._id, report.job.company.blocked)
-                                  }
-                                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${report.job.company.blocked
-                                      ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                      : "bg-red-100 text-red-700 hover:bg-red-200"
-                                    }`}
-                                >
-                                  {report.job.company.blocked ? "Unblock Company" : "Block Company"}
-                                </motion.button>
-                              )}
-                            </div>
+                          <td className="px-6 py-4 align-top text-right">
+                            <button
+                              onClick={() => setSelectedApplicant(application)}
+                              className="text-blue-600 hover:underline text-sm"
+                            >
+                              Details
+                            </button>
                           </td>
                         </motion.tr>
                       ))}
@@ -1480,6 +1456,11 @@ const Dashboard = () => {
                 </table>
               </div>
 
+              {filteredApplications.length === 0 && (
+                <div className="text-center py-6 text-gray-500 text-sm">
+                  No applications found.
+                </div>
+              )}
             </motion.div>
 
             <motion.div
@@ -1746,24 +1727,37 @@ const Dashboard = () => {
                             {new Date(report.createdAt).toLocaleDateString()}
                           </td>
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right">
-                            <div className="flex items-center justify-end gap-2 sm:gap-3">
+                            <div className="flex items-center justify-end gap-2 sm:gap-3 flex-wrap">
                               <select
                                 value={report.status}
                                 onChange={(e) => handleUpdateAbuseReportStatus(report._id, e.target.value)}
-                                className="text-xs px-2 py-1 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 bg-white min-w-[100px]"
+                                className="h-8 text-xs px-2.5 pr-7 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white min-w-[110px]"
                               >
                                 <option value="pending">Pending</option>
                                 <option value="responded">Responded</option>
                                 <option value="reviewed">Reviewed</option>
                                 <option value="resolved">Resolved</option>
                               </select>
+                              {report.job?.company && (
+                                <motion.button
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  onClick={() => handleBlockCompany(report.job.company._id, report.job.company.blocked)}
+                                  className={`h-8 px-3 text-xs font-medium rounded-lg transition-colors inline-flex items-center justify-center ${report.job.company.blocked
+                                    ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                    : "bg-red-100 text-red-700 hover:bg-red-200"
+                                    }`}
+                                >
+                                  {report.job.company.blocked ? "Unblock Company" : "Block Company"}
+                                </motion.button>
+                              )}
                               {report.status === "responded" && (
                                 <div className="flex gap-1">
                                   <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => handleReviewCompanyResponse(report._id, "approve")}
-                                    className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                                    className="h-8 px-3 text-xs font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 inline-flex items-center justify-center"
                                     title="Approve Response"
                                   >
                                     ✓
@@ -1772,38 +1766,12 @@ const Dashboard = () => {
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => handleReviewCompanyResponse(report._id, "reject")}
-                                    className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+                                    className="h-8 px-3 text-xs font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 inline-flex items-center justify-center"
                                     title="Reject Response"
                                   >
                                     ✗
                                   </motion.button>
                                 </div>
-                              )}
-                              {report.job && (
-                                <motion.button
-                                  whileHover={{ scale: 1.05 }}
-                                  whileTap={{ scale: 0.95 }}
-                                  onClick={() => handleBlockJob(report.job._id, report.job.blocked)}
-                                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${report.job.blocked
-                                    ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                    : "bg-orange-100 text-orange-700 hover:bg-orange-200"
-                                    }`}
-                                >
-                                  {report.job.blocked ? "Unblock Job" : "Block Job"}
-                                </motion.button>
-                              )}
-                              {report.job?.company && (
-                                <motion.button
-                                  whileHover={{ scale: 1.05 }}
-                                  whileTap={{ scale: 0.95 }}
-                                  onClick={() => handleBlockCompany(report.job.company._id, report.job.company.blocked)}
-                                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${report.job.company.blocked
-                                    ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                    : "bg-red-100 text-red-700 hover:bg-red-200"
-                                    }`}
-                                >
-                                  {report.job.company.blocked ? "Unblock Company" : "Block Company"}
-                                </motion.button>
                               )}
                             </div>
                           </td>
@@ -1855,6 +1823,20 @@ const Dashboard = () => {
                   setShowEditCommunityModal(false);
                   API.get("/communities").then((res) => setCommunities(res.data));
                 }}
+              />
+            )}
+
+            {selectedApplicant && (
+              <ApplicantDetailsModal
+                applicant={selectedApplicant}
+                onClose={() => setSelectedApplicant(null)}
+              />
+            )}
+
+            {resumeUrl && (
+              <ViewResumeModal
+                resumeUrl={resumeUrl}
+                onClose={() => setResumeUrl(null)}
               />
             )}
           </>

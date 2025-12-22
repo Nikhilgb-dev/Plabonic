@@ -49,7 +49,7 @@ const ManageJobsPage: React.FC = () => {
         company: "",
     });
 
-    const { company } = useCompany();
+    const { company, refreshCompany } = useCompany();
 
     useEffect(() => {
         const getUser = async () => {
@@ -94,6 +94,12 @@ const ManageJobsPage: React.FC = () => {
             loadCompanies();
         }
     }, [role]);
+
+    useEffect(() => {
+        if (role === "company_admin") {
+            refreshCompany();
+        }
+    }, [role, refreshCompany]);
 
     const handleChange = (
         e: React.ChangeEvent<
