@@ -62,6 +62,10 @@ const Freelancers: React.FC = () => {
       toast.error("Please login to apply for this service");
       return;
     }
+    if (user?.blocked) {
+      toast.error("Your account is blocked. Please contact admin.");
+      return;
+    }
     setSelectedFreelancerId(id);
     setShowModal(true);
   };
@@ -320,6 +324,13 @@ const Freelancers: React.FC = () => {
                         className="w-full mt-auto py-2.5 bg-gray-200 text-gray-600 rounded-xl cursor-not-allowed font-medium"
                       >
                         Applied
+                      </button>
+                    ) : user?.blocked ? (
+                      <button
+                        disabled
+                        className="w-full mt-auto py-2.5 bg-gray-200 text-gray-600 rounded-xl cursor-not-allowed font-medium"
+                      >
+                        Account Blocked
                       </button>
                     ) : (
                       <button

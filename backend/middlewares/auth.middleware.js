@@ -15,6 +15,11 @@ export const protect = async (req, res, next) => {
       console.log("❌ No user found for token");
       return res.status(404).json({ message: "User not found" });
     }
+    if (user.blocked && user.role !== "admin" && req.method !== "GET") {
+      return res
+        .status(403)
+        .json({ message: "Your account is blocked. Please contact admin." });
+    }
     req.user = user;
     next();
   } catch (err) {

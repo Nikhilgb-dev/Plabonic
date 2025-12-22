@@ -396,6 +396,19 @@ const Dashboard = () => {
   };
 
 
+  const handleBlockUser = async (userId: string, currentStatus: boolean) => {
+    const action = currentStatus ? "unblock" : "block";
+    if (window.confirm(`Are you sure you want to ${action} this user?`)) {
+      try {
+        await API.put(`/admin/users/${userId}/block`);
+        toast.success(`User ${action}ed successfully`);
+        fetchUsers();
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || `Failed to ${action} user`);
+      }
+    }
+  };
+
   const handleDeleteUser = (userId: string) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       API.delete(`/admin/users/${userId}`).then(() => {
@@ -1558,15 +1571,28 @@ const Dashboard = () => {
                             {new Date(u.createdAt).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right">
-                            <motion.button
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() => handleDeleteUser(u._id)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Delete"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </motion.button>
+                            <div className="flex items-center justify-end gap-2">
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handleBlockUser(u._id, u.blocked)}
+                                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${u.blocked
+                                  ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                  : "bg-red-100 text-red-700 hover:bg-red-200"
+                                  }`}
+                              >
+                                {u.blocked ? "Unblock" : "Block"}
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handleDeleteUser(u._id)}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </motion.button>
+                            </div>
                           </td>
                         </motion.tr>
                       ))}

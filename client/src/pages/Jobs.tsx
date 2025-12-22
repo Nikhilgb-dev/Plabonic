@@ -86,6 +86,10 @@ const Jobs = () => {
       toast.error("Please login to apply for jobs");
       return;
     }
+    if (user?.blocked) {
+      toast.error("Your account is blocked. Please contact admin.");
+      return;
+    }
     setSelectedJobId(jobId);
     setShowModal(true);
   };
@@ -461,6 +465,13 @@ const Jobs = () => {
                         >
                           ✓ Applied
                         </button>
+                      ) : user?.blocked ? (
+                        <button
+                          disabled
+                          className="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg text-sm font-semibold cursor-not-allowed"
+                        >
+                          Account Blocked
+                        </button>
                       ) : job.blocked ? (
                         <button
                           disabled
@@ -505,6 +516,7 @@ const Jobs = () => {
           jobId={selectedJob}
           onClose={() => setShowDetails(false)}
           hasApplied={!!jobs.find((j) => j._id === selectedJob)?.hasApplied}
+          isUserBlocked={!!user?.blocked}
           onApply={(jobId: string) => {
             setShowDetails(false);
             handleApply(jobId);

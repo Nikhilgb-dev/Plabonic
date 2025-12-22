@@ -65,6 +65,8 @@ const userSchema = new mongoose.Schema(
 
     termsAccepted: { type: Boolean, default: false },
 
+    blocked: { type: Boolean, default: false },
+
     company: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
   },
   { timestamps: true }

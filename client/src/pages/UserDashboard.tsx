@@ -8,6 +8,7 @@ import FreelancerApplicationDetailsModal from "@/components/FreelancerApplicatio
 import OfferDetailsModal from "@/components/OfferDetailsModal";
 import FeedbackButton from "@/components/FeedbackButton";
 import ApplyModal from "@/components/ApplyModal";
+import toast from "react-hot-toast";
 
 type AnyObj = Record<string, any>;
 
@@ -211,6 +212,7 @@ const UserDashboard: React.FC = () => {
     const [selectedOffer, setSelectedOffer] = useState<{ application: AnyObj; type: "job" | "freelancer" } | null>(null);
     const [showApplyModal, setShowApplyModal] = useState(false);
     const [applyJobId, setApplyJobId] = useState<string | null>(null);
+    const [currentUser, setCurrentUser] = useState<AnyObj | null>(null);
 
     // Fetchers
     const fetchApplications = useCallback(async () => {
@@ -241,11 +243,20 @@ const UserDashboard: React.FC = () => {
         setNotifications(Array.isArray(res.data) ? res.data : res.data?.notifications ?? []);
     }, []);
 
+    const fetchCurrentUser = useCallback(async () => {
+        try {
+            const res = await API.get("/users/me");
+            setCurrentUser(res.data);
+        } catch (err) {
+            setCurrentUser(null);
+        }
+    }, []);
+
     useEffect(() => {
         const load = async () => {
             setLoading(true);
             try {
-                await Promise.all([fetchApplications(), fetchFreelancerApplications(), fetchSavedJobs(), fetchNotifications()]);
+                await Promise.all([fetchApplications(), fetchFreelancerApplications(), fetchSavedJobs(), fetchNotifications(), fetchCurrentUser()]);
             } catch (err) {
                 console.error("Failed to load dashboard data", err);
             } finally {
@@ -302,6 +313,10 @@ const UserDashboard: React.FC = () => {
     };
     const startApply = (jobId?: string) => {
         if (!jobId) return;
+        if (currentUser?.blocked) {
+            toast.error("Your account is blocked. Please contact admin.");
+            return;
+        }
         setApplyJobId(jobId);
         setShowApplyModal(true);
     };
@@ -609,7 +624,11 @@ const UserDashboard: React.FC = () => {
                                             <button onClick={() => setSelectedJob(job)} className="text-blue-600 hover:underline text-sm inline-flex items-center">
                                                 <Eye className="w-4 h-4 inline-block mr-1" /> View
                                             </button>
-                                            <button onClick={() => startApply(job._id)} className="text-blue-600 hover:underline text-sm inline-flex items-center">
+                                            <button
+                                                onClick={() => startApply(job._id)}
+                                                disabled={!!currentUser?.blocked}
+                                                className={`text-blue-600 text-sm inline-flex items-center ${currentUser?.blocked ? "opacity-50 cursor-not-allowed" : "hover:underline"}`}
+                                            >
                                                 <ExternalLink className="w-4 h-4 inline-block mr-1" /> Apply
                                             </button>
                                             <button onClick={() => unsaveJob(job._id)} className="text-red-600 hover:underline text-sm inline-flex items-center">
@@ -647,7 +666,8 @@ const UserDashboard: React.FC = () => {
                                         <button
                                             onClick={() => startApply(job._id)}
                                             aria-label="Apply to job"
-                                            className="text-sm px-3 py-2 rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 transition"
+                                            disabled={!!currentUser?.blocked}
+                                            className={`text-sm px-3 py-2 rounded-md border border-blue-600 text-blue-600 transition ${currentUser?.blocked ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-50"}`}
                                         >
                                             <ExternalLink className="w-4 h-4 inline-block mr-2" /> Apply
                                         </button>
@@ -671,6 +691,7 @@ const UserDashboard: React.FC = () => {
                     job={selectedJob}
                     onClose={() => setSelectedJob(null)}
                     onApply={(jobId) => startApply(jobId)}
+                    isUserBlocked={!!currentUser?.blocked}
                 />
             )}
 

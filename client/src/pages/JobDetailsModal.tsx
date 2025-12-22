@@ -6,6 +6,7 @@ interface JobDetailsModalProps {
     onClose: () => void;
     onApply: (jobId: string) => void;
     hasApplied?: boolean;
+    isUserBlocked?: boolean;
 }
 
 const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
@@ -13,6 +14,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
     onClose,
     onApply,
     hasApplied,
+    isUserBlocked,
 }) => {
     const [job, setJob] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -486,8 +488,8 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
 
                         <button
                             onClick={() => onApply(jobId)}
-                            disabled={isApplied || job.blocked}
-                            className={`px-6 py-3 rounded-xl font-medium flex items-center gap-2 shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all ${isApplied || job.blocked
+                            disabled={isApplied || job.blocked || isUserBlocked}
+                            className={`px-6 py-3 rounded-xl font-medium flex items-center gap-2 shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all ${isApplied || job.blocked || isUserBlocked
                                     ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                                     : "bg-green-600 text-white hover:bg-green-700"
                                 }`}
@@ -525,6 +527,23 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                                         />
                                     </svg>
                                     Blocked
+                                </>
+                            ) : isUserBlocked ? (
+                                <>
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 11V7a4 4 0 00-8 0v4m-1 0h10a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1v-8a1 1 0 011-1z"
+                                        />
+                                    </svg>
+                                    Account Blocked
                                 </>
                             ) : (
                                 <>

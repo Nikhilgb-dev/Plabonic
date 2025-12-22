@@ -118,6 +118,26 @@ export const deleteUser = async (req, res) => {
   }
 };
 
+export const blockUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (user.role === "admin") {
+      return res.status(400).json({ message: "Admin accounts cannot be blocked" });
+    }
+
+    user.blocked = !user.blocked;
+    await user.save();
+
+    res.json({
+      message: `User ${user.blocked ? "blocked" : "unblocked"}`,
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // ====================== JOBS ======================
 export const createJob = async (req, res) => {
   try {
@@ -547,6 +567,7 @@ export const exportUsersExcel = async (req, res) => {
       { header: "Phone", key: "phone", width: 15 },
       { header: "Location", key: "location", width: 20 },
       { header: "Company", key: "company", width: 20 },
+      { header: "Blocked", key: "blocked", width: 12 },
       // { header: "Terms Accepted", key: "termsAccepted", width: 15 },
     ];
     sheet.views = [{ state: "frozen", ySplit: 1 }];
@@ -559,6 +580,7 @@ export const exportUsersExcel = async (req, res) => {
         phone: u.phone || "",
         location: u.location || "",
         company: u.company?.name || "",
+        blocked: u.blocked ? "Yes" : "No",
         // termsAccepted: u.termsAccepted ? "Yes" : "No",
       }))
     );

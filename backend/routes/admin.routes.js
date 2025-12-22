@@ -5,6 +5,7 @@ import {
   getUserById,
   updateUser,
   deleteUser,
+  blockUser,
   createJob,
   getAllJobs,
   updateJob,
@@ -51,6 +52,7 @@ router.put(
   updateUser
 );
 router.delete("/users/:id", protect, adminOnly, deleteUser);
+router.put("/users/:id/block", protect, adminOnly, blockUser);
 
 // JOB CRUD
 router.post("/jobs", protect, adminOnly, createJob);

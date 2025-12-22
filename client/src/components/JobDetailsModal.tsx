@@ -6,9 +6,10 @@ interface Props {
     job: any;
     onClose: () => void;
     onApply?: (jobId: string) => void;
+    isUserBlocked?: boolean;
 }
 
-const JobDetailsModal: React.FC<Props> = ({ job, onClose, onApply }) => {
+const JobDetailsModal: React.FC<Props> = ({ job, onClose, onApply, isUserBlocked }) => {
     const [showReportModal, setShowReportModal] = useState(false);
 
     if (!job) return null;
@@ -101,9 +102,13 @@ const JobDetailsModal: React.FC<Props> = ({ job, onClose, onApply }) => {
                         {onApply && (
                             <button
                                 onClick={() => onApply(job._id)}
-                                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                disabled={!!isUserBlocked}
+                                className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors ${isUserBlocked
+                                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                    : "bg-blue-600 text-white hover:bg-blue-700"
+                                    }`}
                             >
-                                Apply Now
+                                {isUserBlocked ? "Account Blocked" : "Apply Now"}
                             </button>
                         )}
                         <button
