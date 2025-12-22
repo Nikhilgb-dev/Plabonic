@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import API from "../api/api";
 import { Link, useNavigate } from "react-router-dom";
 import CreateCandidateModal from "../components/CreateCandidateModal";
@@ -50,6 +50,30 @@ const Dashboard = () => {
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
 
+  const [companyFilter, setCompanyFilter] = useState<string>("all");
+  const [orderFilter, setOrderFilter] = useState<"asc" | "desc">("desc");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [verifiedFilter, setVerifiedFilter] = useState<string>("all");
+
+  // Filters for Manage Companies
+  const [companyNameFilter, setCompanyNameFilter] = useState<string>("");
+  const [companyIndustryFilter, setCompanyIndustryFilter] = useState<string>("all");
+  const [companyStatusFilter, setCompanyStatusFilter] = useState<string>("all");
+  const [companyOrderFilter, setCompanyOrderFilter] = useState<"asc" | "desc">("desc");
+
+  // Filters for Recent Applications
+  const [appStatusFilter, setAppStatusFilter] = useState<string>("all");
+  const [appCompanyFilter, setAppCompanyFilter] = useState<string>("all");
+  const [appOrderFilter, setAppOrderFilter] = useState<"asc" | "desc">("desc");
+
+  // Filters for Manage Users
+  const [userOrderFilter, setUserOrderFilter] = useState<"asc" | "desc">("desc");
+
+  // Filters for Abuse Reports
+  const [abuseCompanyFilter, setAbuseCompanyFilter] = useState<string>("all");
+  const [abuseStatusFilter, setAbuseStatusFilter] = useState<string>("all");
+  const [abuseOrderFilter, setAbuseOrderFilter] = useState<"asc" | "desc">("desc");
+
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     title: "",
@@ -100,6 +124,81 @@ const Dashboard = () => {
       console.error(err);
     }
   };
+
+  const filteredJobs = useMemo(() => {
+    let filtered = jobs.filter(job => {
+      if (companyFilter !== "all" && job.company?._id !== companyFilter) return false;
+      if (statusFilter === "open" && job.status !== "open") return false;
+      if (statusFilter === "pending" && job.isVerified) return false;
+      if (statusFilter === "expired") {
+        const expDate = job.expiresAt ? new Date(job.expiresAt) : new Date(new Date(job.createdAt).getTime() + 30 * 24 * 60 * 60 * 1000);
+        if (expDate >= new Date()) return false;
+      }
+      if (verifiedFilter === "pending" && job.isVerified) return false;
+      if (verifiedFilter === "verified" && !job.isVerified) return false;
+      return true;
+    });
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return orderFilter === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+    });
+    return filtered;
+  }, [jobs, companyFilter, orderFilter, statusFilter, verifiedFilter]);
+
+  const filteredCompanies = useMemo(() => {
+    let filtered = companies.filter(company => {
+      if (companyNameFilter && !company.name.toLowerCase().includes(companyNameFilter.toLowerCase())) return false;
+      if (companyIndustryFilter !== "all" && company.industry !== companyIndustryFilter) return false;
+      if (companyStatusFilter === "verified" && !company.verified) return false;
+      if (companyStatusFilter === "pending" && company.verified) return false;
+      return true;
+    });
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return companyOrderFilter === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+    });
+    return filtered;
+  }, [companies, companyNameFilter, companyIndustryFilter, companyStatusFilter, companyOrderFilter]);
+
+  const filteredApplications = useMemo(() => {
+    let filtered = applications.filter(app => {
+      if (appStatusFilter !== "all" && app.status !== appStatusFilter) return false;
+      if (appCompanyFilter !== "all" && app.job?.company?._id !== appCompanyFilter) return false;
+      return true;
+    });
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return appOrderFilter === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+    });
+    return filtered;
+  }, [applications, appStatusFilter, appCompanyFilter, appOrderFilter]);
+
+  const filteredUsers = useMemo(() => {
+    let filtered = [...users];
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return userOrderFilter === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+    });
+    return filtered;
+  }, [users, userOrderFilter]);
+
+  const filteredAbuseReports = useMemo(() => {
+    let filtered = abuseReports.filter(report => {
+      if (abuseCompanyFilter !== "all" && report.job?.company?._id !== abuseCompanyFilter) return false;
+      if (abuseStatusFilter !== "all" && report.status !== abuseStatusFilter) return false;
+      return true;
+    });
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return abuseOrderFilter === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+    });
+    return filtered;
+  }, [abuseReports, abuseCompanyFilter, abuseStatusFilter, abuseOrderFilter]);
 
   const handleExport = async (endpoint: string, filename: string) => {
     try {
@@ -481,6 +580,54 @@ const Dashboard = () => {
                     Add Company
                   </motion.button>
                 </div>
+                <div className="mt-4 flex flex-wrap gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                    <input
+                      type="text"
+                      value={companyNameFilter}
+                      onChange={(e) => setCompanyNameFilter(e.target.value)}
+                      placeholder="Search by name"
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+                    <select
+                      value={companyIndustryFilter}
+                      onChange={(e) => setCompanyIndustryFilter(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="all">All Industries</option>
+                      {Array.from(new Set(companies.map(c => c.industry).filter(Boolean))).map(industry => (
+                        <option key={industry} value={industry}>{industry}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={companyStatusFilter}
+                      onChange={(e) => setCompanyStatusFilter(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="all">All</option>
+                      <option value="verified">Verified</option>
+                      <option value="pending">Pending</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                    <select
+                      value={companyOrderFilter}
+                      onChange={(e) => setCompanyOrderFilter(e.target.value as "asc" | "desc")}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="desc">Newest First</option>
+                      <option value="asc">Oldest First</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
               <div className="overflow-x-auto">
@@ -506,7 +653,7 @@ const Dashboard = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     <AnimatePresence>
-                      {companies.map((company, index) => (
+                      {filteredCompanies.map((company, index) => (
                         <motion.tr
                           key={company._id}
                           initial={{ opacity: 0 }}
@@ -593,6 +740,12 @@ const Dashboard = () => {
                 </table>
               </div>
 
+              {filteredCompanies.length === 0 && (
+                <div className="text-center py-6 text-gray-500 text-sm">
+                  No companies found matching the current filters.
+                </div>
+              )}
+
               {selectedCompany && (
                 <CompanyDetailsModal
                   company={selectedCompany}
@@ -666,6 +819,62 @@ const Dashboard = () => {
                           </motion.button>
                         </div>
 
+                        <div className="px-6 py-4 border-b border-gray-100">
+                          <div className="flex flex-wrap gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                              <select
+                                value={companyFilter}
+                                onChange={(e) => setCompanyFilter(e.target.value)}
+                                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                              >
+                                <option value="all">All Companies</option>
+                                {companies.map((c) => (
+                                  <option key={c._id} value={c._id}>
+                                    {c.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                              <select
+                                value={orderFilter}
+                                onChange={(e) => setOrderFilter(e.target.value as "asc" | "desc")}
+                                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                              >
+                                <option value="desc">Newest First</option>
+                                <option value="asc">Oldest First</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                              <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                              >
+                                <option value="all">All</option>
+                                <option value="open">Open</option>
+                                <option value="pending">Pending</option>
+                                <option value="expired">Expired</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Verified</label>
+                              <select
+                                value={verifiedFilter}
+                                onChange={(e) => setVerifiedFilter(e.target.value)}
+                                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                              >
+                                <option value="all">All</option>
+                                <option value="pending">Pending</option>
+                                <option value="verified">Verified</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
                         <div className="overflow-x-auto">
                           <table className="w-full">
                             <thead className="bg-gray-50 border-b border-gray-100">
@@ -701,7 +910,7 @@ const Dashboard = () => {
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                               <AnimatePresence>
-                                {jobs.map((job, index) => (
+                                {filteredJobs.map((job, index) => (
                                   <motion.tr
                                     key={job._id}
                                     initial={{ opacity: 0 }}
@@ -801,9 +1010,9 @@ const Dashboard = () => {
                           </table>
                         </div>
 
-                        {jobs.length === 0 && (
+                        {filteredJobs.length === 0 && (
                           <div className="text-center py-6 text-gray-500 text-sm">
-                            No job postings found. Click “Post New Job” to create one.
+                            No jobs found matching the current filters.
                           </div>
                         )}
                       </motion.div>
@@ -1001,15 +1210,60 @@ const Dashboard = () => {
               transition={{ delay: 0.6 }}
               className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-8"
             >
-              <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
-                <div className="bg-emerald-50 p-2.5 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-emerald-600" />
+              <div className="px-6 py-5 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="bg-emerald-50 p-2.5 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Recent Applications</h2>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      View all job applications across the platform
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900">Recent Applications</h2>
-                  <p className="text-sm text-gray-500 mt-0.5">
-                    View all job applications across the platform
-                  </p>
+                <div className="mt-4 flex flex-wrap gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={appStatusFilter}
+                      onChange={(e) => setAppStatusFilter(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="all">All Statuses</option>
+                      <option value="applied">Applied</option>
+                      <option value="reviewed">Reviewed</option>
+                      <option value="shortlisted">Shortlisted</option>
+                      <option value="rejected">Rejected</option>
+                      <option value="hired">Hired</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                    <select
+                      value={appCompanyFilter}
+                      onChange={(e) => setAppCompanyFilter(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="all">All Companies</option>
+                      {companies.map((c) => (
+                        <option key={c._id} value={c._id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                    <select
+                      value={appOrderFilter}
+                      onChange={(e) => setAppOrderFilter(e.target.value as "asc" | "desc")}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="desc">Newest First</option>
+                      <option value="asc">Oldest First</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -1028,7 +1282,7 @@ const Dashboard = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     <AnimatePresence>
-                      {applications.map((a, index) => (
+                      {filteredApplications.map((a, index) => (
                         <motion.tr
                           key={a._id}
                           initial={{ opacity: 0 }}
@@ -1113,7 +1367,7 @@ const Dashboard = () => {
                   </tbody>
                 </table>
 
-                {applications.length === 0 && (
+                {filteredApplications.length === 0 && (
                   <div className="text-center py-6 text-gray-500 text-sm">
                     No applications found.
                   </div>
@@ -1150,6 +1404,19 @@ const Dashboard = () => {
                     Add User
                   </motion.button>
                 </div>
+                <div className="mt-4 flex flex-wrap gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                    <select
+                      value={userOrderFilter}
+                      onChange={(e) => setUserOrderFilter(e.target.value as "asc" | "desc")}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="desc">Newest First</option>
+                      <option value="asc">Oldest First</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
               <div className="overflow-x-auto">
@@ -1178,7 +1445,7 @@ const Dashboard = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     <AnimatePresence>
-                      {users.map((u, index) => (
+                      {filteredUsers.map((u, index) => (
                         <motion.tr
                           key={u._id}
                           initial={{ opacity: 0 }}
@@ -1241,6 +1508,48 @@ const Dashboard = () => {
                     </p>
                   </div>
                 </div>
+                <div className="mt-4 flex flex-wrap gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                    <select
+                      value={abuseCompanyFilter}
+                      onChange={(e) => setAbuseCompanyFilter(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="all">All Companies</option>
+                      {companies.map((c) => (
+                        <option key={c._id} value={c._id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={abuseStatusFilter}
+                      onChange={(e) => setAbuseStatusFilter(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="all">All Statuses</option>
+                      <option value="pending">Pending</option>
+                      <option value="responded">Responded</option>
+                      <option value="reviewed">Reviewed</option>
+                      <option value="resolved">Resolved</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                    <select
+                      value={abuseOrderFilter}
+                      onChange={(e) => setAbuseOrderFilter(e.target.value as "asc" | "desc")}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    >
+                      <option value="desc">Newest First</option>
+                      <option value="asc">Oldest First</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
               <div className="overflow-x-auto">
@@ -1278,7 +1587,7 @@ const Dashboard = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     <AnimatePresence>
-                      {abuseReports.map((report, index) => (
+                      {filteredAbuseReports.map((report, index) => (
                         <motion.tr
                           key={report._id}
                           initial={{ opacity: 0 }}
@@ -1403,7 +1712,7 @@ const Dashboard = () => {
                 </table>
               </div>
 
-              {abuseReports.length === 0 && (
+              {filteredAbuseReports.length === 0 && (
                 <div className="text-center py-6 text-gray-500 text-sm">
                   No abuse reports found.
                 </div>
