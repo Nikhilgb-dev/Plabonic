@@ -74,6 +74,9 @@ const Dashboard = () => {
   const [abuseStatusFilter, setAbuseStatusFilter] = useState<string>("all");
   const [abuseOrderFilter, setAbuseOrderFilter] = useState<"asc" | "desc">("desc");
 
+  const [exportStartDate, setExportStartDate] = useState<string>("");
+  const [exportEndDate, setExportEndDate] = useState<string>("");
+
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     title: "",
@@ -210,7 +213,27 @@ const Dashboard = () => {
 
   const handleExport = async (endpoint: string, filename: string) => {
     try {
-      const res = await API.get(endpoint, { responseType: "blob" });
+      if ((exportStartDate && !exportEndDate) || (!exportStartDate && exportEndDate)) {
+        toast.error("Select both start and end dates to export a range.");
+        return;
+      }
+      if (exportStartDate && exportEndDate) {
+        const start = new Date(exportStartDate);
+        const end = new Date(exportEndDate);
+        if (start > end) {
+          toast.error("Start date must be before end date.");
+          return;
+        }
+      }
+
+      const params = new URLSearchParams();
+      if (exportStartDate) params.append("startDate", exportStartDate);
+      if (exportEndDate) params.append("endDate", exportEndDate);
+      const exportEndpoint = params.toString()
+        ? `${endpoint}?${params.toString()}`
+        : endpoint;
+
+      const res = await API.get(exportEndpoint, { responseType: "blob" });
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -543,6 +566,42 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
+                <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">From</label>
+                    <input
+                      type="date"
+                      value={exportStartDate}
+                      onChange={(e) => setExportStartDate(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">To</label>
+                    <input
+                      type="date"
+                      value={exportEndDate}
+                      onChange={(e) => setExportEndDate(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setExportStartDate("");
+                      setExportEndDate("");
+                    }}
+                    disabled={!exportStartDate && !exportEndDate}
+                    className="h-10 px-3 sm:px-4 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Leave blank to export all data.
+                </p>
               </div>
               <div className="px-4 sm:px-6 py-4 sm:py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {exportOptions.map((opt) => (

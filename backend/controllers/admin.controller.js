@@ -18,6 +18,31 @@ const setExcelHeaders = (res, filename) => {
   res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
 };
 
+const getDateRangeFilter = (req) => {
+  const { startDate, endDate } = req.query;
+  if (!startDate && !endDate) return { query: {} };
+
+  const parsedStart = startDate ? new Date(startDate) : null;
+  const parsedEnd = endDate ? new Date(endDate) : null;
+
+  if (
+    (startDate && Number.isNaN(parsedStart.getTime())) ||
+    (endDate && Number.isNaN(parsedEnd.getTime()))
+  ) {
+    return { error: "Invalid date range" };
+  }
+
+  const createdAt = {};
+  if (parsedStart) createdAt.$gte = parsedStart;
+  if (parsedEnd) {
+    const endOfDay = new Date(parsedEnd);
+    endOfDay.setHours(23, 59, 59, 999);
+    createdAt.$lte = endOfDay;
+  }
+
+  return { query: Object.keys(createdAt).length ? { createdAt } : {} };
+};
+
 // ====================== USERS ======================
 export const createUser = async (req, res) => {
   try {
@@ -506,7 +531,10 @@ export const blockJob = async (req, res) => {
 // ====================== EXPORTS ======================
 export const exportUsersExcel = async (req, res) => {
   try {
-    const users = await User.find()
+    const { query, error } = getDateRangeFilter(req);
+    if (error) return res.status(400).json({ message: error });
+
+    const users = await User.find(query)
       .select("-password")
       .populate("company", "name");
 
@@ -545,7 +573,10 @@ export const exportUsersExcel = async (req, res) => {
 
 export const exportCompaniesExcel = async (req, res) => {
   try {
-    const companies = await Company.find().select("-password");
+    const { query, error } = getDateRangeFilter(req);
+    if (error) return res.status(400).json({ message: error });
+
+    const companies = await Company.find(query).select("-password");
 
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Companies");
@@ -630,7 +661,10 @@ export const exportCompaniesExcel = async (req, res) => {
 
 export const exportJobsExcel = async (req, res) => {
   try {
-    const jobs = await Job.find()
+    const { query, error } = getDateRangeFilter(req);
+    if (error) return res.status(400).json({ message: error });
+
+    const jobs = await Job.find(query)
       .populate("postedBy", "name email")
       .populate("company", "name");
 
@@ -679,7 +713,10 @@ export const exportJobsExcel = async (req, res) => {
 
 export const exportFreelancersExcel = async (req, res) => {
   try {
-    const freelancers = await Freelancer.find().populate(
+    const { query, error } = getDateRangeFilter(req);
+    if (error) return res.status(400).json({ message: error });
+
+    const freelancers = await Freelancer.find(query).populate(
       "createdBy",
       "name email"
     );

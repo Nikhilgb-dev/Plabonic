@@ -1,11 +1,21 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, ArrowLeft, CheckCircle2, ShieldCheck, ThumbsUp } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ArrowLeft,
+  CheckCircle2,
+  ShieldCheck,
+  ThumbsUp,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { MarketingCard } from "@/types/marketing";
 import API from "@/api/api";
 
-const badgeMap: Record<keyof MarketingCard["badges"], { label: string; icon: React.ReactNode }> = {
+const badgeMap: Record<
+  keyof MarketingCard["badges"],
+  { label: string; icon: React.ReactNode }
+> = {
   trusted: { label: "Trusted", icon: <ThumbsUp className="w-4 h-4" /> },
   verified: { label: "Verified", icon: <ShieldCheck className="w-4 h-4" /> },
   recommended: { label: "Recommended", icon: <CheckCircle2 className="w-4 h-4" /> },
@@ -14,13 +24,24 @@ const badgeMap: Record<keyof MarketingCard["badges"], { label: string; icon: Rea
 const MarketingDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
   const [card, setCard] = useState<MarketingCard | null>(null);
   const [active, setActive] = useState(0);
+
   const [buyerName, setBuyerName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
+
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  // ✅ Ensure page always opens at top
+  useEffect(() => {
+    // works even when coming from a scrolled list page
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+  }, [id]);
 
   useEffect(() => {
     const fetchCard = async () => {
@@ -30,6 +51,7 @@ const MarketingDetail: React.FC = () => {
       try {
         const { data } = await API.get<MarketingCard>(`/marketing/cards/${id}`);
         setCard(data);
+        setActive(0);
       } catch (err) {
         console.error(err);
         setNotFound(true);
@@ -53,10 +75,12 @@ const MarketingDetail: React.FC = () => {
   const handleEnquiry = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!card || !id) return;
+
     if (!buyerName || !email || !mobile) {
       toast.error("Please fill in your name, email, and mobile number.");
       return;
     }
+
     try {
       await API.post(`/marketing/cards/${id}/enquiries`, {
         buyerName,
@@ -77,9 +101,13 @@ const MarketingDetail: React.FC = () => {
     }
   };
 
+  const scrollToBuy = () => {
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-gradient-to-b from-gray-50 to-white flex items-center justify-center px-4">
         <p className="text-gray-700">Loading...</p>
       </div>
     );
@@ -87,8 +115,8 @@ const MarketingDetail: React.FC = () => {
 
   if (!card || notFound) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col items-center justify-center gap-4 px-4">
-        <p className="text-gray-700 text-lg">Marketing card not found.</p>
+      <div className="min-h-[100dvh] bg-gradient-to-b from-gray-50 to-white flex flex-col items-center justify-center gap-4 px-4">
+        <p className="text-gray-700 text-lg text-center">Marketing card not found.</p>
         <button
           onClick={() => navigate(-1)}
           className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
@@ -99,9 +127,11 @@ const MarketingDetail: React.FC = () => {
     );
   }
 
+  const enabledBadges = Object.entries(card.badges || {}).filter(([, v]) => v);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-6xl mx-auto px-4 py-10 space-y-6">
+    <div className="min-h-[100dvh] bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-5 sm:space-y-6">
         <button
           onClick={() => navigate(-1)}
           className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
@@ -110,38 +140,51 @@ const MarketingDetail: React.FC = () => {
           Back
         </button>
 
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
+          {/* LEFT: Gallery */}
           <div className="relative rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
-            <div className="aspect-[4/3] w-full overflow-hidden">
-              {gallery.length > 0 && (
+            <div className="aspect-[4/3] sm:aspect-[16/11] w-full overflow-hidden bg-gray-100">
+              {gallery.length > 0 ? (
                 <img
                   src={gallery[active]}
                   alt={`${card.title} shot ${active + 1}`}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-sm text-gray-500">
+                  No images
+                </div>
               )}
             </div>
+
             {gallery.length > 1 && (
               <>
                 <button
-                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 shadow hover:bg-white"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/85 shadow hover:bg-white"
                   onClick={() => setActive((prev) => (prev - 1 + gallery.length) % gallery.length)}
                   aria-label="Previous image"
+                  type="button"
                 >
-                  <ChevronLeft className="w-5 h-5 text-gray-700" />
+                  <ChevronLeft className="w-5 h-5 text-gray-800" />
                 </button>
+
                 <button
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 shadow hover:bg-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/85 shadow hover:bg-white"
                   onClick={() => setActive((prev) => (prev + 1) % gallery.length)}
                   aria-label="Next image"
+                  type="button"
                 >
-                  <ChevronRight className="w-5 h-5 text-gray-700" />
+                  <ChevronRight className="w-5 h-5 text-gray-800" />
                 </button>
+
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
                   {gallery.map((_, idx) => (
                     <span
                       key={idx}
-                      className={`h-2 w-2 rounded-full ${idx === active ? "bg-blue-600" : "bg-white/70"}`}
+                      className={`h-2 w-2 rounded-full ${
+                        idx === active ? "bg-blue-600" : "bg-white/70"
+                      }`}
                     />
                   ))}
                 </div>
@@ -149,20 +192,28 @@ const MarketingDetail: React.FC = () => {
             )}
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <img src={card.logo} alt={card.name} className="w-12 h-12 rounded-full object-cover border" />
-              <div>
-                <p className="text-sm text-gray-500">{card.name}</p>
-                <h1 className="text-2xl font-bold text-gray-900">{card.title}</h1>
+          {/* RIGHT: Details */}
+          <div className="space-y-4 sm:space-y-5">
+            {/* Header */}
+            <div className="flex items-start gap-3">
+              <img
+                src={card.logo}
+                alt={card.name}
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover border bg-white shrink-0"
+                loading="lazy"
+              />
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-500">{card.name}</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug">
+                  {card.title}
+                </h1>
               </div>
             </div>
-            <p className="text-gray-700 leading-relaxed">{card.description}</p>
 
-            <div className="flex flex-wrap items-center gap-2">
-              {Object.entries(card.badges || {})
-                .filter(([, value]) => value)
-                .map(([key]) => (
+            {/* Badges */}
+            {enabledBadges.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                {enabledBadges.map(([key]) => (
                   <span
                     key={key}
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-100"
@@ -171,12 +222,38 @@ const MarketingDetail: React.FC = () => {
                     {badgeMap[key as keyof MarketingCard["badges"]]?.label}
                   </span>
                 ))}
+              </div>
+            )}
+
+            {/* Description */}
+            <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+              {card.description}
+            </p>
+
+            {/* Price + CTA row (nice on mobile) */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+                Rs. {Number(card.price || 0).toLocaleString()}
+              </div>
+
+              {/* Desktop CTA button to jump to form */}
+              <button
+                type="button"
+                onClick={scrollToBuy}
+                className="hidden sm:inline-flex px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+              >
+                Buy Now
+              </button>
             </div>
 
-            <div className="text-3xl font-bold text-gray-900">Rs. {Number(card.price || 0).toLocaleString()}</div>
+            {/* Form */}
+            <form
+              ref={formRef}
+              onSubmit={handleEnquiry}
+              className="space-y-3 p-4 sm:p-5 rounded-2xl border border-gray-200 bg-white shadow-sm"
+            >
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Buy now</h3>
 
-            <form onSubmit={handleEnquiry} className="space-y-3 p-4 rounded-xl border border-gray-200 bg-white shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900">Buy now</h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block">
                   <span className="text-sm text-gray-600">Name</span>
@@ -188,6 +265,7 @@ const MarketingDetail: React.FC = () => {
                     required
                   />
                 </label>
+
                 <label className="block">
                   <span className="text-sm text-gray-600">Email</span>
                   <input
@@ -198,6 +276,7 @@ const MarketingDetail: React.FC = () => {
                     required
                   />
                 </label>
+
                 <label className="block sm:col-span-2">
                   <span className="text-sm text-gray-600">Mobile Number</span>
                   <input
@@ -209,14 +288,37 @@ const MarketingDetail: React.FC = () => {
                   />
                 </label>
               </div>
+
               <button
                 type="submit"
                 className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
               >
-                Buy Now
+                Submit Enquiry
               </button>
             </form>
+
+            {/* little bottom spacing for mobile sticky CTA */}
+            <div className="h-16 sm:hidden" />
           </div>
+        </div>
+      </div>
+
+      {/* ✅ Mobile sticky CTA (so the form doesn’t “dominate” at first glance) */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur px-4 py-3">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs text-gray-500">Price</p>
+            <p className="text-base font-bold text-gray-900 truncate">
+              Rs. {Number(card.price || 0).toLocaleString()}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={scrollToBuy}
+            className="px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+          >
+            Buy Now
+          </button>
         </div>
       </div>
     </div>
