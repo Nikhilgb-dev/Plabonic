@@ -34,6 +34,11 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
         status: "open" as "open" | "closed",
     });
     const [submitting, setSubmitting] = useState(false);
+    const formatNumberInput = (value: string) => {
+        const digits = value.replace(/[^\d]/g, "");
+        if (!digits) return "";
+        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
 
     useEffect(() => {
         if (initialData) {
@@ -110,10 +115,14 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
                             <label className="block text-sm font-medium">Min Salary (LPA)</label>
                             <input
                                 name="minSalary"
-                                type="number"
+                                type="text"
                                 placeholder="e.g. 800,000"
-                                value={form.minSalary || ""}
-                                onChange={(e) => setForm({ ...form, minSalary: e.target.value ? parseFloat(e.target.value) : undefined })}
+                                value={form.minSalary ? form.minSalary.toLocaleString() : ""}
+                                onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    const numericValue = formatted ? Number(formatted.replace(/,/g, "")) : undefined;
+                                    setForm({ ...form, minSalary: numericValue });
+                                }}
                                 className="w-full px-3 py-2 border rounded-md"
                             />
                         </div>
@@ -121,10 +130,14 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
                             <label className="block text-sm font-medium">Max Salary (LPA)</label>
                             <input
                                 name="maxSalary"
-                                type="number"
+                                type="text"
                                 placeholder="e.g. 1,200,000"
-                                value={form.maxSalary || ""}
-                                onChange={(e) => setForm({ ...form, maxSalary: e.target.value ? parseFloat(e.target.value) : undefined })}
+                                value={form.maxSalary ? form.maxSalary.toLocaleString() : ""}
+                                onChange={(e) => {
+                                    const formatted = formatNumberInput(e.target.value);
+                                    const numericValue = formatted ? Number(formatted.replace(/,/g, "")) : undefined;
+                                    setForm({ ...form, maxSalary: numericValue });
+                                }}
                                 className="w-full px-3 py-2 border rounded-md"
                             />
                         </div>

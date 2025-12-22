@@ -49,6 +49,14 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({
 
     const navigate = useNavigate();
 
+    const formatNumberInput = (value: string) => {
+        const digits = value.replace(/[^\d]/g, "");
+        if (!digits) return "";
+        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    const normalizeNumberInput = (value: string) => value.replace(/[^\d]/g, "");
+
     const closeModal = () => {
         if (onClose) {
             onClose();            // parent controls modal
@@ -114,7 +122,11 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({
             formData.append("preferences", JSON.stringify(preferences));
             formData.append("descriptionOfWork", descriptionOfWork);
             formData.append("aboutFreelancer", aboutFreelancer);
-            formData.append("pricing", JSON.stringify(pricing));
+            const pricingPayload = {
+                min: normalizeNumberInput(pricing.min),
+                max: normalizeNumberInput(pricing.max),
+            };
+            formData.append("pricing", JSON.stringify(pricingPayload));
             formData.append("services", JSON.stringify(services));
             if (photo) formData.append("photo", photo);
 
@@ -279,11 +291,23 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-2">Starting Service Price</label>
-                            <input type="number" placeholder="Starting Price" value={pricing.min} onChange={(e) => setPricing({ ...pricing, min: e.target.value })} className="input" />
+                            <input
+                                type="text"
+                                placeholder="Starting Price"
+                                value={pricing.min}
+                                onChange={(e) => setPricing({ ...pricing, min: formatNumberInput(e.target.value) })}
+                                className="input"
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-2">Maximum Service Price</label>
-                            <input type="number" placeholder="Max Price" value={pricing.max} onChange={(e) => setPricing({ ...pricing, max: e.target.value })} className="input" />
+                            <input
+                                type="text"
+                                placeholder="Max Price"
+                                value={pricing.max}
+                                onChange={(e) => setPricing({ ...pricing, max: formatNumberInput(e.target.value) })}
+                                className="input"
+                            />
                         </div>
                     </div>
 
