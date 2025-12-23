@@ -268,7 +268,17 @@ export default function EduleLanding() {
 
                 <p className="text-sm text-gray-600 line-clamp-2">{card.description}</p>
 
-                <span className="text-lg font-bold text-green-600">Rs. {card.price.toLocaleString()}</span>
+                <div className="flex items-center gap-2">
+                  {card.originalPrice && card.originalPrice > card.price && (
+                    <>
+                      <span className="text-sm text-gray-500 line-through">Rs. {card.originalPrice.toLocaleString()}</span>
+                      <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
+                        {Math.round(((card.originalPrice - card.price) / card.originalPrice) * 100)}% off
+                      </span>
+                    </>
+                  )}
+                  <span className="text-lg font-bold text-green-600">Rs. {card.price.toLocaleString()}</span>
+                </div>
               </div>
             </Link>
           ))}

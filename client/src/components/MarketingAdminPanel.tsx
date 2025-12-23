@@ -113,9 +113,21 @@ const MarketingAdminPanel: React.FC = () => {
 
                 <div className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-semibold text-gray-900">
-                      Rs. {Number(card.price || 0).toLocaleString()}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {card.originalPrice && card.originalPrice > card.price && (
+                        <span className="text-sm text-gray-500 line-through">
+                          Rs. {Number(card.originalPrice || 0).toLocaleString()}
+                        </span>
+                      )}
+                      <span className="text-lg font-semibold text-gray-900">
+                        Rs. {Number(card.price || 0).toLocaleString()}
+                      </span>
+                      {card.originalPrice && card.originalPrice > card.price && (
+                        <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
+                          {Math.round(((card.originalPrice - card.price) / card.originalPrice) * 100)}% off
+                        </span>
+                      )}
+                    </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(card)}
@@ -167,8 +179,10 @@ const MarketingAdminPanel: React.FC = () => {
                   <tr>
                     <th className="px-3 py-2 text-left font-semibold">Buyer</th>
                     <th className="px-3 py-2 text-left font-semibold">Contact</th>
+                    <th className="px-3 py-2 text-left font-semibold">WhatsApp</th>
                     <th className="px-3 py-2 text-left font-semibold">Card</th>
-                    <th className="px-3 py-2 text-left font-semibold">Price</th>
+                    <th className="px-3 py-2 text-left font-semibold">Qty</th>
+                    <th className="px-3 py-2 text-left font-semibold">Total</th>
                     <th className="px-3 py-2 text-left font-semibold">Date</th>
                   </tr>
                 </thead>
@@ -180,12 +194,18 @@ const MarketingAdminPanel: React.FC = () => {
                         <div>{entry.email}</div>
                         <div className="text-xs text-gray-500">{entry.mobile}</div>
                       </td>
+                      <td className="px-3 py-2 text-gray-600">
+                        {entry.whatsappNumber || "-"}
+                      </td>
                       <td className="px-3 py-2 text-gray-700">
                         <div className="font-semibold text-gray-900">{entry.cardTitle}</div>
                         <div className="text-xs text-gray-500">{entry.cardName}</div>
                       </td>
                       <td className="px-3 py-2 text-gray-900">
-                        Rs. {Number(entry.cardPrice || 0).toLocaleString()}
+                        {entry.quantity || 1}
+                      </td>
+                      <td className="px-3 py-2 text-gray-900">
+                        Rs. {Number(entry.total || entry.cardPrice || 0).toLocaleString()}
                       </td>
                       <td className="px-3 py-2 text-gray-500">
                         {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : "-"}

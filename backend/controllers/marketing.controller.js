@@ -3,7 +3,7 @@ import MarketingEnquiry from "../models/marketingEnquiry.model.js";
 
 export const createMarketingCard = async (req, res) => {
   try {
-    const { name, title, description, price, coverImage, logo, badges = {}, gallery = [] } = req.body;
+    const { name, title, description, originalPrice, price, coverImage, logo, badges = {}, gallery = [] } = req.body;
 
     if (!name || !title || !description || !price || !coverImage || !logo) {
       return res.status(400).json({ message: "name, title, description, price, coverImage, and logo are required" });
@@ -19,6 +19,7 @@ export const createMarketingCard = async (req, res) => {
       name,
       title,
       description,
+      originalPrice,
       price,
       coverImage,
       logo,
@@ -57,7 +58,7 @@ export const getMarketingCardById = async (req, res) => {
 
 export const createMarketingEnquiry = async (req, res) => {
   try {
-    const { buyerName, email, mobile } = req.body;
+    const { buyerName, email, mobile, quantity = 1, whatsappNumber } = req.body;
     const { id } = req.params;
 
     if (!buyerName || !email || !mobile) {
@@ -67,14 +68,19 @@ export const createMarketingEnquiry = async (req, res) => {
     const card = await MarketingCard.findById(id);
     if (!card) return res.status(404).json({ message: "Marketing card not found" });
 
+    const total = card.price * quantity;
+
     const enquiry = await MarketingEnquiry.create({
       card: card._id,
       cardName: card.name,
       cardTitle: card.title,
       cardPrice: card.price,
+      quantity,
+      total,
       buyerName,
       email,
       mobile,
+      whatsappNumber,
     });
 
     res.status(201).json(enquiry);
@@ -87,7 +93,7 @@ export const createMarketingEnquiry = async (req, res) => {
 export const updateMarketingCard = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, title, description, price, coverImage, logo, badges = {}, gallery = [] } = req.body;
+    const { name, title, description, originalPrice, price, coverImage, logo, badges = {}, gallery = [] } = req.body;
 
     if (!name || !title || !description || !price || !coverImage || !logo) {
       return res.status(400).json({ message: "name, title, description, price, coverImage, and logo are required" });
@@ -105,6 +111,7 @@ export const updateMarketingCard = async (req, res) => {
         name,
         title,
         description,
+        originalPrice,
         price,
         coverImage,
         logo,

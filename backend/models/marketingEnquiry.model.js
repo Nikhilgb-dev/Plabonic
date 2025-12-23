@@ -6,9 +6,12 @@ const marketingEnquirySchema = new mongoose.Schema(
     cardName: { type: String, required: true },
     cardTitle: { type: String, required: true },
     cardPrice: { type: Number, required: true },
+    quantity: { type: Number, required: true, min: 1, default: 1 },
+    total: { type: Number, required: true },
     buyerName: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true },
     mobile: { type: String, required: true, trim: true },
+    whatsappNumber: { type: String, trim: true },
   },
   { timestamps: true }
 );

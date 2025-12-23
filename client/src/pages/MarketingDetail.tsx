@@ -31,6 +31,8 @@ const MarketingDetail: React.FC = () => {
   const [buyerName, setBuyerName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [quantity, setQuantity] = useState(1);
 
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
@@ -57,6 +59,7 @@ const MarketingDetail: React.FC = () => {
           setBuyerName(res.data.name || "");
           setEmail(res.data.email || "");
           setMobile(res.data.phone || "");
+          setWhatsappNumber(res.data.phone || "");
         } catch {
           setUser(null);
         }
@@ -108,6 +111,8 @@ const MarketingDetail: React.FC = () => {
         buyerName,
         email,
         mobile,
+        whatsappNumber,
+        quantity,
       });
       toast.success("Payment request submitted successfully");
       setBuyerName(user?.name || "");
@@ -240,8 +245,20 @@ const MarketingDetail: React.FC = () => {
 
             {/* Price + CTA row (nice on mobile) */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="text-2xl sm:text-3xl font-bold text-gray-900">
-                Rs. {Number(card.price || 0).toLocaleString()}
+              <div className="flex items-center gap-3">
+                {card.originalPrice && card.originalPrice > card.price && (
+                  <>
+                    <span className="text-xl sm:text-2xl text-gray-500 line-through">
+                      Rs. {Number(card.originalPrice || 0).toLocaleString()}
+                    </span>
+                    <span className="text-sm bg-red-100 text-red-600 px-2 py-1 rounded-full">
+                      {Math.round(((card.originalPrice - card.price) / card.originalPrice) * 100)}% off
+                    </span>
+                  </>
+                )}
+                <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  Rs. {Number(card.price || 0).toLocaleString()}
+                </div>
               </div>
 
               {/* Desktop CTA button to show form - only show if logged in */}
@@ -251,7 +268,7 @@ const MarketingDetail: React.FC = () => {
                   onClick={handlePayNow}
                   className="hidden sm:inline-flex px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
                 >
-                  Pay Now
+                  Buy Now
                 </button>
               )}
             </div>
@@ -326,13 +343,39 @@ const MarketingDetail: React.FC = () => {
                         required
                       />
                     </label>
+
+                    <label className="block sm:col-span-2">
+                      <span className="text-sm text-gray-600">Preferred WhatsApp Number</span>
+                      <input
+                        type="tel"
+                        value={whatsappNumber}
+                        onChange={(e) => setWhatsappNumber(e.target.value)}
+                        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="block">
+                    <span className="text-sm text-gray-600">Quantity</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={quantity}
+                      onChange={(e) => setQuantity(Number(e.target.value))}
+                      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </label>
+
+                  <div className="text-lg font-semibold text-gray-900">
+                    Total: Rs. {Number(card.price * quantity || 0).toLocaleString()}
                   </div>
 
                   <button
                     type="submit"
                     className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
                   >
-                    Pay Now
+                    Submit Enquiry
                   </button>
                 </form>
               )
@@ -355,16 +398,23 @@ const MarketingDetail: React.FC = () => {
           <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="text-xs text-gray-500">Price</p>
-              <p className="text-base font-bold text-gray-900 truncate">
-                Rs. {Number(card.price || 0).toLocaleString()}
-              </p>
+              <div className="flex items-center gap-2">
+                {card.originalPrice && card.originalPrice > card.price && (
+                  <span className="text-sm text-gray-500 line-through">
+                    Rs. {Number(card.originalPrice || 0).toLocaleString()}
+                  </span>
+                )}
+                <p className="text-base font-bold text-gray-900 truncate">
+                  Rs. {Number(card.price || 0).toLocaleString()}
+                </p>
+              </div>
             </div>
             <button
               type="button"
               onClick={handlePayNow}
               className="px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
             >
-              Pay Now
+              Submit Enquiry
             </button>
           </div>
         </div>

@@ -28,6 +28,7 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
   const [name, setName] = useState(card?.name || "");
   const [title, setTitle] = useState(card?.title || "");
   const [description, setDescription] = useState(card?.description || "");
+  const [originalPrice, setOriginalPrice] = useState<string>(card?.originalPrice?.toString() || "");
   const [price, setPrice] = useState<string>(card?.price?.toString() || "");
   const [badges, setBadges] = useState(card?.badges || {
     trusted: false,
@@ -41,6 +42,7 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
       setName(card.name);
       setTitle(card.title);
       setDescription(card.description);
+      setOriginalPrice(card.originalPrice?.toString() || "");
       setPrice(card.price.toString());
       setBadges(card.badges);
     }
@@ -78,6 +80,7 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
         name,
         title,
         description,
+        originalPrice: originalPrice ? Number(originalPrice) : undefined,
         price: Number(price),
         coverImage: coverUrl,
         logo: logoUrl,
@@ -107,15 +110,22 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
   const renderUploadInput = (
     label: string,
     onChange: (file: File | null) => void,
-    required?: boolean
+    required?: boolean,
+    previewUrl?: string
   ) => (
     <label className="block">
       <span className="text-sm font-medium text-gray-700">{label}</span>
+      {previewUrl && (
+        <div className="mt-2">
+          <img src={previewUrl} alt="Current" className="w-20 h-20 object-cover rounded border" />
+          <p className="text-xs text-gray-500 mt-1">Current image</p>
+        </div>
+      )}
       <div className="mt-2 flex items-center gap-3">
         <input
           type="file"
           accept="image/*"
-          required={required}
+          required={required && !previewUrl}
           onChange={(e) => onChange(e.target.files?.[0] || null)}
           className="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer"
         />
@@ -143,8 +153,8 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
 
         <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5 max-h-[75vh] overflow-y-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {renderUploadInput("Cover Image", setCover, true)}
-            {renderUploadInput("Logo", setLogo, true)}
+            {renderUploadInput("Cover Image", setCover, true, card?.coverImage)}
+            {renderUploadInput("Logo", setLogo, true, card?.logo)}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -181,22 +191,40 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
             />
           </label>
 
-          <label className="block">
-            <span className="text-sm font-medium text-gray-700">Price (Rs.)</span>
-            <input
-              type="number"
-              min="0"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="block">
+              <span className="text-sm font-medium text-gray-700">Original Price (Rs.) - Optional</span>
+              <input
+                type="number"
+                min="0"
+                value={originalPrice}
+                onChange={(e) => setOriginalPrice(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-gray-700">Discounted Price (Rs.)</span>
+              <input
+                type="number"
+                min="0"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </label>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {gallery.map((file, idx) => (
               <label key={idx} className="block">
                 <span className="text-sm font-medium text-gray-700">Gallery Image {idx + 1} (Optional)</span>
+                {card?.gallery?.[idx] && (
+                  <div className="mt-2">
+                    <img src={card.gallery[idx]} alt={`Current ${idx + 1}`} className="w-20 h-20 object-cover rounded border" />
+                    <p className="text-xs text-gray-500 mt-1">Current image</p>
+                  </div>
+                )}
                 <div className="mt-2 flex items-center gap-3">
                   <input
                     type="file"

@@ -10,6 +10,7 @@ export type MarketingCard = {
   name: string;
   title: string;
   description: string;
+  originalPrice?: number;
   price: number;
   coverImage: string;
   logo: string;
@@ -26,8 +27,11 @@ export type MarketingEnquiry = {
   cardTitle: string;
   cardName: string;
   cardPrice: number;
+  quantity: number;
+  total: number;
   buyerName: string;
   email: string;
   mobile: string;
+  whatsappNumber?: string;
   createdAt: string;
 };
