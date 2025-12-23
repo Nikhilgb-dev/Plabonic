@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import API from "../api/api";
 import toast from "react-hot-toast";
-import TermsModal from "../components/TermsModal";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface Service {
     title: string;
@@ -41,7 +40,6 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({
     ]);
     const [pricing, setPricing] = useState({ min: "", max: "" });
     const [acceptTerms, setAcceptTerms] = useState(false);
-    const [showTermsModal, setShowTermsModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -321,13 +319,9 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({
                         />
                         <label htmlFor="acceptTerms" className="text-sm">
                             I accept the{" "}
-                            <button
-                                type="button"
-                                onClick={() => setShowTermsModal(true)}
-                                className="text-brand underline"
-                            >
+                            <Link to="/terms" className="text-brand underline">
                                 Terms and Conditions
-                            </button>
+                            </Link>
                         </label>
                     </div>
 
@@ -341,7 +335,6 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({
                 </form>
             </div>
 
-            <TermsModal isOpen={showTermsModal} onClose={() => setShowTermsModal(false)} />
         </div>
     );
 };

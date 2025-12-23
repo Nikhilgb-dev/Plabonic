@@ -2,7 +2,6 @@ import { toast } from "react-hot-toast";
 import React, { useState } from "react";
 import API from "../api/api";
 import { useNavigate, Link } from "react-router-dom";
-import TermsModal from "../components/TermsModal";
 
 const Signup = () => {
   const [form, setForm] = useState({
@@ -17,7 +16,6 @@ const Signup = () => {
     acceptTerms: false,
   });
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
-  const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
@@ -144,13 +142,9 @@ const Signup = () => {
             />
             <label htmlFor="acceptTerms" className="text-sm">
               I accept the{" "}
-              <button
-                type="button"
-                onClick={() => setShowTermsModal(true)}
-                className="text-brand underline"
-              >
+              <Link to="/terms" className="text-brand underline">
                 Terms and Conditions
-              </button>
+              </Link>
             </label>
           </div>
         </div>
@@ -218,7 +212,6 @@ const Signup = () => {
           </Link>
         </p> */}
       </form>
-      <TermsModal isOpen={showTermsModal} onClose={() => setShowTermsModal(false)} />
     </div>
   );
 };

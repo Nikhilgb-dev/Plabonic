@@ -93,7 +93,7 @@ export default function EduleLanding() {
             </h1>
 
             <p className="text-gray-600 mb-6">
-              Job search made simple Apply easily and connect directly with top jobproviders on our platform.<br />
+              Job search made simple Apply easily and connect directly with top job providers on our platform.<br />
 
             </p>
 

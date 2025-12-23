@@ -43,6 +43,7 @@ import FreelancerRegister from "./pages/FreelancerRegister";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
 import MarketingDetail from "./pages/MarketingDetail";
 import AboutUsPage from "./pages/About";
+import Terms from "./pages/Terms";
 
 export default function App() {
   return (
@@ -70,6 +71,7 @@ export default function App() {
               <Route path="/communities/:id" element={<CommunityDetails />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/about" element={<AboutUsPage />} />
+              <Route path="/terms" element={<Terms />} />
               <Route
                 path="/dashboard/applications"
                 element={<AdminApplications />}

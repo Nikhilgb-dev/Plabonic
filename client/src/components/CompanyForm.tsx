@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API from "../api/api";
 import { toast } from "react-hot-toast";
-import TermsModal from "./TermsModal";
+import { Link } from "react-router-dom";
 
 interface CompanyFormData {
     name: string;
@@ -35,7 +35,6 @@ interface Props {
 const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
-    const [showTermsModal, setShowTermsModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const [form, setForm] = useState<CompanyFormData>({
@@ -431,13 +430,9 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                             />
                             <label htmlFor="acceptTerms" className="text-sm">
                               I accept the{" "}
-                              <button
-                                type="button"
-                                onClick={() => setShowTermsModal(true)}
-                                className="text-brand underline"
-                              >
+                              <Link to="/terms" className="text-brand underline">
                                 Terms and Conditions
-                              </button>
+                              </Link>
                             </label>
                         </div>
                     </div>
@@ -474,7 +469,6 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                     )}
                 </div>
               </form>
-              <TermsModal isOpen={showTermsModal} onClose={() => setShowTermsModal(false)} />
             </div>
           );
         };
