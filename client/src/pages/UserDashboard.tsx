@@ -663,11 +663,11 @@ const UserDashboard: React.FC = () => {
                                         <td className="p-3">{job.location || "—"}</td>
                                         <td className="p-3">
                                             {job.minSalary && job.maxSalary
-                                                ? `₹${job.minSalary} - ₹${job.maxSalary}`
+                                                ? `₹${job.minSalary.toLocaleString()} - ₹${job.maxSalary.toLocaleString()}`
                                                 : job.minSalary
-                                                    ? `From ₹${job.minSalary}`
+                                                    ? `From ₹${job.minSalary.toLocaleString()}`
                                                     : job.maxSalary
-                                                        ? `Up to ₹${job.maxSalary}`
+                                                        ? `Up to ₹${job.maxSalary.toLocaleString()}`
                                                         : "Not specified"
                                             }
                                         </td>
