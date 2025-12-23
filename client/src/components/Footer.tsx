@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import logo from "../assets/logo.jpg";
 
 const links = [
-  { label: 'About', to: '#' },
+  { label: 'About', to: '/about' },
   { label: 'Careers', to: '#' },
   { label: 'Blog', to: '#' },
   { label: 'Support', to: '#' },
