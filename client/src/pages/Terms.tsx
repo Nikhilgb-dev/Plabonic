@@ -3,10 +3,15 @@ import React, { useEffect } from "react";
 const Terms = () => {
   useEffect(() => {
     const hash = window.location.hash;
-    if (!hash) return;
+    if (!hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      return;
+    }
     const el = document.getElementById(hash.substring(1));
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }
   }, []);
 

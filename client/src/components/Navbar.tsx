@@ -199,6 +199,7 @@ export default function Navbar() {
   const getDashboardLink = () => {
     if (user?.role === "admin") return { to: "/dashboard", label: "Admin Dashboard" };
     if (user?.role === "company_admin") return { to: "/company/dashboard", label: "Company Dashboard" };
+    if (user?.role === "freelancer") return { to: "/freelancer/dashboard", label: "Freelancer Dashboard" };
     if (user?.role === "user") return { to: "/user/dashboard", label: "Dashboard" };
     return null;
   };
