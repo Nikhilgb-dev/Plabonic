@@ -1210,7 +1210,7 @@ const Dashboard = () => {
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Min Salary (LPA)
+                                Min Salary (Rupees)
                               </label>
                               <input
                                 name="minSalary"
@@ -1227,7 +1227,7 @@ const Dashboard = () => {
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Max Salary (LPA)
+                                Max Salary (Rupees)
                               </label>
                               <input
                                 name="maxSalary"

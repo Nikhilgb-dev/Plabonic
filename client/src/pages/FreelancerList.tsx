@@ -287,7 +287,7 @@ const FreelancerList: React.FC = () => {
                                             {min && max ? (
                                                 <>
                                                     INR {min} - INR {max}{" "}
-                                                    <span className="text-gray-500 font-medium">LPA</span>
+                                                    <span className="text-gray-500 font-medium">Rupees</span>
                                                 </>
                                             ) : (
                                                 <span className="font-medium text-gray-500">

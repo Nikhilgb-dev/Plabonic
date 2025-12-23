@@ -45,12 +45,12 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ jobId, onClose, onJobUpdate
           <input type="text" name="title" placeholder="Title" value={form.title} onChange={handleChange} className="w-full mb-2 p-2 border" />
           <input type="text" name="location" placeholder="Location" value={form.location} onChange={handleChange} className="w-full mb-2 p-2 border" />
           <div className="grid grid-cols-2 gap-2 mb-2">
-            <input type="text" name="minSalary" placeholder="Min Salary (LPA)" value={form.minSalary ? form.minSalary.toLocaleString() : ""} onChange={(e) => {
+            <input type="text" name="minSalary" placeholder="Min Salary (Rupees)" value={form.minSalary ? form.minSalary.toLocaleString() : ""} onChange={(e) => {
               const formatted = formatNumberInput(e.target.value);
               const numericValue = formatted ? Number(formatted.replace(/,/g, "")) : undefined;
               setForm({ ...form, minSalary: numericValue });
             }} className="w-full p-2 border" />
-            <input type="text" name="maxSalary" placeholder="Max Salary (LPA)" value={form.maxSalary ? form.maxSalary.toLocaleString() : ""} onChange={(e) => {
+            <input type="text" name="maxSalary" placeholder="Max Salary (Rupees)" value={form.maxSalary ? form.maxSalary.toLocaleString() : ""} onChange={(e) => {
               const formatted = formatNumberInput(e.target.value);
               const numericValue = formatted ? Number(formatted.replace(/,/g, "")) : undefined;
               setForm({ ...form, maxSalary: numericValue });

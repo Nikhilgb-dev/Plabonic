@@ -311,7 +311,7 @@ const Freelancers: React.FC = () => {
                     <div className="text-sm text-gray-800 font-semibold mb-4">
                       Pricing:{" "}
                       {f.pricing?.min && f.pricing?.max ? (
-                        <>INR {f.pricing.min} - INR {f.pricing.max} LPA</>
+                        <>INR {f.pricing.min} - INR {f.pricing.max} Rupees</>
                       ) : (
                         <span className="font-normal text-gray-500">Not specified</span>
                       )}

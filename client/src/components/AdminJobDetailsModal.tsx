@@ -119,11 +119,11 @@ const AdminJobDetailsModal: React.FC<Props> = ({ job, onClose, onRefresh }) => {
                                 </div>
                                 <p className="text-gray-900 font-medium">
                                     {job.minSalary && job.maxSalary
-                                        ? `₹${job.minSalary.toLocaleString()} - ₹${job.maxSalary.toLocaleString()} LPA`
+                                        ? `₹${job.minSalary.toLocaleString()} - ₹${job.maxSalary.toLocaleString()} Rupees`
                                         : job.minSalary
-                                        ? `From ₹${job.minSalary.toLocaleString()} LPA`
+                                        ? `From ₹${job.minSalary.toLocaleString()} Rupees`
                                         : job.maxSalary
-                                        ? `Up to ₹${job.maxSalary.toLocaleString()} LPA`
+                                        ? `Up to ₹${job.maxSalary.toLocaleString()} Rupees`
                                         : "Not specified"}
                                 </p>
                             </div>

@@ -112,7 +112,7 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium">Min Salary (LPA)</label>
+                            <label className="block text-sm font-medium">Min Salary (Rupees)</label>
                             <input
                                 name="minSalary"
                                 type="text"
@@ -127,7 +127,7 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">Max Salary (LPA)</label>
+                            <label className="block text-sm font-medium">Max Salary (Rupees)</label>
                             <input
                                 name="maxSalary"
                                 type="text"

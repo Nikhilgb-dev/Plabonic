@@ -309,7 +309,7 @@ const ManageJobsPage: React.FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Min Salary (LPA)
+                                        Min Salary (Rupees)
                                     </label>
                                     <input
                                         name="minSalary"
@@ -326,7 +326,7 @@ const ManageJobsPage: React.FC = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Max Salary (LPA)
+                                        Max Salary (Rupees)
                                     </label>
                                     <input
                                         name="maxSalary"
@@ -483,7 +483,7 @@ const ManageJobsPage: React.FC = () => {
                                                                 <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                                 </svg>
-                                                                {job.minSalary && job.maxSalary ? `${job.minSalary}-${job.maxSalary} LPA` : job.minSalary ? `${job.minSalary} LPA` : `${job.maxSalary} LPA`}
+                                                                {job.minSalary && job.maxSalary ? `${job.minSalary}-${job.maxSalary} Rupees` : job.minSalary ? `${job.minSalary} Rupees` : `${job.maxSalary} Rupees`}
                                                             </span>
                                                         )}
                                                         {job.blocked && (
