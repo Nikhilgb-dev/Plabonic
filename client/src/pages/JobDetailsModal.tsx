@@ -204,7 +204,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                         </div>
 
                         {/* Salary Section */}
-                        {job.salary && (
+                        {(job.minSalary || job.maxSalary) && (
                             <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-600 rounded-lg p-4 mb-6">
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
@@ -227,7 +227,12 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                                             Salary Range
                                         </p>
                                         <p className="text-xl font-bold text-green-700">
-                                            {job.salary}
+                                            {job.minSalary && job.maxSalary
+                                                ? `Rs. ${job.minSalary.toLocaleString()} - Rs. ${job.maxSalary.toLocaleString()}`
+                                                : job.minSalary
+                                                ? `Rs. ${job.minSalary.toLocaleString()}+`
+                                                : `Up to Rs. ${job.maxSalary.toLocaleString()}`
+                                            }
                                         </p>
                                     </div>
                                 </div>

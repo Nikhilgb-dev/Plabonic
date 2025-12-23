@@ -32,7 +32,7 @@ export default function Footer() {
               </Link>
               {/* <span className="text-xl font-bold">Plabonic<span className="text-brand">.com</span></span> */}
             </div>
-            <p className="mt-3 text-sm text-gray-600">A modern job platform for tech roles. This is a demo clone for educational use.</p>
+            <p className="mt-3 text-sm text-gray-600">Where talent meets opportunity.</p>
           </div>
           <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4">
             {links.map(l => (
@@ -42,7 +42,7 @@ export default function Footer() {
         </div>
         <div className="mt-8 flex items-center justify-between border-t pt-6 text-sm text-gray-500">
           <p>© {new Date().getFullYear()} Plabonic</p>
-          <p>Made with ❤️</p>
+          <p>Made with Care</p>
         </div>
       </div>
     </footer>

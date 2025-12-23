@@ -47,6 +47,7 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ jobId, onClose, initialContact,
   const [resumeMode, setResumeMode] = useState<ResumeMode>("upload");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [hasProjects, setHasProjects] = useState<boolean>(true);
 
 
   useEffect(() => {
@@ -241,7 +242,7 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ jobId, onClose, initialContact,
     formData.append("contact", JSON.stringify(contact));
     formData.append("experience", JSON.stringify(experienceData));
     formData.append("education", JSON.stringify(educationHistory));
-    formData.append("project", JSON.stringify(projects));
+    formData.append("project", JSON.stringify(hasProjects ? projects : []));
 
     try {
       await API.post(`/jobs/${jobId}/apply`, formData, {
@@ -808,7 +809,41 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ jobId, onClose, initialContact,
                 </p>
               </div>
 
-              {projects.map((proj, idx) => (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Do you have projects to showcase?
+                  </label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-3 px-6 py-4 border-2 rounded-xl cursor-pointer transition-all flex-1 hover:bg-blue-50" style={{ borderColor: hasProjects ? '#2563eb' : '#d1d5db', backgroundColor: hasProjects ? '#eff6ff' : 'transparent' }}>
+                      <input
+                        type="radio"
+                        checked={hasProjects}
+                        onChange={() => setHasProjects(true)}
+                        className="w-5 h-5 text-blue-600"
+                      />
+                      <div>
+                        <span className="font-semibold text-gray-800 block">Yes</span>
+                        <span className="text-xs text-gray-600">I have projects to add</span>
+                      </div>
+                    </label>
+                    <label className="flex items-center gap-3 px-6 py-4 border-2 rounded-xl cursor-pointer transition-all flex-1 hover:bg-blue-50" style={{ borderColor: !hasProjects ? '#2563eb' : '#d1d5db', backgroundColor: !hasProjects ? '#eff6ff' : 'transparent' }}>
+                      <input
+                        type="radio"
+                        checked={!hasProjects}
+                        onChange={() => setHasProjects(false)}
+                        className="w-5 h-5 text-blue-600"
+                      />
+                      <div>
+                        <span className="font-semibold text-gray-800 block">No</span>
+                        <span className="text-xs text-gray-600">No projects to add</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {hasProjects && projects.map((proj, idx) => (
                 <div key={idx} className="p-5 border-2 border-gray-200 rounded-xl bg-gray-50 space-y-3">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-semibold text-gray-800 flex items-center gap-2">
@@ -879,16 +914,18 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ jobId, onClose, initialContact,
                 </div>
               ))}
 
-              <button
-                type="button"
-                onClick={addProjectField}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Add Another Project
-              </button>
+              {hasProjects && (
+                <button
+                  type="button"
+                  onClick={addProjectField}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Another Project
+                </button>
+              )}
             </div>
           )}
 
