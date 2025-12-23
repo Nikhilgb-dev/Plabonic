@@ -110,7 +110,9 @@ const Settings = () => {
     if (loading) return <div className="p-6 text-gray-500">Loading...</div>;
 
     const isCompanyAdmin = user?.role === "company_admin";
+    const isFreelancer = user?.role === "freelancer";
     const isAdmin = user?.role === "admin";
+    const showUserFields = !isCompanyAdmin && !isFreelancer;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
@@ -163,40 +165,41 @@ const Settings = () => {
                 </div>
 
                 {/* User Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="text-sm text-gray-600">Full Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={form.name || ""}
-                            onChange={handleChange}
-                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="text-sm text-gray-600">Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={form.email || ""}
-                            onChange={handleChange}
-                            disabled
-                            className="w-full border rounded-md p-2 bg-gray-50"
-                        />
-                    </div>
-                    {!isAdmin && (
-                        <>
-                            <div>
-                                <label className="text-sm text-gray-600">Headline</label>
-                                <input
-                                    type="text"
-                                    name="headline"
-                                    value={form.headline || ""}
-                                    onChange={handleChange}
-                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
+                {showUserFields && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="text-sm text-gray-600">Full Name</label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={form.name || ""}
+                                onChange={handleChange}
+                                className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="text-sm text-gray-600">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={form.email || ""}
+                                onChange={handleChange}
+                                disabled
+                                className="w-full border rounded-md p-2 bg-gray-50"
+                            />
+                        </div>
+                        {!isAdmin && (
+                            <>
+                                <div>
+                                    <label className="text-sm text-gray-600">Headline</label>
+                                    <input
+                                        type="text"
+                                        name="headline"
+                                        value={form.headline || ""}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
                             <div>
                                 <label className="text-sm text-gray-600">Location</label>
                                 <input
@@ -759,6 +762,7 @@ const Settings = () => {
                         </>
                     )}
                 </div>
+                )}
 
                 {/* Company Info Section */}
                 {isCompanyAdmin && company && (
@@ -780,6 +784,195 @@ const Settings = () => {
                                     type="text"
                                     value={company.domain}
                                     onChange={(e) => setCompany({ ...company, domain: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Year of Establishment</label>
+                                <input
+                                    type="number"
+                                    value={company.yearOfEstablishment || ""}
+                                    onChange={(e) => setCompany({ ...company, yearOfEstablishment: Number(e.target.value) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Industry / Sector</label>
+                                <input
+                                    type="text"
+                                    value={company.industry || ""}
+                                    onChange={(e) => setCompany({ ...company, industry: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Company Registration Number</label>
+                                <input
+                                    type="text"
+                                    value={company.companyRegistrationNumber || ""}
+                                    onChange={(e) => setCompany({ ...company, companyRegistrationNumber: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">GST</label>
+                                <input
+                                    type="text"
+                                    value={company.gst || ""}
+                                    onChange={(e) => setCompany({ ...company, gst: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">PAN</label>
+                                <input
+                                    type="text"
+                                    value={company.pan || ""}
+                                    onChange={(e) => setCompany({ ...company, pan: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Headquarters Location (City, State, Country)</label>
+                                <input
+                                    type="text"
+                                    value={company.headquartersLocation || ""}
+                                    onChange={(e) => setCompany({ ...company, headquartersLocation: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Branch Locations (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={company.branchLocations ? company.branchLocations.join(", ") : ""}
+                                    onChange={(e) => setCompany({ ...company, branchLocations: e.target.value.split(", ").filter(l => l.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Contact Person Name</label>
+                                <input
+                                    type="text"
+                                    value={company.contactPersonName || ""}
+                                    onChange={(e) => setCompany({ ...company, contactPersonName: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Contact Person Designation</label>
+                                <input
+                                    type="text"
+                                    value={company.contactPersonDesignation || ""}
+                                    onChange={(e) => setCompany({ ...company, contactPersonDesignation: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Official Email Address</label>
+                                <input
+                                    type="email"
+                                    value={company.officialEmail || ""}
+                                    onChange={(e) => setCompany({ ...company, officialEmail: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Company Website URL</label>
+                                <input
+                                    type="text"
+                                    value={company.companyWebsiteUrl || ""}
+                                    onChange={(e) => setCompany({ ...company, companyWebsiteUrl: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">LinkedIn / Social Media Profiles (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={company.socialMediaProfiles ? company.socialMediaProfiles.join(", ") : ""}
+                                    onChange={(e) => setCompany({ ...company, socialMediaProfiles: e.target.value.split(", ").filter(p => p.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Number of Employees</label>
+                                <input
+                                    type="number"
+                                    value={company.numberOfEmployees || ""}
+                                    onChange={(e) => setCompany({ ...company, numberOfEmployees: Number(e.target.value) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Annual Turnover / Revenue Range</label>
+                                <input
+                                    type="text"
+                                    value={company.annualTurnover || ""}
+                                    onChange={(e) => setCompany({ ...company, annualTurnover: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Services Offered (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={company.servicesOffered ? company.servicesOffered.join(", ") : ""}
+                                    onChange={(e) => setCompany({ ...company, servicesOffered: e.target.value.split(", ").filter(s => s.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Products Offered (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={company.productsOffered ? company.productsOffered.join(", ") : ""}
+                                    onChange={(e) => setCompany({ ...company, productsOffered: e.target.value.split(", ").filter(s => s.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Certifications / Accreditations (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={company.certificationsAccreditations ? company.certificationsAccreditations.join(", ") : ""}
+                                    onChange={(e) => setCompany({ ...company, certificationsAccreditations: e.target.value.split(", ").filter(c => c.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Key Clients / Partners (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={company.keyClientsPartners ? company.keyClientsPartners.join(", ") : ""}
+                                    onChange={(e) => setCompany({ ...company, keyClientsPartners: e.target.value.split(", ").filter(c => c.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Preferred Mode of Communication</label>
+                                <input
+                                    type="text"
+                                    value={company.preferredModeOfCommunication || ""}
+                                    onChange={(e) => setCompany({ ...company, preferredModeOfCommunication: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Billing Address</label>
+                                <textarea
+                                    value={company.billingAddress || ""}
+                                    onChange={(e) => setCompany({ ...company, billingAddress: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                    rows={3}
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Payment Method Preference</label>
+                                <input
+                                    type="text"
+                                    value={company.paymentMethodPreference || ""}
+                                    onChange={(e) => setCompany({ ...company, paymentMethodPreference: e.target.value })}
                                     className="w-full border rounded-md p-2"
                                 />
                             </div>
@@ -853,6 +1046,225 @@ const Settings = () => {
                                     className="w-full border rounded-md p-2"
                                     rows={3}
                                 />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Date of Birth</label>
+                                <input
+                                    type="date"
+                                    value={freelancerForm.dateOfBirth ? freelancerForm.dateOfBirth.split('T')[0] : ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, dateOfBirth: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Gender</label>
+                                <select
+                                    value={freelancerForm.gender || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, gender: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                >
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Educational Qualification</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.educationalQualification || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, educationalQualification: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Skills / Expertise (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.skills ? freelancerForm.skills.join(", ") : ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, skills: e.target.value.split(", ").filter(s => s.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Years of Experience</label>
+                                <input
+                                    type="number"
+                                    value={freelancerForm.yearsOfExperience || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, yearsOfExperience: Number(e.target.value) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Current Occupation / Employer</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.currentEmployer || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, currentEmployer: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Portfolio / Website URL</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.portfolioUrl || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, portfolioUrl: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">LinkedIn Profile URL</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.linkedin || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, linkedin: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">GitHub URL</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.github || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, github: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Twitter URL</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.twitter || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, twitter: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">WhatsApp Number</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.whatsappNumber || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, whatsappNumber: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Certifications (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.certifications ? freelancerForm.certifications.join(", ") : ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, certifications: e.target.value.split(", ").filter(c => c.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Languages Known (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.languagesKnown ? freelancerForm.languagesKnown.join(", ") : ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, languagesKnown: e.target.value.split(", ").filter(l => l.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Availability (Hours per week)</label>
+                                <input
+                                    type="number"
+                                    value={freelancerForm.availabilityHours || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, availabilityHours: Number(e.target.value) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Preferred Working Time</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.preferredWorkingTime || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, preferredWorkingTime: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Expected Hourly Rate</label>
+                                <input
+                                    type="number"
+                                    value={freelancerForm.expectedHourlyRate || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, expectedHourlyRate: Number(e.target.value) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Expected Project Rate</label>
+                                <input
+                                    type="number"
+                                    value={freelancerForm.expectedProjectRate || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, expectedProjectRate: Number(e.target.value) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Payment Method Preference</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.paymentMethodPreference || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, paymentMethodPreference: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Tools / Software Proficiency (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.toolsProficiency ? freelancerForm.toolsProficiency.join(", ") : ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, toolsProficiency: e.target.value.split(", ").filter(t => t.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Past Clients / References (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.pastClients ? freelancerForm.pastClients.join(", ") : ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, pastClients: e.target.value.split(", ").filter(c => c.trim()) })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Availability for Interview (Date & Time)</label>
+                                <input
+                                    type="text"
+                                    value={freelancerForm.interviewAvailability || ""}
+                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, interviewAvailability: e.target.value })}
+                                    className="w-full border rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Resume Upload</label>
+                                <input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        const formData = new FormData();
+                                        formData.append("resume", file);
+                                        try {
+                                            const res = await API.put("/freelancers/me", formData, {
+                                                headers: { "Content-Type": "multipart/form-data" },
+                                            });
+                                            setFreelancerForm(res.data);
+                                            alert("Resume uploaded successfully!");
+                                        } catch (err) {
+                                            alert("Failed to upload resume.");
+                                        }
+                                    }}
+                                    className="w-full border rounded-md p-2"
+                                />
+                                {freelancerForm.resume && (
+                                    <p className="text-sm text-gray-500 mt-1">Resume uploaded</p>
+                                )}
                             </div>
                             <div>
                                 <label className="text-sm text-gray-600">Preferences (comma separated)</label>

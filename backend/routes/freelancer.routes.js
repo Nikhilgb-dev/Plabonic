@@ -27,7 +27,7 @@ router.get("/", getAllFreelancers);
 
 router.get("/me/applications", protect, getMyFreelancerApplications);
 router.get("/me", protect, getMyFreelancerProfile);
-router.put("/me", protect, upload.single("photo"), updateMyFreelancerProfile);
+router.put("/me", protect, upload.fields([{ name: 'photo', maxCount: 1 }, { name: 'resume', maxCount: 1 }]), updateMyFreelancerProfile);
 
 router.put("/applications/:id/status", protect, updateApplicationStatus);
 router.put("/applications/:id/respond", protect, respondToFreelancerOffer);

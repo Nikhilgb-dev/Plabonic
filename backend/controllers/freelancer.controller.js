@@ -304,8 +304,13 @@ export const updateMyFreelancerProfile = async (req, res) => {
     delete updates.expiryDate; // Should not be updated by user
 
     // Handle photo upload
-    if (req.file) {
-      updates.photo = await uploadToCloudinary(req.file, "freelancers");
+    if (req.files && req.files.photo) {
+      updates.photo = await uploadToCloudinary(req.files.photo[0], "freelancers");
+    }
+
+    // Handle resume upload
+    if (req.files && req.files.resume) {
+      updates.resume = await uploadToCloudinary(req.files.resume[0], "resumes");
     }
 
     Object.keys(updates).forEach(key => {
