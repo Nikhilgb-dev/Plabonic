@@ -34,6 +34,8 @@ const MarketingDetail: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -42,6 +44,26 @@ const MarketingDetail: React.FC = () => {
     // works even when coming from a scrolled list page
     window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
   }, [id]);
+
+  // Fetch user data
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const res = await API.get("/users/me");
+          setUser(res.data);
+          // Prefill form with user data
+          setBuyerName(res.data.name || "");
+          setEmail(res.data.email || "");
+          setMobile(res.data.phone || "");
+        } catch {
+          setUser(null);
+        }
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const fetchCard = async () => {
@@ -87,10 +109,11 @@ const MarketingDetail: React.FC = () => {
         email,
         mobile,
       });
-      toast.success("Enquiry submitted to admin");
-      setBuyerName("");
-      setEmail("");
-      setMobile("");
+      toast.success("Payment request submitted successfully");
+      setBuyerName(user?.name || "");
+      setEmail(user?.email || "");
+      setMobile(user?.phone || "");
+      setShowPaymentForm(false);
     } catch (err) {
       console.error(err);
       const message =
@@ -101,8 +124,13 @@ const MarketingDetail: React.FC = () => {
     }
   };
 
-  const scrollToBuy = () => {
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handlePayNow = () => {
+    if (user) {
+      setShowPaymentForm(true);
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
   };
 
   if (loading) {
@@ -210,6 +238,29 @@ const MarketingDetail: React.FC = () => {
               </div>
             </div>
 
+            {/* Price + CTA row (nice on mobile) */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+                Rs. {Number(card.price || 0).toLocaleString()}
+              </div>
+
+              {/* Desktop CTA button to show form - only show if logged in */}
+              {user && (
+                <button
+                  type="button"
+                  onClick={handlePayNow}
+                  className="hidden sm:inline-flex px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+                >
+                  Pay Now
+                </button>
+              )}
+            </div>
+
+            {/* Description */}
+            <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+              {card.description}
+            </p>
+
             {/* Badges */}
             {enabledBadges.length > 0 && (
               <div className="flex flex-wrap items-center gap-2">
@@ -232,102 +283,92 @@ const MarketingDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Description */}
-            <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-              {card.description}
-            </p>
+            {/* Payment Form or Login Message */}
+            {user ? (
+              showPaymentForm && (
+                <form
+                  ref={formRef}
+                  onSubmit={handleEnquiry}
+                  className="space-y-3 p-4 sm:p-5 rounded-2xl border border-gray-200 bg-white shadow-sm"
+                >
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">Payment Form</h3>
 
-            {/* Price + CTA row (nice on mobile) */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="block">
+                      <span className="text-sm text-gray-600">Name</span>
+                      <input
+                        type="text"
+                        value={buyerName}
+                        onChange={(e) => setBuyerName(e.target.value)}
+                        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="text-sm text-gray-600">Email</span>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </label>
+
+                    <label className="block sm:col-span-2">
+                      <span className="text-sm text-gray-600">Mobile Number</span>
+                      <input
+                        type="tel"
+                        value={mobile}
+                        onChange={(e) => setMobile(e.target.value)}
+                        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </label>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+                  >
+                    Pay Now
+                  </button>
+                </form>
+              )
+            ) : (
+              <div className="p-4 sm:p-5 rounded-2xl border border-gray-200 bg-white shadow-sm text-center">
+                <p className="text-lg font-semibold text-gray-900">Please login first</p>
+                <p className="text-sm text-gray-600 mt-2">You need to be logged in to make a payment.</p>
+              </div>
+            )}
+
+            {/* little bottom spacing for mobile sticky CTA - only when form is shown */}
+            {showPaymentForm && <div className="h-16 sm:hidden" />}
+          </div>
+        </div>
+      </div>
+
+      {/* ✅ Mobile sticky CTA (so the form doesn’t "dominate" at first glance) */}
+      {user && (
+        <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur px-4 py-3">
+          <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs text-gray-500">Price</p>
+              <p className="text-base font-bold text-gray-900 truncate">
                 Rs. {Number(card.price || 0).toLocaleString()}
-              </div>
-
-              {/* Desktop CTA button to jump to form */}
-              <button
-                type="button"
-                onClick={scrollToBuy}
-                className="hidden sm:inline-flex px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
-              >
-                Buy Now
-              </button>
+              </p>
             </div>
-
-            {/* Form */}
-            <form
-              ref={formRef}
-              onSubmit={handleEnquiry}
-              className="space-y-3 p-4 sm:p-5 rounded-2xl border border-gray-200 bg-white shadow-sm"
+            <button
+              type="button"
+              onClick={handlePayNow}
+              className="px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
             >
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Buy now</h3>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <label className="block">
-                  <span className="text-sm text-gray-600">Name</span>
-                  <input
-                    type="text"
-                    value={buyerName}
-                    onChange={(e) => setBuyerName(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="text-sm text-gray-600">Email</span>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </label>
-
-                <label className="block sm:col-span-2">
-                  <span className="text-sm text-gray-600">Mobile Number</span>
-                  <input
-                    type="tel"
-                    value={mobile}
-                    onChange={(e) => setMobile(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </label>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
-              >
-                Submit Enquiry
-              </button>
-            </form>
-
-            {/* little bottom spacing for mobile sticky CTA */}
-            <div className="h-16 sm:hidden" />
+              Pay Now
+            </button>
           </div>
         </div>
-      </div>
-
-      {/* ✅ Mobile sticky CTA (so the form doesn’t “dominate” at first glance) */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur px-4 py-3">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs text-gray-500">Price</p>
-            <p className="text-base font-bold text-gray-900 truncate">
-              Rs. {Number(card.price || 0).toLocaleString()}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={scrollToBuy}
-            className="px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
-          >
-            Buy Now
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

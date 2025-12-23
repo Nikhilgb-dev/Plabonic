@@ -81,10 +81,10 @@ export default function EduleLanding() {
               <div className="w-3 h-3 rounded-full bg-yellow-300"></div>
             </div>
 
-            <p className="text-gray-600 mb-2">Start your favourite course</p>
+            <p className="text-gray-600 mb-2">Take your first step towards a successful career </p>
             <h1 className="text-5xl font-bold leading-tight mb-4">
               Build Your Career<br />
-               <span className="text-green-600 relative">
+              <span className="text-green-600 relative">
                 Right here
                 <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none">
                   <path d="M0 4 Q 100 8 200 4" stroke="#10b981" strokeWidth="2" fill="none" />
@@ -189,7 +189,7 @@ export default function EduleLanding() {
             <svg className="absolute -bottom-1 left-0 w-full" height="6" viewBox="0 0 120 6">
               <path d="M0 3 Q 60 6 120 3" stroke="#10b981" strokeWidth="2" fill="none" />
             </svg>
-          </span> 
+          </span>
         </h2>
 
         {/* Search Bar */}
@@ -243,7 +243,23 @@ export default function EduleLanding() {
                     <img src={card.logo} alt={card.name} className="w-8 h-8 rounded-full object-cover" />
                     <span className="text-sm text-gray-600">{card.name}</span>
                   </div>
-                  <span className="text-lg font-bold text-green-600">Rs. {card.price.toLocaleString()}</span>
+                  <div className="flex flex-wrap gap-2">
+                    {card.badges?.trusted && (
+                      <span className="text-xs px-2 py-1 rounded-full bg-[#0080ff] text-white border border-[#0080ff]">
+                        Trusted
+                      </span>
+                    )}
+                    {card.badges?.verified && (
+                      <span className="text-xs px-2 py-1 rounded-full bg-[#80ff00] text-black border border-[#80ff00]">
+                        Verified
+                      </span>
+                    )}
+                    {card.badges?.recommended && (
+                      <span className="text-xs px-2 py-1 rounded-full bg-black text-white border border-black">
+                        Recommended
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-green-600 transition">
@@ -252,23 +268,7 @@ export default function EduleLanding() {
 
                 <p className="text-sm text-gray-600 line-clamp-2">{card.description}</p>
 
-                <div className="flex flex-wrap gap-2">
-                  {card.badges?.trusted && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-[#0080ff] text-white border border-[#0080ff]">
-                      Trusted
-                    </span>
-                  )}
-                  {card.badges?.verified && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-[#80ff00] text-black border border-[#80ff00]">
-                      Verified
-                    </span>
-                  )}
-                  {card.badges?.recommended && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-black text-white border border-black">
-                      Recommended
-                    </span>
-                  )}
-                </div>
+                <span className="text-lg font-bold text-green-600">Rs. {card.price.toLocaleString()}</span>
               </div>
             </Link>
           ))}
