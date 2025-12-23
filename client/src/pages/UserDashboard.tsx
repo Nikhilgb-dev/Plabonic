@@ -378,6 +378,57 @@ const UserDashboard: React.FC = () => {
                 <StatCard title="Hired" value={stats.hired} />
             </div>
 
+            {/* Profile Overview */}
+            {currentUser && (
+                <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+                    <h2 className="text-lg font-semibold mb-4">My Profile</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {currentUser.name && <div><strong>Name:</strong> {currentUser.name}</div>}
+                        {currentUser.email && <div><strong>Email:</strong> {currentUser.email}</div>}
+                        {currentUser.phone && <div><strong>Phone:</strong> {currentUser.phone}</div>}
+                        {currentUser.whatsappNumber && <div><strong>WhatsApp:</strong> {currentUser.whatsappNumber}</div>}
+                        {currentUser.dateOfBirth && <div><strong>Date of Birth:</strong> {new Date(currentUser.dateOfBirth).toLocaleDateString()}</div>}
+                        {currentUser.gender && <div><strong>Gender:</strong> {currentUser.gender}</div>}
+                        {currentUser.currentLocation && <div><strong>Current Location:</strong> {currentUser.currentLocation}</div>}
+                        {currentUser.preferredJobLocation && <div><strong>Preferred Job Location:</strong> {currentUser.preferredJobLocation}</div>}
+                        {currentUser.educationalQualification && <div><strong>Educational Qualification:</strong> {currentUser.educationalQualification}</div>}
+                        {currentUser.yearOfGraduation && <div><strong>Year of Graduation:</strong> {currentUser.yearOfGraduation}</div>}
+                        {currentUser.workExperienceYears && <div><strong>Work Experience (Years):</strong> {currentUser.workExperienceYears}</div>}
+                        {currentUser.currentEmployer && <div><strong>Current Employer:</strong> {currentUser.currentEmployer}</div>}
+                        {currentUser.currentDesignation && <div><strong>Current Designation:</strong> {currentUser.currentDesignation}</div>}
+                        {currentUser.noticePeriod && <div><strong>Notice Period:</strong> {currentUser.noticePeriod}</div>}
+                        {currentUser.currentSalary && <div><strong>Current Salary:</strong> ₹{currentUser.currentSalary.toLocaleString()}</div>}
+                        {currentUser.expectedSalary && <div><strong>Expected Salary:</strong> ₹{currentUser.expectedSalary.toLocaleString()}</div>}
+                        {currentUser.technicalSkills && currentUser.technicalSkills.length > 0 && <div><strong>Technical Skills:</strong> {currentUser.technicalSkills.join(", ")}</div>}
+                        {currentUser.softSkills && currentUser.softSkills.length > 0 && <div><strong>Soft Skills:</strong> {currentUser.softSkills.join(", ")}</div>}
+                        {currentUser.interestedSkills && currentUser.interestedSkills.length > 0 && <div><strong>Interested Skills:</strong> {currentUser.interestedSkills.join(", ")}</div>}
+                        {currentUser.certifications && currentUser.certifications.length > 0 && <div><strong>Certifications:</strong> {currentUser.certifications.join(", ")}</div>}
+                        {currentUser.languagesKnown && currentUser.languagesKnown.length > 0 && <div><strong>Languages Known:</strong> {currentUser.languagesKnown.join(", ")}</div>}
+                        {currentUser.projects && currentUser.projects.length > 0 && <div><strong>Projects:</strong> {currentUser.projects.length} project(s)</div>}
+                        {currentUser.resume && <div><strong>Resume:</strong> Uploaded</div>}
+                        {currentUser.about && <div><strong>About:</strong> {currentUser.about}</div>}
+                        {currentUser.headline && <div><strong>Headline:</strong> {currentUser.headline}</div>}
+                        {currentUser.description && <div><strong>Description:</strong> {currentUser.description}</div>}
+                        {currentUser.location && <div><strong>Location:</strong> {currentUser.location}</div>}
+                        {currentUser.website && <div><strong>Website:</strong> {currentUser.website}</div>}
+                        {currentUser.socialLinks?.linkedin && <div><strong>LinkedIn:</strong> {currentUser.socialLinks.linkedin}</div>}
+                        {currentUser.socialLinks?.github && <div><strong>GitHub:</strong> {currentUser.socialLinks.github}</div>}
+                        {currentUser.socialLinks?.twitter && <div><strong>Twitter:</strong> {currentUser.socialLinks.twitter}</div>}
+                        {currentUser.skills && currentUser.skills.length > 0 && <div><strong>Skills:</strong> {currentUser.skills.join(", ")}</div>}
+                        {currentUser.experience && currentUser.experience.length > 0 && <div><strong>Experience:</strong> {currentUser.experience.length} entry(ies)</div>}
+                        {currentUser.education && currentUser.education.length > 0 && <div><strong>Education:</strong> {currentUser.education.length} entry(ies)</div>}
+                    </div>
+                    <div className="mt-4">
+                        <button
+                            onClick={() => window.location.href = "/settings"}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        >
+                            Edit Profile
+                        </button>
+                    </div>
+                </section>
+            )}
+
             {/* Application status pipeline */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
                 <h2 className="text-lg font-semibold mb-4">Application Status Overview</h2>

@@ -44,6 +44,8 @@ import FreelancerDashboard from "./pages/FreelancerDashboard";
 import MarketingDetail from "./pages/MarketingDetail";
 import AboutUsPage from "./pages/About";
 import Terms from "./pages/Terms";
+import PostJob from "./pages/PostJob";
+import ManageUsers from "./pages/ManageUsers";
 
 export default function App() {
   return (
@@ -132,6 +134,8 @@ export default function App() {
 
               {/* Optional Admin Job Management */}
               <Route path="/admin/jobs" element={<ManageJobsPage />} />
+              <Route path="/admin/users" element={<ManageUsers />} />
+              <Route path="/post-job" element={<PostJob />} />
               <Route path="/admin/freelancers" element={<FreelancerList />} />
               <Route path="/freelancers" element={<Freelancers />} />
               <Route path="/freelancers/register" element={<FreelancerRegister />} />

@@ -22,6 +22,15 @@ const educationSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const projectSchema = new mongoose.Schema(
+  {
+    title: String,
+    description: String,
+    link: String,
+  },
+  { _id: false }
+);
+
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -62,6 +71,29 @@ const userSchema = new mongoose.Schema(
       github: { type: String, default: "" },
       twitter: { type: String, default: "" },
     },
+
+    // Additional profile fields
+    dateOfBirth: Date,
+    gender: String,
+    currentLocation: String,
+    preferredJobLocation: String,
+    educationalQualification: String,
+    yearOfGraduation: Number,
+    workExperienceYears: Number,
+    currentEmployer: String,
+    currentDesignation: String,
+    noticePeriod: String,
+    currentSalary: Number,
+    expectedSalary: Number,
+    technicalSkills: [String],
+    softSkills: [String],
+    interestedSkills: [String],
+    projects: [projectSchema],
+    certifications: [String],
+    languagesKnown: [String],
+    whatsappNumber: String,
+    resume: String,
+    about: String,
 
     termsAccepted: { type: Boolean, default: false },
 

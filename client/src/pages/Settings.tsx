@@ -43,7 +43,7 @@ const Settings = () => {
         load();
     }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
@@ -214,6 +214,190 @@ const Settings = () => {
                                     name="phone"
                                     value={form.phone || ""}
                                     onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">WhatsApp Number</label>
+                                <input
+                                    type="text"
+                                    name="whatsappNumber"
+                                    value={form.whatsappNumber || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Date of Birth</label>
+                                <input
+                                    type="date"
+                                    name="dateOfBirth"
+                                    value={form.dateOfBirth ? form.dateOfBirth.split('T')[0] : ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Gender</label>
+                                <select
+                                    name="gender"
+                                    value={form.gender || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Current Location (City, State)</label>
+                                <input
+                                    type="text"
+                                    name="currentLocation"
+                                    value={form.currentLocation || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Preferred Job Location</label>
+                                <input
+                                    type="text"
+                                    name="preferredJobLocation"
+                                    value={form.preferredJobLocation || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Educational Qualification</label>
+                                <input
+                                    type="text"
+                                    name="educationalQualification"
+                                    value={form.educationalQualification || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Year of Graduation</label>
+                                <input
+                                    type="number"
+                                    name="yearOfGraduation"
+                                    value={form.yearOfGraduation || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Work Experience (in years)</label>
+                                <input
+                                    type="number"
+                                    name="workExperienceYears"
+                                    value={form.workExperienceYears || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Current Employer</label>
+                                <input
+                                    type="text"
+                                    name="currentEmployer"
+                                    value={form.currentEmployer || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Current Designation</label>
+                                <input
+                                    type="text"
+                                    name="currentDesignation"
+                                    value={form.currentDesignation || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Notice Period</label>
+                                <input
+                                    type="text"
+                                    name="noticePeriod"
+                                    value={form.noticePeriod || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Current Salary</label>
+                                <input
+                                    type="number"
+                                    name="currentSalary"
+                                    value={form.currentSalary || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Expected Salary</label>
+                                <input
+                                    type="number"
+                                    name="expectedSalary"
+                                    value={form.expectedSalary || ""}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Technical Skills (comma separated)</label>
+                                <input
+                                    type="text"
+                                    name="technicalSkills"
+                                    value={form.technicalSkills ? form.technicalSkills.join(", ") : ""}
+                                    onChange={(e) => setForm({ ...form, technicalSkills: e.target.value.split(", ").filter(s => s.trim()) })}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Soft Skills (comma separated)</label>
+                                <input
+                                    type="text"
+                                    name="softSkills"
+                                    value={form.softSkills ? form.softSkills.join(", ") : ""}
+                                    onChange={(e) => setForm({ ...form, softSkills: e.target.value.split(", ").filter(s => s.trim()) })}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Interested Skills to Learn (comma separated)</label>
+                                <input
+                                    type="text"
+                                    name="interestedSkills"
+                                    value={form.interestedSkills ? form.interestedSkills.join(", ") : ""}
+                                    onChange={(e) => setForm({ ...form, interestedSkills: e.target.value.split(", ").filter(s => s.trim()) })}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Languages Known (comma separated)</label>
+                                <input
+                                    type="text"
+                                    name="languagesKnown"
+                                    value={form.languagesKnown ? form.languagesKnown.join(", ") : ""}
+                                    onChange={(e) => setForm({ ...form, languagesKnown: e.target.value.split(", ").filter(s => s.trim()) })}
+                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm text-gray-600">Certifications (comma separated)</label>
+                                <input
+                                    type="text"
+                                    name="certifications"
+                                    value={form.certifications ? form.certifications.join(", ") : ""}
+                                    onChange={(e) => setForm({ ...form, certifications: e.target.value.split(", ").filter(s => s.trim()) })}
                                     className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
@@ -470,6 +654,105 @@ const Settings = () => {
                                         >
                                             Add Education
                                         </button>
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="text-sm text-gray-600">Projects</label>
+                                        {(form.projects || []).map((proj: any, index: number) => (
+                                            <div key={index} className="border rounded-md p-4 mb-4">
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Project Title"
+                                                        value={proj.title || ""}
+                                                        onChange={(e) => {
+                                                            const newProj = [...(form.projects || [])];
+                                                            newProj[index] = { ...newProj[index], title: e.target.value };
+                                                            setForm({ ...form, projects: newProj });
+                                                        }}
+                                                        className="border rounded-md p-2"
+                                                    />
+                                                    <textarea
+                                                        placeholder="Description"
+                                                        value={proj.description || ""}
+                                                        onChange={(e) => {
+                                                            const newProj = [...(form.projects || [])];
+                                                            newProj[index] = { ...newProj[index], description: e.target.value };
+                                                            setForm({ ...form, projects: newProj });
+                                                        }}
+                                                        className="border rounded-md p-2"
+                                                        rows={2}
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Link"
+                                                        value={proj.link || ""}
+                                                        onChange={(e) => {
+                                                            const newProj = [...(form.projects || [])];
+                                                            newProj[index] = { ...newProj[index], link: e.target.value };
+                                                            setForm({ ...form, projects: newProj });
+                                                        }}
+                                                        className="border rounded-md p-2"
+                                                    />
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const newProj = (form.projects || []).filter((_: any, i: number) => i !== index);
+                                                        setForm({ ...form, projects: newProj });
+                                                    }}
+                                                    className="mt-2 px-3 py-1 bg-red-500 text-white rounded-md text-sm"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const newProj = [...(form.projects || []), { title: "", description: "", link: "" }];
+                                                setForm({ ...form, projects: newProj });
+                                            }}
+                                            className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                                        >
+                                            Add Project
+                                        </button>
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="text-sm text-gray-600">About you (50 words or 2-3 lines)</label>
+                                        <textarea
+                                            name="about"
+                                            value={form.about || ""}
+                                            onChange={handleChange}
+                                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                            rows={3}
+                                            maxLength={300}
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="text-sm text-gray-600">Resume Upload</label>
+                                        <input
+                                            type="file"
+                                            accept=".pdf,.doc,.docx"
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+                                                const formData = new FormData();
+                                                formData.append("resume", file);
+                                                try {
+                                                    const res = await API.put("/users/me", formData, {
+                                                        headers: { "Content-Type": "multipart/form-data" },
+                                                    });
+                                                    setForm(res.data);
+                                                    alert("Resume uploaded successfully!");
+                                                } catch (err) {
+                                                    alert("Failed to upload resume.");
+                                                }
+                                            }}
+                                            className="w-full border rounded-md p-2"
+                                        />
+                                        {form.resume && (
+                                            <p className="text-sm text-gray-500 mt-1">Resume uploaded</p>
+                                        )}
                                     </div>
                                 </>
                             )}

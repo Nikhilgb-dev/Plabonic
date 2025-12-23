@@ -20,7 +20,7 @@ const router = express.Router();
 // Self profile (CRUD-like for own account)
 router.get("/me", protect, getProfile);
 router.get("/me", protect, getMyProfile);
-router.put("/me", protect, upload.single("profilePhoto"), updateMyProfile);
+router.put("/me", protect, upload.fields([{ name: 'profilePhoto', maxCount: 1 }, { name: 'resume', maxCount: 1 }]), updateMyProfile);
 router.delete("/me", protect, deleteMyAccount);
 // Follow/unfollow other users
 router.post("/:id/follow", protect, toggleFollow);

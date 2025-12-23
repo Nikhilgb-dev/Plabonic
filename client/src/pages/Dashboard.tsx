@@ -402,6 +402,46 @@ const Dashboard = () => {
   };
 
 
+  const calculateCompletion = (user: any) => {
+    const fields = [
+      user.phone,
+      user.whatsappNumber,
+      user.dateOfBirth,
+      user.gender,
+      user.currentLocation,
+      user.preferredJobLocation,
+      user.educationalQualification,
+      user.yearOfGraduation,
+      user.workExperienceYears,
+      user.currentEmployer,
+      user.currentDesignation,
+      user.noticePeriod,
+      user.currentSalary,
+      user.expectedSalary,
+      user.technicalSkills?.length ? true : false,
+      user.softSkills?.length ? true : false,
+      user.interestedSkills?.length ? true : false,
+      user.projects?.length ? true : false,
+      user.certifications?.length ? true : false,
+      user.languagesKnown?.length ? true : false,
+      user.resume,
+      user.about,
+      user.headline,
+      user.description,
+      user.location,
+      user.website,
+      user.socialLinks?.linkedin,
+      user.socialLinks?.github,
+      user.socialLinks?.twitter,
+      user.skills?.length ? true : false,
+      user.experience?.length ? true : false,
+      user.education?.length ? true : false,
+      user.profilePhoto,
+    ];
+    const filled = fields.filter(field => field !== undefined && field !== null && field !== "" && field !== false).length;
+    return Math.round((filled / fields.length) * 100);
+  };
+
   const handleBlockUser = async (userId: string, currentStatus: boolean) => {
     const action = currentStatus ? "unblock" : "block";
     if (window.confirm(`Are you sure you want to ${action} this user?`)) {
@@ -1551,6 +1591,9 @@ const Dashboard = () => {
                         Role
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Profile Completion
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Joined
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -1580,6 +1623,14 @@ const Dashboard = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm capitalize text-gray-600">
                             {u.role}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2 max-w-[60px]">
+                                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${calculateCompletion(u)}%` }}></div>
+                              </div>
+                              <span className="text-sm text-gray-500">{calculateCompletion(u)}%</span>
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {new Date(u.createdAt).toLocaleDateString()}

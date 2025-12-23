@@ -61,8 +61,13 @@ export const updateMyProfile = async (req, res) => {
     });
 
     // optional profile photo upload
-    if (req.file) {
-      user.profilePhoto = await uploadToCloudinary(req.file, "profile_photos");
+    if (req.files && req.files.profilePhoto) {
+      user.profilePhoto = await uploadToCloudinary(req.files.profilePhoto[0], "profile_photos");
+    }
+
+    // optional resume upload
+    if (req.files && req.files.resume) {
+      user.resume = await uploadToCloudinary(req.files.resume[0], "resumes");
     }
 
     await user.save();
