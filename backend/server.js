@@ -19,9 +19,9 @@ import path from "path";
 const __dirname = path.resolve();
 
 // Startup env check (do not log secrets)
-console.log("[env] CLOUDINARY_CLOUD_NAME set:", !!process.env.CLOUDINARY_CLOUD_NAME);
-console.log("[env] CLOUDINARY_API_KEY set:", !!process.env.CLOUDINARY_API_KEY);
-console.log("[env] CLOUDINARY_API_SECRET set:", !!process.env.CLOUDINARY_API_SECRET);
+// console.log("[env] CLOUDINARY_CLOUD_NAME set:", !!process.env.CLOUDINARY_CLOUD_NAME);
+// console.log("[env] CLOUDINARY_API_KEY set:", !!process.env.CLOUDINARY_API_KEY);
+// console.log("[env] CLOUDINARY_API_SECRET set:", !!process.env.CLOUDINARY_API_SECRET);
 connectDB();
 
 const app = express();

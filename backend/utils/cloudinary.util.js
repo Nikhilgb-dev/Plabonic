@@ -86,14 +86,14 @@ export const uploadToCloudinary = (file, folder = "uploads") =>
       if (err || !result) return reject(err || new Error("Upload failed"));
       const url = result.secure_url;
       // Debug log for tracing uploads
-      console.log("[cloudinary] uploaded", originalName, "->", url, {
-        resourceType: result.resource_type,
-        format: result.format,
-        type: result.type,
-        accessMode: result.access_mode,
-        bytes: result.bytes,
-        contentType: result.content_type,
-      });
+      // console.log("[cloudinary] uploaded", originalName, "->", url, {
+      //   resourceType: result.resource_type,
+      //   format: result.format,
+      //   type: result.type,
+      //   accessMode: result.access_mode,
+      //   bytes: result.bytes,
+      //   contentType: result.content_type,
+      // });
       return resolve(url);
     };
 
