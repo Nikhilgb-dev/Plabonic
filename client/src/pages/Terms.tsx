@@ -767,7 +767,7 @@ const Terms = () => {
               <h3 className="text-lg font-semibold">11. Contact Information</h3>
               <p>For questions, concerns, or requests related to this Privacy Policy, contact:</p>
               <p className="mt-2">Plabonic</p>
-              <p>Email: privacy@plabonic.com</p>
+              <p>Email: reachus@plabonic.com</p>
               <p>Website: https://www.plabonic.com</p>
             </div>
           </div>
