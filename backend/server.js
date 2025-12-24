@@ -16,9 +16,13 @@ import marketingRoutes from "./routes/marketing.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import path from "path";
 
+dotenv.config();
+
+console.log("Environment loadeds:", dotenv.config());
+// TODO: add more logs to check env variables
+
 const __dirname = path.resolve();
 
-dotenv.config();
 connectDB();
 
 const app = express();
