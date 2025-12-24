@@ -1,4 +1,4 @@
-// import "dotenv/config";
+import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.config.js";
@@ -16,10 +16,9 @@ import marketingRoutes from "./routes/marketing.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import path from "path";
 
-dotenv.config();
-
 const __dirname = path.resolve();
 
+dotenv.config();
 connectDB();
 
 const app = express();
