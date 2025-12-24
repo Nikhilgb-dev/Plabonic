@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.config.js";
@@ -16,13 +16,12 @@ import marketingRoutes from "./routes/marketing.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import path from "path";
 
-dotenv.config();
-
-console.log("Environment loadeds:", dotenv.config());
-// TODO: add more logs to check env variables
-
 const __dirname = path.resolve();
 
+// Startup env check (do not log secrets)
+console.log("[env] CLOUDINARY_CLOUD_NAME set:", !!process.env.CLOUDINARY_CLOUD_NAME);
+console.log("[env] CLOUDINARY_API_KEY set:", !!process.env.CLOUDINARY_API_KEY);
+console.log("[env] CLOUDINARY_API_SECRET set:", !!process.env.CLOUDINARY_API_SECRET);
 connectDB();
 
 const app = express();
