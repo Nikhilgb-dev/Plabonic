@@ -571,8 +571,8 @@ const Terms = () => {
               this Agreement, you may contact us at:
             </p>
             <p className="mt-2">Plabonic</p>
-            <p>Email: support@plabonic.com</p>
-            <p>Website: https://www.plabonic.com</p>
+            <p>Email: reachus@plabonic.com</p>
+            <a href="https://www.plabonic.com">Website: https://www.plabonic.com</a>
           </div>
         </section>
 

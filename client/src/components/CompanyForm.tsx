@@ -381,7 +381,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                         </div>
                         <div>
                             <label className="block text-sm text-gray-700 mb-1">
-                                Authorized persona [ID] (optional)
+                                Authorized person [ID] (optional)
                             </label>
                             <input
                                 type="file"

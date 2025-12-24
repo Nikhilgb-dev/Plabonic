@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import API from "@/api/api";
 import { useCompany } from "../contexts/CompanyContext";
+import { useNavigate } from "react-router-dom";
 
 interface Job {
     _id?: string;
@@ -35,6 +36,7 @@ const ManageJobsPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingJob, setEditingJob] = useState<Job | null>(null);
+    const navigate = useNavigate();
 
     const [form, setForm] = useState<Job>({
         title: "",
@@ -74,7 +76,7 @@ const ManageJobsPage: React.FC = () => {
         try {
             const res =
                 role === "admin"
-                    ? await API.get("/jobs")
+                    ? await API.get("/admin/jobs")
                     : await API.get("/companies/me/jobs");
             setJobs(res.data.jobs || res.data);
         } catch (err) {
@@ -139,13 +141,13 @@ const ManageJobsPage: React.FC = () => {
             if (editingJob?._id) {
                 const endpoint =
                     role === "admin"
-                        ? `/jobs/${editingJob._id}`
+                        ? `/admin/jobs/${editingJob._id}`
                         : `/companies/me/jobs/${editingJob._id}`;
                 await API.put(endpoint, form);
                 toast.success("Job updated successfully");
             } else {
                 const endpoint =
-                    role === "admin" ? "/jobs" : "/companies/me/jobs";
+                    role === "admin" ? "/admin/jobs" : "/companies/me/jobs";
                 await API.post(endpoint, form);
                 toast.success("Job posted successfully");
             }
@@ -178,7 +180,7 @@ const ManageJobsPage: React.FC = () => {
         if (!window.confirm("Are you sure you want to delete this job?")) return;
         try {
             const endpoint =
-                role === "admin" ? `/jobs/${id}` : `/companies/me/jobs/${id}`;
+                role === "admin" ? `/admin/jobs/${id}` : `/companies/me/jobs/${id}`;
             await API.delete(endpoint);
             toast.success("Job deleted successfully");
             loadJobs();
@@ -188,26 +190,38 @@ const ManageJobsPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 p-6">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 px-4 py-6 sm:p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header Section */}
-                <div className="bg-white rounded-2xl shadow-lg p-8 mb-6 border border-blue-100">
-                    <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 mb-6 border border-blue-100">
+                    <div className="flex items-start justify-between gap-4">
                         <div>
-                            <h2 className="text-3xl font-bold text-gray-800 mb-2">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
                                 Manage Jobs
                             </h2>
-                            <p className="text-gray-600">
+                            <p className="text-sm sm:text-base text-gray-600">
                                 Create, edit, and manage your job postings
                             </p>
                         </div>
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                            aria-label="Close"
+                            title="Close"
+                        >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div className="mt-4 flex justify-end sm:justify-start">
                         <button
                             onClick={() => {
                                 resetForm();
                                 setShowForm(true);
                             }}
                             disabled={role === "company_admin" && company?.blocked}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:transform-none shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-medium flex items-center gap-2"
+                            className="w-full sm:w-auto px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:transform-none shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-medium flex items-center justify-center gap-2"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -219,9 +233,9 @@ const ManageJobsPage: React.FC = () => {
 
                 {/* Job Form */}
                 {showForm && (
-                    <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 border border-blue-100 animate-fadeIn">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-2xl font-bold text-gray-800">
+                    <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-8 mb-6 border border-blue-100 animate-fadeIn">
+                        <div className="flex items-start justify-between gap-4 mb-6">
+                            <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
                                 {editingJob ? "Edit Job Posting" : "Create New Job"}
                             </h3>
                             <button
@@ -234,7 +248,7 @@ const ManageJobsPage: React.FC = () => {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                             {role === "admin" && (
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -271,7 +285,7 @@ const ManageJobsPage: React.FC = () => {
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                                         Location
@@ -306,7 +320,7 @@ const ManageJobsPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                                         Min Salary (Rupees)
@@ -399,18 +413,18 @@ const ManageJobsPage: React.FC = () => {
                                 />
                             </div>
 
-                            <div className="flex justify-end gap-3 pt-4">
+                            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2 sm:pt-4">
                                 <button
                                     type="button"
                                     onClick={() => setShowForm(false)}
-                                    className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium transition-all"
+                                    className="w-full sm:w-auto px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={role === "company_admin" && company?.blocked}
-                                    className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:transform-none shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-medium"
+                                    className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:transform-none shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-medium"
                                 >
                                     {role === "company_admin" && company?.blocked ? "Posting Disabled" : (editingJob ? "Update Job" : "Post Job")}
                                 </button>
@@ -457,7 +471,7 @@ const ManageJobsPage: React.FC = () => {
                                 className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden group"
                             >
                                 <div className="p-6">
-                                    <div className="flex justify-between items-start gap-4">
+                                    <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
                                         <div className="flex-1">
                                             <div className="flex items-start justify-between mb-3">
                                                 <div>
@@ -530,11 +544,11 @@ const ManageJobsPage: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-col gap-2">
+                                        <div className="flex w-full lg:w-auto flex-row lg:flex-col gap-2">
                                             <button
                                                 onClick={() => handleEdit(job)}
                                                 disabled={job.blocked}
-                                                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2 ${
+                                                className={`w-full lg:w-auto px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 ${
                                                     job.blocked
                                                         ? "bg-gray-50 text-gray-400 cursor-not-allowed"
                                                         : "bg-blue-50 text-blue-600 hover:bg-blue-100"
@@ -549,7 +563,7 @@ const ManageJobsPage: React.FC = () => {
                                             <button
                                                 onClick={() => handleDelete(job._id!)}
                                                 disabled={job.blocked}
-                                                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2 ${
+                                                className={`w-full lg:w-auto px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 ${
                                                     job.blocked
                                                         ? "bg-gray-50 text-gray-400 cursor-not-allowed"
                                                         : "bg-red-50 text-red-600 hover:bg-red-100"

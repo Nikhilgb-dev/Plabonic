@@ -155,7 +155,7 @@ const CompanyDetailsModal: React.FC<Props> = ({ company, onClose, onRefresh, isA
                         </div>
                         {company.authorizedSignatory?.signature && (
                             <div className="sm:col-span-2 mt-2">
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Authorized personal [ ID Card ]</h4>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Authorized person [ ID Card ]</h4>
                                 <img
                                     src={company.authorizedSignatory.signature}
                                     alt="Signature"

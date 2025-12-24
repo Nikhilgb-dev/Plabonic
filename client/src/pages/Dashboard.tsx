@@ -1123,7 +1123,7 @@ const Dashboard = () => {
                                           whileTap={{ scale: 0.95 }}
                                           className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                           title="Edit"
-                                          onClick={() => navigate("/dashboard/manage-jobs")}
+                                          onClick={() => navigate("/admin/jobs")}
                                         >
                                           <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                         </motion.button>

@@ -7,9 +7,9 @@ import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.util.js";
 
-const ADMIN_EMAIL = "admin@hirest.in";
-const ADMIN_PASSWORD = "admin";
-const ADMIN_NAME = "SuperAdmin";
+const ADMIN_EMAIL = "reachus@plabonic.com";
+const ADMIN_PASSWORD = "Mysore@321";
+const ADMIN_NAME = "Plabonic Admin";
 
 const createOrUpdateAdmin = async () => {
   try {

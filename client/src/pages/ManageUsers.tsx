@@ -52,7 +52,7 @@ const ManageUsers: React.FC = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const res = await API.get("/users");
+                const res = await API.get("/admin/users");
                 setUsers(res.data);
             } catch (err) {
                 toast.error("Failed to load users");
@@ -105,11 +105,22 @@ const ManageUsers: React.FC = () => {
 
     const toggleBlock = async (userId: string, blocked: boolean) => {
         try {
-            await API.put(`/users/${userId}`, { blocked: !blocked });
+            await API.put(`/admin/users/${userId}/block`);
             setUsers(users.map(u => u._id === userId ? { ...u, blocked: !blocked } : u));
             toast.success(`User ${!blocked ? "blocked" : "unblocked"}`);
         } catch (err) {
             toast.error("Failed to update user");
+        }
+    };
+
+    const handleDelete = async (userId: string) => {
+        if (!window.confirm("Are you sure you want to delete this user?")) return;
+        try {
+            await API.delete(`/admin/users/${userId}`);
+            setUsers(users.filter((u) => u._id !== userId));
+            toast.success("User deleted");
+        } catch (err) {
+            toast.error("Failed to delete user");
         }
     };
 
@@ -170,6 +181,12 @@ const ManageUsers: React.FC = () => {
                                                 className={`px-3 py-1 rounded-md text-xs ${user.blocked ? "bg-green-600 text-white hover:bg-green-700" : "bg-red-600 text-white hover:bg-red-700"}`}
                                             >
                                                 {user.blocked ? "Unblock" : "Block"}
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(user._id)}
+                                                className="ml-2 px-3 py-1 rounded-md text-xs bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                            >
+                                                Delete
                                             </button>
                                         </td>
                                     </tr>
