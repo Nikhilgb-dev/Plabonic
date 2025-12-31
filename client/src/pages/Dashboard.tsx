@@ -1102,7 +1102,7 @@ const Dashboard = () => {
                                       })()}
                                     </td>
                                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden lg:table-cell">
-                                      {applications.filter(a => a.job._id === job._id).length}
+                                      {applications.filter(a => a.job?._id === job._id).length}
                                     </td>
                                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 max-w-xs truncate hidden xl:table-cell" title={job.remarks}>
                                       {job.remarks || "-"}
