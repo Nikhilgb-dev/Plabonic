@@ -11,6 +11,7 @@ import ApplicantDetailsModal from "@/components/ApplicantDetailsModal";
 import FreelancerList from "./FreelancerList";
 import MarketingAdminPanel from "@/components/MarketingAdminPanel";
 import AdminJobDetailsModal from "@/components/AdminJobDetailsModal";
+import Avatar from "@/components/Avatar";
 
 import {
   Briefcase,
@@ -793,17 +794,11 @@ const Dashboard = () => {
                         >
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-2 sm:gap-3">
-                              {company.logo ? (
-                                <img
-                                  src={company.logo}
-                                  alt={company.name}
-                                  className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover ring-2 ring-gray-100"
-                                />
-                              ) : (
-                                <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm ring-2 ring-gray-100">
-                                  {company.name.charAt(0).toUpperCase()}
-                                </div>
-                              )}
+                              <Avatar
+                                src={company.logo}
+                                alt={company.name}
+                                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full ring-2 ring-gray-100"
+                              />
                               <div className="min-w-0">
                                 <span className="font-medium text-gray-900 text-sm sm:text-base block truncate max-w-[120px] sm:max-w-none">{company.name}</span>
                                 <span className="text-xs text-gray-500 sm:hidden">{company.domain}</span>

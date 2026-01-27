@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "../api/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Star, Building2, Reply, X, Send } from "lucide-react";
+import Avatar from "../components/Avatar";
 import toast from "react-hot-toast";
 
 interface Feedback {
@@ -163,17 +164,11 @@ const AdminFeedbacks: React.FC = () => {
                         {/* Left: Author Info */}
                         <div className="flex items-start gap-3 min-w-fit">
                           {fb.submittedBy === "user" ? (
-                            fb.user?.profilePhoto ? (
-                              <img
-                                src={fb.user.profilePhoto}
-                                alt={fb.user.name}
-                                className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-semibold text-lg">
-                                {fb.user?.name?.charAt(0)}
-                              </div>
-                            )
+                            <Avatar
+                              src={fb.user?.profilePhoto}
+                              alt={fb.user?.name || "User"}
+                              className="w-12 h-12 rounded-full ring-2 ring-blue-100"
+                            />
                           ) : (
                             <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
                               <Building2 className="w-6 h-6" />

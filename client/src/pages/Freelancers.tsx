@@ -3,6 +3,7 @@ import API from "../api/api";
 import { MapPin, Bookmark, Share2 } from "lucide-react";
 import toast from "react-hot-toast";
 import FreelancerApplyModal from "../components/FreelancerApplyModal";
+import Avatar from "../components/Avatar";
 
 const Freelancers: React.FC = () => {
   const [freelancers, setFreelancers] = useState<any[]>([]);
@@ -207,10 +208,10 @@ const Freelancers: React.FC = () => {
                 >
                   {/* Top */}
                   <div className="p-5 flex items-start gap-4">
-                    <img
-                      src={f.photo || "https://via.placeholder.com/160"}
+                    <Avatar
+                      src={f.photo}
                       alt={f.name}
-                      className="w-20 h-20 rounded-full border border-gray-200 object-cover shadow-sm"
+                      className="w-20 h-20 rounded-full border border-gray-200 shadow-sm"
                     />
                     <div className="flex-1">
                       <div className="flex items-center justify-between gap-2">

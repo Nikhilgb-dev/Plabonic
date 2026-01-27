@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import API from "@/api/api";
 import { motion } from "framer-motion";
 import { Camera, Trash2, Save, Building2, User, Shield } from "lucide-react";
+import Avatar from "@/components/Avatar";
 
 const Settings = () => {
     const navigate = useNavigate();
@@ -140,10 +141,10 @@ const Settings = () => {
 
                 {/* Profile Photo */}
                 <div className="flex items-center gap-6 mb-8">
-                    <img
-                        src={user?.profilePhoto || "https://via.placeholder.com/80"}
+                    <Avatar
+                        src={user?.profilePhoto}
                         alt="Profile"
-                        className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                        className="w-20 h-20 rounded-full border-2 border-gray-200"
                     />
                     <div>
                         <input

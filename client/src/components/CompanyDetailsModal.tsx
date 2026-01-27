@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import API from "../api/api";
 import { toast } from "react-hot-toast";
+import Avatar from "./Avatar";
 
 interface Props {
     company: any;
@@ -53,10 +54,10 @@ const CompanyDetailsModal: React.FC<Props> = ({ company, onClose, onRefresh, isA
 
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6">
-                    <img
-                        src={company.logo || "https://via.placeholder.com/80"}
+                    <Avatar
+                        src={company.logo}
                         alt={company.name}
-                        className="w-16 h-16 rounded-lg object-cover border"
+                        className="w-16 h-16 rounded-lg border"
                     />
                     <div>
                         <h2 className="text-2xl font-bold">{company.name}</h2>

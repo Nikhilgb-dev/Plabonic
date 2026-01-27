@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/api";
+import Avatar from "../components/Avatar";
 
 const Profile = () => {
     const [user, setUser] = useState<any>(null);
@@ -12,7 +13,7 @@ const Profile = () => {
 
     return (
         <div className="p-6 max-w-lg mx-auto">
-            <img src={user.profilePhoto || "https://via.placeholder.com/100"} alt="Profile" className="w-24 h-24 rounded-full mb-4" />
+            <Avatar src={user.profilePhoto} alt="Profile" className="w-24 h-24 rounded-full mb-4" />
             <h2 className="text-2xl font-bold">{user.name}</h2>
             <p>{user.headline}</p>
             <p>{user.description}</p>

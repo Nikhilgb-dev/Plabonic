@@ -11,6 +11,7 @@ import {
     UserSearch,
     LogOut,
 } from "lucide-react";
+import Avatar from "./Avatar";
 
 const navItems = [
     { path: "/company/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -44,17 +45,11 @@ const CompanyLayout: React.FC = () => {
                 <div>
                     <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
                         <div className="flex items-center gap-3">
-                            {company?.logo ? (
-                                <img
-                                    src={company.logo}
-                                    alt={company.name || "Company Logo"}
-                                    className="w-10 h-10 rounded-full object-cover"
-                                />
-                            ) : (
-                                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg">
-                                    {company?.name?.charAt(0).toUpperCase() || "C"}
-                                </div>
-                            )}
+                            <Avatar
+                                src={company?.logo}
+                                alt={company?.name || "Company Logo"}
+                                className="w-10 h-10 rounded-full"
+                            />
                             <div>
                                 <div className="font-semibold text-gray-800 truncate w-32 sm:w-40">
                                     {company?.name}

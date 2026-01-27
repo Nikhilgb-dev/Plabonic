@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import API from "../api/api";
 import logo from "../assets/logo.jpg";
 import { Bell, User, LogOut, Settings, Briefcase, Users, LayoutDashboard, Menu, X, Copy, Check } from "lucide-react";
+import Avatar from "./Avatar";
 import { motion, AnimatePresence } from "framer-motion";
 
 const supportEmail = " reachus@plabonic.com";
@@ -375,10 +376,10 @@ export default function Navbar() {
                     }}
                     className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 pr-2 sm:pr-3 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                   >
-                    <img
-                      src={user.profilePhoto || "https://via.placeholder.com/40"}
+                    <Avatar
+                      src={user.profilePhoto}
                       alt="profile"
-                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-gray-200 object-cover flex-shrink-0"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-gray-200 flex-shrink-0"
                     />
                     <span className="hidden md:block font-medium text-gray-800 text-xs sm:text-sm max-w-[80px] lg:max-w-[120px] truncate">
                       {user.name}
@@ -476,10 +477,10 @@ export default function Navbar() {
             <div className="px-3 sm:px-4 py-4 space-y-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
               {/* User Profile Section - Mobile Only */}
               <div className="sm:hidden flex items-center gap-3 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg">
-                <img
-                  src={user.profilePhoto || "https://via.placeholder.com/40"}
+                <Avatar
+                  src={user.profilePhoto}
                   alt="profile"
-                  className="w-10 h-10 rounded-full border-2 border-gray-200 object-cover flex-shrink-0"
+                  className="w-10 h-10 rounded-full border-2 border-gray-200 flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-800 text-sm truncate">{user.name}</p>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "@/api/api";
 import { toast } from "react-hot-toast";
 import EditProfileModal from "../components/EditProfileModal";
+import Avatar from "../components/Avatar";
 
 interface CompanyData {
     name: string;
@@ -46,10 +47,10 @@ const CompanyProfilePage: React.FC = () => {
         <div className="max-w-3xl mx-auto bg-white shadow-sm border border-gray-200 rounded-lg p-6">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
-                    <img
-                        src={company.logo || "https://via.placeholder.com/80"}
+                    <Avatar
+                        src={company.logo}
                         alt="Company Logo"
-                        className="w-20 h-20 rounded object-cover border"
+                        className="w-20 h-20 rounded border"
                     />
                     <div>
                         <h2 className="text-2xl font-semibold text-gray-800">{company.name}</h2>

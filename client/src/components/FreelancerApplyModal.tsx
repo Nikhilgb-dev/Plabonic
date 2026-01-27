@@ -209,7 +209,7 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
               <p className="text-sm text-gray-500 mt-1">Word count: {wordCount} (minimum 50)</p>
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Supporting Document *
               </label>
@@ -221,7 +221,7 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
                 className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm sm:text-base
                   file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
               />
-            </div>
+            </div> */}
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">

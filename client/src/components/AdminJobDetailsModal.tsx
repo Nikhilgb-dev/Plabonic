@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import API from "../api/api";
 import toast from "react-hot-toast";
+import Avatar from "./Avatar";
 
 interface Props {
     job: any;
@@ -56,17 +57,11 @@ const AdminJobDetailsModal: React.FC<Props> = ({ job, onClose, onRefresh }) => {
                     </button>
 
                     <div className="flex items-start gap-4">
-                        {job.company?.logo ? (
-                            <img
-                                src={job.company.logo}
-                                alt={job.company.name}
-                                className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover bg-white p-2 shadow-lg"
-                            />
-                        ) : (
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white text-blue-700 flex items-center justify-center rounded-xl font-bold text-2xl shadow-lg">
-                                {job.company?.name?.charAt(0) || "C"}
-                            </div>
-                        )}
+                        <Avatar
+                            src={job.company?.logo}
+                            alt={job.company?.name || "Company"}
+                            className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-white shadow-lg"
+                        />
                         <div className="flex-1 text-white pt-1">
                             <h2 className="text-xl sm:text-2xl font-bold mb-2 pr-8">{job.title}</h2>
                             <p className="text-blue-100 text-sm sm:text-base font-medium">{job.company?.name}</p>

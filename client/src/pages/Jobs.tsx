@@ -6,6 +6,7 @@ import JobDetailsModal from "./JobDetailsModal";
 import ReportAbuseModal from "../components/ReportAbuseModal";
 import { Bookmark, Share2, Shield } from "lucide-react";
 import toast from "react-hot-toast";
+import Avatar from "../components/Avatar";
 
 const Jobs = () => {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -369,17 +370,11 @@ const Jobs = () => {
                   {/* Company Info */}
                   {job.company && (
                     <div className="flex items-center gap-3 mb-3">
-                      {job.company.logo ? (
-                        <img
-                          src={job.company.logo}
-                          alt={job.company.name}
-                          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-1 ring-gray-200"
-                        />
-                      ) : (
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-semibold">
-                          {job.company?.name?.charAt(0)}
-                        </div>
-                      )}
+                      <Avatar
+                        src={job.company.logo}
+                        alt={job.company.name}
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full ring-1 ring-gray-200"
+                      />
                       <div>
                         <h4 className="font-semibold text-gray-800 text-sm sm:text-base">
                           {job.company.name}

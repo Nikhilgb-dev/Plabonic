@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import AddFreelancer from "./AddFreelancer";
 import toast from "react-hot-toast";
+import Avatar from "../components/Avatar";
 
 const FreelancerList: React.FC = () => {
     const [freelancers, setFreelancers] = useState<any[]>([]);
@@ -196,10 +197,10 @@ const FreelancerList: React.FC = () => {
                                 {/* Header */}
                                 <div className="flex items-start gap-4">
                                     <div className="relative">
-                                        <img
-                                            src={freelancer.photo || "https://via.placeholder.com/160"}
+                                        <Avatar
+                                            src={freelancer.photo}
                                             alt={freelancer.name}
-                                            className="w-16 h-16 rounded-2xl object-cover ring-1 ring-gray-200 shadow-sm"
+                                            className="w-16 h-16 rounded-2xl ring-1 ring-gray-200 shadow-sm"
                                         />
                                         {freelancer.isVerified && (
                                             <span className="absolute -bottom-2 -right-2 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 shadow-sm">

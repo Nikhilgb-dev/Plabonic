@@ -8,6 +8,7 @@ import ApplicantDetailsModal from "@/components/ApplicantDetailsModal";
 import EditJobModal from "@/components/EditJobModal";
 import CompanyForm from "@/components/CompanyForm";
 import toast from "react-hot-toast";
+import Avatar from "@/components/Avatar";
 
 type DashboardData = {
     employeesCount: number;
@@ -464,17 +465,11 @@ const CompanyDashboard: React.FC = () => {
                                     className="border rounded-lg p-3 bg-white shadow-xs text-[11px]"
                                 >
                                     <div className="flex items-center gap-3">
-                                        {a.user?.profilePhoto ? (
-                                            <img
-                                                src={a.user.profilePhoto}
-                                                alt={a.user.name}
-                                                className="w-9 h-9 rounded-full object-cover ring-1 ring-gray-200"
-                                            />
-                                        ) : (
-                                            <div className="w-9 h-9 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold">
-                                                {a.user?.name?.charAt(0)}
-                                            </div>
-                                        )}
+                                        <Avatar
+                                            src={a.user?.profilePhoto}
+                                            alt={a.user?.name || "Applicant"}
+                                            className="w-9 h-9 rounded-full ring-1 ring-gray-200"
+                                        />
                                         <div className="min-w-0">
                                             <div className="font-medium text-gray-900 text-sm truncate">
                                                 {a.user?.name}
@@ -564,24 +559,11 @@ const CompanyDashboard: React.FC = () => {
                                             >
                                                 <td className="p-2 sm:p-3">
                                                     <div className="flex items-center gap-3 min-w-[180px]">
-                                                        {a.user?.profilePhoto ? (
-                                                            <img
-                                                                src={
-                                                                    a.user
-                                                                        .profilePhoto
-                                                                }
-                                                                alt={
-                                                                    a.user.name
-                                                                }
-                                                                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover ring-1 ring-gray-200"
-                                                            />
-                                                        ) : (
-                                                            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold">
-                                                                {a.user?.name?.charAt(
-                                                                    0
-                                                                )}
-                                                            </div>
-                                                        )}
+                                                        <Avatar
+                                                            src={a.user?.profilePhoto}
+                                                            alt={a.user?.name || "Applicant"}
+                                                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full ring-1 ring-gray-200"
+                                                        />
                                                         <div>
                                                             <div className="font-medium text-gray-900 text-sm">
                                                                 {a.user?.name}
