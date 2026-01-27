@@ -138,9 +138,15 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            toast.success(mode === "edit" ? "✅ Company details updated successfully!" : "✅ Company registered successfully!");
+            toast.success(mode === "edit" ? "✅ Company details updated successfully!" : "Company registered successfully!");
 
-            if (onSuccess) setTimeout(() => onSuccess(), 800);
+            if (mode === "self") {
+                setTimeout(() => {
+                    window.location.href = "/company/login";
+                }, 800);
+            } else if (onSuccess) {
+                setTimeout(() => onSuccess(), 800);
+            }
 
             setForm({
                 name: "",

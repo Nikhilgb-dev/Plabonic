@@ -5,7 +5,7 @@ import logo from "../assets/logo.jpg";
 import { Bell, User, LogOut, Settings, Briefcase, Users, LayoutDashboard, Menu, X, Copy, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const supportEmail = "Plabonic.hq@gmail.com";
+const supportEmail = " reachus@plabonic.com";
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);

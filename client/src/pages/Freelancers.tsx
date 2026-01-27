@@ -192,7 +192,7 @@ const Freelancers: React.FC = () => {
             No freelance opportunities available right now.
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 items-stretch">
             {filteredFreelancers.map((f) => {
               const isExpanded = !!expandedCards[f._id];
               const description = f.descriptionOfWork || "";
@@ -201,7 +201,7 @@ const Freelancers: React.FC = () => {
               return (
                 <div
                   key={f._id}
-                  className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-indigo-100 overflow-hidden flex flex-col ${
+                  className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-indigo-100 overflow-hidden flex flex-col h-full ${
                     isExpanded ? "h-auto" : "h-[410px]" // collapsed = fixed height, expanded = auto
                   }`}
                 >
@@ -295,7 +295,13 @@ const Freelancers: React.FC = () => {
                     {/* Description with Read more */}
                     {description && (
                       <div className="mb-3 text-sm text-gray-700">
-                        <p>{getDescriptionText(description, isExpanded)}</p>
+                        <div
+                          className={`${
+                            isExpanded ? "h-auto" : "h-[4.5rem] overflow-hidden"
+                          }`}
+                        >
+                          <p>{getDescriptionText(description, isExpanded)}</p>
+                        </div>
                         {isLong && (
                           <button
                             type="button"
@@ -308,38 +314,40 @@ const Freelancers: React.FC = () => {
                       </div>
                     )}
 
-                    <div className="text-sm text-gray-800 font-semibold mb-4">
-                      Pricing:{" "}
-                      {f.pricing?.min && f.pricing?.max ? (
-                        <>INR {f.pricing.min} - INR {f.pricing.max} Rupees</>
+                    <div className="mt-auto">
+                      <div className="text-sm text-gray-800 font-semibold mb-4">
+                        Pricing:{" "}
+                        {f.pricing?.min && f.pricing?.max ? (
+                          <>INR {f.pricing.min} - INR {f.pricing.max} Rupees</>
+                        ) : (
+                          <span className="font-normal text-gray-500">Not specified</span>
+                        )}
+                      </div>
+
+                      {/* Button pinned at bottom */}
+                      {f.hasApplied ? (
+                        <button
+                          disabled
+                          className="w-full py-2.5 bg-gray-200 text-gray-600 rounded-xl cursor-not-allowed font-medium"
+                        >
+                          Applied
+                        </button>
+                      ) : user?.blocked ? (
+                        <button
+                          disabled
+                          className="w-full py-2.5 bg-gray-200 text-gray-600 rounded-xl cursor-not-allowed font-medium"
+                        >
+                          Account Blocked
+                        </button>
                       ) : (
-                        <span className="font-normal text-gray-500">Not specified</span>
+                        <button
+                          onClick={() => handleApply(f._id)}
+                          className="w-full py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-medium shadow"
+                        >
+                          Apply for Service
+                        </button>
                       )}
                     </div>
-
-                    {/* Button pinned at bottom */}
-                    {f.hasApplied ? (
-                      <button
-                        disabled
-                        className="w-full mt-auto py-2.5 bg-gray-200 text-gray-600 rounded-xl cursor-not-allowed font-medium"
-                      >
-                        Applied
-                      </button>
-                    ) : user?.blocked ? (
-                      <button
-                        disabled
-                        className="w-full mt-auto py-2.5 bg-gray-200 text-gray-600 rounded-xl cursor-not-allowed font-medium"
-                      >
-                        Account Blocked
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleApply(f._id)}
-                        className="w-full mt-auto py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-medium shadow"
-                      >
-                        Apply for Service
-                      </button>
-                    )}
                   </div>
                 </div>
               );

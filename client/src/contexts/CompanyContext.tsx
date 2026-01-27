@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import API from "@/api/api";
 
 /**
@@ -86,7 +86,7 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({
     /**
      * Refresh company data from backend (/api/companies/me)
      */
-    const refreshCompany = async () => {
+    const refreshCompany = useCallback(async () => {
         if (!token) return;
         setLoading(true);
         try {
@@ -99,7 +99,7 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({
         } finally {
             setLoading(false);
         }
-    };
+    }, [token]);
 
     return (
         <CompanyContext.Provider
