@@ -367,6 +367,49 @@ export const withdrawFreelancerApplication = async (req, res) => {
   }
 };
 
+export const updateFreelancerApplication = async (req, res) => {
+  try {
+    const application = await FreelancerApplication.findById(req.params.id);
+    if (!application) return res.status(404).json({ message: "Application not found" });
+
+    if (application.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    if (["hired", "accepted", "rejected"].includes(application.status)) {
+      return res.status(400).json({ message: "Cannot edit this application at its current status" });
+    }
+
+    const { clientName, contactNumber, officialEmail, requirements, message } = req.body;
+
+    if (requirements !== undefined) {
+      const trimmed = String(requirements).trim();
+      if (!trimmed) {
+        return res.status(400).json({ message: "Requirements are required" });
+      }
+      const wordCount = trimmed.split(/\s+/).length;
+      if (wordCount < 50) {
+        return res.status(400).json({ message: "Requirements must be at least 50 words" });
+      }
+      application.requirements = trimmed;
+    }
+
+    if (clientName !== undefined) application.clientName = clientName;
+    if (contactNumber !== undefined) application.contactNumber = contactNumber;
+    if (officialEmail !== undefined) application.officialEmail = officialEmail;
+    if (message !== undefined) application.message = message;
+
+    if (req.file) {
+      application.resume = await uploadToCloudinary(req.file, "resumes");
+    }
+
+    await application.save();
+    res.json({ message: "Application updated successfully", application });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 export const respondToFreelancerOffer = async (req, res) => {
   try {
     const { action } = req.body; // "accept" or "reject"

@@ -5,13 +5,17 @@ import toast from "react-hot-toast";
 interface FreelancerApplyModalProps {
   freelancerId: string;
   freelancerName: string;
+  application?: any;
   onClose: () => void;
+  onSaved?: () => void;
 }
 
 const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
   freelancerId,
   freelancerName,
+  application,
   onClose,
+  onSaved,
 }) => {
   const [formData, setFormData] = useState({
     clientName: "",
@@ -24,12 +28,33 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [prepopulating, setPrepopulating] = useState(true);
+  const isEdit = !!application?._id;
+
+  const computeWordCount = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return 0;
+    // split on spaces/newlines/tabs and filter out empty tokens
+    return trimmed.split(/\s+/).filter(Boolean).length;
+  };
 
   // Prepopulate form with user's previous application data
   useEffect(() => {
     const prepopulateForm = async () => {
+      if (application) {
+        setFormData({
+          clientName: application.clientName || "",
+          contactNumber: application.contactNumber || "",
+          officialEmail: application.officialEmail || "",
+          requirements: application.requirements || "",
+          message: application.message || "",
+        });
+        setWordCount(computeWordCount(application.requirements || ""));
+        setPrepopulating(false);
+        return;
+      }
+
       try {
-        const response = await API.get('/freelancers/me/applications');
+        const response = await API.get("/freelancers/me/applications");
         const applications = response.data;
 
         if (applications && applications.length > 0) {
@@ -46,14 +71,14 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
         }
       } catch (error) {
         // keep silent — not critical
-        console.log('No previous applications found', error);
+        console.log("No previous applications found", error);
       } finally {
         setPrepopulating(false);
       }
     };
 
     prepopulateForm();
-  }, []);
+  }, [application]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +88,7 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
       return;
     }
 
-    if (!resume) {
+    if (!resume && !isEdit) {
       toast.error("Please upload your resume");
       return;
     }
@@ -77,25 +102,28 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
       formDataToSend.append("officialEmail", formData.officialEmail);
       formDataToSend.append("requirements", formData.requirements);
       formDataToSend.append("message", formData.message);
-      formDataToSend.append("resume", resume);
+      if (resume) {
+        formDataToSend.append("resume", resume);
+      }
 
-      await API.post(`/freelancers/${freelancerId}/apply`, formDataToSend, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-      toast.success("Application submitted successfully!");
+      if (isEdit) {
+        await API.put(`/freelancers/applications/${application._id}`, formDataToSend, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        toast.success("Application updated successfully!");
+      } else {
+        await API.post(`/freelancers/${freelancerId}/apply`, formDataToSend, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        toast.success("Application submitted successfully!");
+      }
+      onSaved?.();
       onClose();
     } catch (err: any) {
       toast.error(err?.response?.data?.message || "Failed to apply");
     } finally {
       setLoading(false);
     }
-  };
-
-  const computeWordCount = (text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed) return 0;
-    // split on spaces/newlines/tabs and filter out empty tokens
-    return trimmed.split(/\s+/).filter(Boolean).length;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -130,10 +158,10 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
               </svg>
             </button>
             <h2 id="apply-modal-title" className="text-lg sm:text-2xl font-bold mb-1">
-              Apply for Service
+              {isEdit ? "Edit Application" : "Apply for Service"}
             </h2>
             <p className="text-indigo-100 text-xs sm:text-sm truncate">
-              Apply to work with {freelancerName}
+              {isEdit ? `Update your application to ${freelancerName}` : `Apply to work with ${freelancerName}`}
             </p>
           </div>
 
@@ -209,19 +237,22 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
               <p className="text-sm text-gray-500 mt-1">Word count: {wordCount} (minimum 50)</p>
             </div>
 
-            {/* <div>
+            <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Supporting Document *
+                Supporting Document {isEdit ? "(Optional)" : "*"}
               </label>
               <input
                 type="file"
                 accept=".pdf,.doc,.docx"
                 onChange={(e) => setResume(e.target.files?.[0] || null)}
-                required
+                required={!isEdit}
                 className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm sm:text-base
                   file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
               />
-            </div> */}
+              {isEdit && (
+                <p className="text-xs text-gray-500 mt-1">Leave blank to keep your existing resume.</p>
+              )}
+            </div>
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -251,7 +282,7 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
                 disabled={loading}
                 className="w-full sm:w-1/2 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-all shadow-md"
               >
-                {loading ? "Applying..." : "Apply"}
+                {loading ? (isEdit ? "Saving..." : "Applying...") : isEdit ? "Save Changes" : "Apply"}
               </button>
             </div>
           </form>
@@ -262,3 +293,4 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
 };
 
 export default FreelancerApplyModal;
+

@@ -2,12 +2,13 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import API from "@/api/api";
 import { motion } from "framer-motion";
-import { CheckCircle, XCircle, Trash2, Eye, ExternalLink } from "lucide-react";
+import { CheckCircle, XCircle, Trash2, Eye, ExternalLink, Pencil } from "lucide-react";
 import JobDetailsModal from "@/components/JobDetailsModal";
 import FreelancerApplicationDetailsModal from "@/components/FreelancerApplicationDetailsModal";
 import OfferDetailsModal from "@/components/OfferDetailsModal";
 import FeedbackButton from "@/components/FeedbackButton";
 import ApplyModal from "@/components/ApplyModal";
+import FreelancerApplyModal from "@/components/FreelancerApplyModal";
 import toast from "react-hot-toast";
 
 type AnyObj = Record<string, any>;
@@ -118,7 +119,7 @@ const JobAppCard = ({ a, onView, onWithdraw, onViewOffer }: { a: AnyObj; onView:
 );
 
 /** Mobile card for freelancer application */
-const FreelancerAppCard = ({ a, onView, onWithdraw, onViewOffer }: { a: AnyObj; onView: (app: AnyObj) => void; onWithdraw: (id: string) => void; onViewOffer: (app: AnyObj, type: "freelancer") => void }) => (
+const FreelancerAppCard = ({ a, onView, onWithdraw, onViewOffer, onEdit, canEdit }: { a: AnyObj; onView: (app: AnyObj) => void; onWithdraw: (id: string) => void; onViewOffer: (app: AnyObj, type: "freelancer") => void; onEdit: (app: AnyObj) => void; canEdit: boolean }) => (
     <motion.div
         layout
         initial={{ opacity: 0, y: 6 }}
@@ -188,6 +189,15 @@ const FreelancerAppCard = ({ a, onView, onWithdraw, onViewOffer }: { a: AnyObj; 
                     >
                         <Eye className="w-4 h-4 inline-block mr-2" /> View
                     </button>
+                    {canEdit && (
+                        <button
+                            onClick={() => onEdit(a)}
+                            aria-label="Edit freelancer application"
+                            className="text-sm px-3 py-2 rounded-md border border-indigo-600 text-indigo-600 hover:bg-indigo-50 transition"
+                        >
+                            <Pencil className="w-4 h-4 inline-block mr-2" /> Edit
+                        </button>
+                    )}
                     <button
                         onClick={() => onWithdraw(a._id)}
                         aria-label="Withdraw freelancer application"
@@ -213,6 +223,7 @@ const UserDashboard: React.FC = () => {
     const [showApplyModal, setShowApplyModal] = useState(false);
     const [applyJobId, setApplyJobId] = useState<string | null>(null);
     const [currentUser, setCurrentUser] = useState<AnyObj | null>(null);
+    const [editingFreelancerApplication, setEditingFreelancerApplication] = useState<AnyObj | null>(null);
 
     // Fetchers
     const fetchApplications = useCallback(async () => {
@@ -319,6 +330,11 @@ const UserDashboard: React.FC = () => {
         }
         setApplyJobId(jobId);
         setShowApplyModal(true);
+    };
+
+    const canEditFreelancerApplication = (app: AnyObj) => {
+        const status = String(app?.status || "applied").toLowerCase();
+        return !["hired", "accepted", "rejected"].includes(status);
     };
 
     // memoized stats so re-renders don't recompute
@@ -557,6 +573,8 @@ const UserDashboard: React.FC = () => {
                                 onView={(app) => setSelectedFreelancerApplication(app)}
                                 onWithdraw={withdrawFreelancerApplication}
                                 onViewOffer={(app, type) => setSelectedOffer({ application: app, type })}
+                                onEdit={(app) => setEditingFreelancerApplication(app)}
+                                canEdit={canEditFreelancerApplication(a)}
                             />
                         ))
                     )}
@@ -622,6 +640,14 @@ const UserDashboard: React.FC = () => {
                                                     <button onClick={() => setSelectedFreelancerApplication(a)} className="text-blue-600 hover:underline text-sm inline-flex items-center">
                                                         <Eye className="w-4 h-4 inline-block mr-1" /> View
                                                     </button>
+                                                    {canEditFreelancerApplication(a) && (
+                                                        <button
+                                                            onClick={() => setEditingFreelancerApplication(a)}
+                                                            className="text-indigo-600 hover:underline text-sm inline-flex items-center"
+                                                        >
+                                                            <Pencil className="w-4 h-4 inline-block mr-1" /> Edit
+                                                        </button>
+                                                    )}
                                                     <button onClick={() => withdrawFreelancerApplication(a._id)} className="text-red-600 hover:underline text-sm inline-flex items-center">
                                                         <Trash2 className="w-4 h-4 inline-block mr-1" /> Withdraw
                                                     </button>
@@ -784,6 +810,21 @@ const UserDashboard: React.FC = () => {
                         setShowApplyModal(false);
                         setApplyJobId(null);
                         fetchApplications();
+                    }}
+                />
+            )}
+
+            {editingFreelancerApplication && (
+                <FreelancerApplyModal
+                    freelancerId={
+                        editingFreelancerApplication.freelancer?._id || editingFreelancerApplication.freelancer
+                    }
+                    freelancerName={editingFreelancerApplication.freelancer?.name || "Freelancer"}
+                    application={editingFreelancerApplication}
+                    onClose={() => setEditingFreelancerApplication(null)}
+                    onSaved={() => {
+                        setEditingFreelancerApplication(null);
+                        fetchFreelancerApplications();
                     }}
                 />
             )}

@@ -13,6 +13,7 @@ import {
   updateMyFreelancerProfile,
   updateApplicationStatus,
   withdrawFreelancerApplication,
+  updateFreelancerApplication,
   respondToFreelancerOffer,
 } from "../controllers/freelancer.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
@@ -30,6 +31,7 @@ router.get("/me", protect, getMyFreelancerProfile);
 router.put("/me", protect, upload.fields([{ name: 'photo', maxCount: 1 }, { name: 'resume', maxCount: 1 }]), updateMyFreelancerProfile);
 
 router.put("/applications/:id/status", protect, updateApplicationStatus);
+router.put("/applications/:id", protect, upload.single("resume"), updateFreelancerApplication);
 router.put("/applications/:id/respond", protect, respondToFreelancerOffer);
 router.delete("/applications/:id", protect, withdrawFreelancerApplication);
 
