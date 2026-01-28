@@ -39,6 +39,7 @@ const Dashboard = () => {
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
   const [companies, setCompanies] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [freelancersCount, setFreelancersCount] = useState(0);
   const [posts, setPosts] = useState<any[]>([]);
   const [selectedApplicant, setSelectedApplicant] = useState<any | null>(null);
   const [abuseReports, setAbuseReports] = useState<any[]>([]);
@@ -107,6 +108,14 @@ const Dashboard = () => {
 
   const fetchUsers = () => API.get("/admin/users").then((res) => setUsers(res.data));
   const fetchCompanies = () => API.get("/companies").then((res) => setCompanies(res.data));
+  const fetchFreelancersCount = async () => {
+    try {
+      const res = await API.get("/freelancers");
+      setFreelancersCount(Array.isArray(res.data) ? res.data.length : 0);
+    } catch {
+      setFreelancersCount(0);
+    }
+  };
 
   const fetchApplications = async () => {
     try {
@@ -282,6 +291,7 @@ const Dashboard = () => {
       API.get("/communities").then((res) => setCommunities(res.data));
       fetchUsers();
       fetchCompanies();
+      fetchFreelancersCount();
       fetchApplications();
       fetchAbuseReports();
     } else if (user?.role === "user") {
@@ -522,6 +532,15 @@ const Dashboard = () => {
       iconColor: "text-sky-600",
       action: () => setShowCreateCandidateModal(true),
       linkText: "Create new user"
+    },
+    {
+      icon: Star,
+      label: "Total Freelancers",
+      value: freelancersCount,
+      bgColor: "bg-emerald-50",
+      iconColor: "text-emerald-600",
+      link: "/admin/freelancers",
+      linkText: "View freelancers"
     }
   ];
 
@@ -564,7 +583,7 @@ const Dashboard = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-6 sm:mb-8"
             >
               {statsData.map((stat, index) => (
                 <motion.div

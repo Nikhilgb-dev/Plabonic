@@ -129,6 +129,15 @@ export const blockUser = async (req, res) => {
     user.blocked = !user.blocked;
     await user.save();
 
+    if (user.role === "company_admin" && user.company) {
+      const company = await Company.findById(user.company);
+      if (company) {
+        company.blocked = user.blocked;
+        await company.save();
+        await Job.updateMany({ company: company._id }, { blocked: company.blocked });
+      }
+    }
+
     res.json({
       message: `User ${user.blocked ? "blocked" : "unblocked"}`,
       user,

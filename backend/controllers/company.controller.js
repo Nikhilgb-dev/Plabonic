@@ -263,9 +263,18 @@ export const deleteCompany = async (req, res) => {
     const company = await Company.findByIdAndDelete(req.params.id);
     if (!company) return res.status(404).json({ message: "We could not find that company." });
 
-    // OPTIONAL cleanup: if you want to unset the company ref on users:
-    // await User.updateMany({ company: company._id }, { $unset: { company: "" } });
-    // Optionally revert their role if required.
+    const jobs = await Job.find({ company: company._id }).select("_id");
+    const jobIds = jobs.map((j) => j._id);
+
+    if (jobIds.length) {
+      await Application.deleteMany({ job: { $in: jobIds } });
+      await Notification.deleteMany({ job: { $in: jobIds } });
+      await AbuseReport.deleteMany({ job: { $in: jobIds } });
+      await Job.deleteMany({ _id: { $in: jobIds } });
+    }
+
+    await Notification.deleteMany({ company: company._id });
+    await User.deleteMany({ company: company._id });
 
     res.json({ message: "Company deleted successfully" });
   } catch (err) {

@@ -65,7 +65,8 @@ const Jobs = () => {
     setLoading(true);
     API.get("/jobs")
       .then((res) => {
-        setJobs(res.data);
+        const data = Array.isArray(res.data) ? res.data : [];
+        setJobs(data.filter((job) => job.company && job.company.blocked !== true));
         setLoading(false);
       })
       .catch(() => setLoading(false));

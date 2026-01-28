@@ -272,10 +272,21 @@ export const getJobs = async (req, res) => {
       }
     }
 
+    if (!requestUser || (requestUser.role !== "admin" && requestUser.role !== "company_admin")) {
+      const activeCompanies = await Company.find({ blocked: { $ne: true } }).select("_id");
+      const activeCompanyIds = activeCompanies.map((c) => c._id);
+      query = { ...query, company: { $in: activeCompanyIds } };
+    }
+
     const jobs = await Job.find(query)
       .sort({ createdAt: -1 })
       .populate("postedBy", "name email")
-      .populate("company", "name logo authorizedSignatory");
+      .populate("company", "name logo authorizedSignatory blocked");
+
+    const filteredJobs =
+      requestUser && (requestUser.role === "admin" || requestUser.role === "company_admin")
+        ? jobs
+        : jobs.filter((job) => job.company && job.company.blocked !== true);
 
     let appliedJobs = [];
     if (requestUser?._id) {
@@ -285,7 +296,7 @@ export const getJobs = async (req, res) => {
       appliedJobs = applications.map((a) => a.job.toString());
     }
 
-    const jobsWithFlag = jobs.map((job) => ({
+    const jobsWithFlag = filteredJobs.map((job) => ({
       ...job.toObject(),
       hasApplied: appliedJobs.includes(job._id.toString()),
     }));
@@ -308,6 +319,12 @@ export const getJobById = async (req, res) => {
     ]);
 
     if (!job) return res.status(404).json({ message: "We could not find that job." });
+    if (!job.company) return res.status(404).json({ message: "We could not find that job." });
+    if (!user || (user.role !== "admin" && user.role !== "company_admin")) {
+      if (job.company.blocked) {
+        return res.status(404).json({ message: "We could not find that job." });
+      }
+    }
 
     let hasApplied = false;
     if (user) {
