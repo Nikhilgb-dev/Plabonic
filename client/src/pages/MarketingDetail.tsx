@@ -87,7 +87,10 @@ const MarketingDetail: React.FC = () => {
     fetchCard();
   }, [id]);
 
-  const gallery = useMemo(() => card?.gallery || [], [card]);
+  const gallery = useMemo(
+    () => (card?.gallery || []).filter((item) => typeof item === "string" && item.trim().length > 0),
+    [card]
+  );
 
   useEffect(() => {
     if (!gallery.length) return;

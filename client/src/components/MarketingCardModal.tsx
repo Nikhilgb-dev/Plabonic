@@ -70,7 +70,10 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
       const newGalleryUrls = await Promise.all(
         gallery.map((file) => file ? uploadFile(file) : Promise.resolve(null))
       );
-      const updatedGallery = galleryUrls.map((existing, idx) => newGalleryUrls[idx] || existing);
+      const mergedGallery = Array.from(
+        { length: Math.max(galleryUrls.length, newGalleryUrls.length) },
+        (_, idx) => newGalleryUrls[idx] || galleryUrls[idx]
+      ).filter(Boolean);
 
       if (cover || logo || gallery.some(f => f)) {
         toast.success("Images uploaded successfully");
@@ -84,7 +87,7 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
         price: Number(price),
         coverImage: coverUrl,
         logo: logoUrl,
-        gallery: updatedGallery,
+        gallery: mergedGallery,
         badges,
       };
 

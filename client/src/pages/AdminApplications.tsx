@@ -13,7 +13,7 @@ const AdminApplications = () => {
                 const { data } = await API.get('/admin/applications');
                 setApplications(data);
             } catch (err: any) {
-                toast.error(err.response?.data?.message || 'We couldn't load applications. Please try again.');
+                toast.error(err.response?.data?.message || "We couldn't load applications. Please try again.");
             } finally {
                 setLoading(false);
             }

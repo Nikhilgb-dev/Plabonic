@@ -222,7 +222,7 @@ export default function EduleLanding() {
         </div> */}
 
         {/* Course Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 mb-8">
           {marketingLoading && (
             <p className="text-sm text-gray-500">Loading marketing courses...</p>
           )}
@@ -233,52 +233,62 @@ export default function EduleLanding() {
             <Link
               to={`/marketing/${card._id || card.id}`}
               key={card._id || card.id}
-              className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition bg-white group"
+              className="border border-gray-100 rounded-lg overflow-hidden shadow-sm bg-gradient-to-b from-gray-50 to-white hover:shadow-lg transition"
             >
-              <img src={card.coverImage} alt={card.title} className="w-full h-48 object-cover" />
+              <div className="relative h-36 overflow-hidden">
+                <img src={card.coverImage} alt={card.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                <div className="absolute bottom-2 left-2 flex items-center gap-2">
+                  <img
+                    src={card.logo}
+                    alt={card.name}
+                    className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                  />
+                  <div>
+                    <p className="text-white text-sm font-semibold">{card.name}</p>
+                    <p className="text-xs text-white/80">{card.title}</p>
+                  </div>
+                </div>
+              </div>
 
               <div className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <img src={card.logo} alt={card.name} className="w-8 h-8 rounded-full object-cover" />
-                    <span className="text-sm text-gray-600">{card.name}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {card.badges?.trusted && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-[#0080ff] text-white border border-[#0080ff]">
-                        Trusted
+                    {card.originalPrice && card.originalPrice > card.price && (
+                      <span className="text-sm text-gray-500 line-through">
+                        Rs. {Number(card.originalPrice || 0).toLocaleString()}
                       </span>
                     )}
-                    {card.badges?.verified && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-[#80ff00] text-black border border-[#80ff00]">
-                        Verified
-                      </span>
-                    )}
-                    {card.badges?.recommended && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-black text-white border border-black">
-                        Recommended
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-green-600 transition">
-                  {card.title}
-                </h3>
-
-                <p className="text-sm text-gray-600 line-clamp-2">{card.description}</p>
-
-                <div className="flex items-center gap-2">
-                  {card.originalPrice && card.originalPrice > card.price && (
-                    <>
-                      <span className="text-sm text-gray-500 line-through">Rs. {card.originalPrice.toLocaleString()}</span>
+                    <span className="text-lg font-semibold text-gray-900">
+                      Rs. {Number(card.price || 0).toLocaleString()}
+                    </span>
+                    {card.originalPrice && card.originalPrice > card.price && (
                       <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
                         {Math.round(((card.originalPrice - card.price) / card.originalPrice) * 100)}% off
                       </span>
-                    </>
-                  )}
-                  <span className="text-lg font-bold text-green-600">Rs. {card.price.toLocaleString()}</span>
+                    )}
+                  </div>
                 </div>
+
+                <div className="flex gap-1 mb-2">
+                  {card.badges?.trusted && (
+                    <span className="px-2 py-1 text-xs rounded-full border bg-[#0080ff] text-white border-[#0080ff]">
+                      Trusted
+                    </span>
+                  )}
+                  {card.badges?.verified && (
+                    <span className="px-2 py-1 text-xs rounded-full border bg-[#80ff00] text-black border-[#80ff00]">
+                      Verified
+                    </span>
+                  )}
+                  {card.badges?.recommended && (
+                    <span className="px-2 py-1 text-xs rounded-full border bg-black text-white border-black">
+                      Recommended
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-sm text-gray-600 line-clamp-3">{card.description}</p>
               </div>
             </Link>
           ))}
