@@ -102,4 +102,18 @@ export const getMyFeedbacks = async (req, res) => {
   }
 };
 
+export const getPublicFeedbacks = async (req, res) => {
+  try {
+    const limit = Math.min(Number(req.query.limit || 6), 12);
+    const feedbacks = await Feedback.find({ targetType: "platform" })
+      .populate("user", "name profilePhoto")
+      .populate("company", "name logo")
+      .sort({ createdAt: -1 })
+      .limit(limit);
+    res.json(feedbacks);
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
+  }
+};
+
 

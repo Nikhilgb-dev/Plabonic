@@ -3,12 +3,16 @@ import { motion } from 'framer-motion';
 import API from '../api/api';
 import { Link } from 'react-router-dom';
 import { MarketingCard } from '@/types/marketing';
+import Avatar from '@/components/Avatar';
+import { Star } from 'lucide-react';
 
 export default function EduleLanding() {
   const [companyLogos, setCompanyLogos] = useState<string[]>([]);
   const [loadingLogos, setLoadingLogos] = useState(true);
   const [marketingCards, setMarketingCards] = useState<MarketingCard[]>([]);
   const [marketingLoading, setMarketingLoading] = useState(true);
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,6 +58,20 @@ export default function EduleLanding() {
       }
     };
     fetchCards();
+  }, []);
+
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        const res = await API.get("/feedbacks/public?limit=6");
+        setFeedbacks(Array.isArray(res.data) ? res.data : []);
+      } catch (err) {
+        console.error("Error fetching feedbacks", err);
+      } finally {
+        setFeedbackLoading(false);
+      }
+    };
+    fetchFeedbacks();
   }, []);
 
   const marqueeLogos: string[] = companyLogos.length
@@ -299,6 +317,78 @@ export default function EduleLanding() {
             Other Course
           </button>
         </div> */}
+      </section>
+
+      {/* Feedback Section */}
+      <section className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 border-t border-gray-100">
+        <div className="container mx-auto px-4 py-16">
+          <div className="flex flex-col items-center text-center mb-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Feedback</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">What people say about Plabonic</h2>
+            <p className="text-sm text-gray-600 mt-3 max-w-2xl">
+              Real feedback from users and companies using the platform.
+            </p>
+          </div>
+
+          {feedbackLoading && (
+            <p className="text-sm text-gray-500 text-center">Loading feedback...</p>
+          )}
+          {!feedbackLoading && feedbacks.length === 0 && (
+            <p className="text-sm text-gray-500 text-center">No feedback yet.</p>
+          )}
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {feedbacks.map((f) => {
+              const authorName = f.submittedBy === "company" ? f.company?.name : f.user?.name;
+              const avatarSrc = f.submittedBy === "company" ? f.company?.logo : f.user?.profilePhoto;
+              const rating = Number(f.rating || 0);
+              return (
+                <div
+                  key={f._id}
+                  className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5 flex flex-col gap-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <Avatar
+                      src={avatarSrc}
+                      alt={authorName || "Feedback author"}
+                      className="w-11 h-11 rounded-full border border-gray-200"
+                    />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">
+                        {authorName || "Anonymous"}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {f.submittedBy === "company" ? "Company" : "User"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {rating > 0 && (
+                    <div className="flex items-center gap-1 text-yellow-500">
+                      {Array.from({ length: 5 }).map((_, idx) => (
+                        <Star
+                          key={idx}
+                          className={`w-4 h-4 ${idx < rating ? "fill-yellow-400" : "fill-transparent text-gray-300"}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {f.subject && (
+                    <p className="text-sm font-semibold text-gray-900">{f.subject}</p>
+                  )}
+                  <p className="text-sm text-gray-600 leading-relaxed line-clamp-4">{f.message}</p>
+                  {f.reply && (
+                    <div className="mt-2 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2">
+                      <p className="text-xs font-semibold text-blue-700">Admin reply</p>
+                      <p className="text-xs text-blue-700/80 mt-1 line-clamp-3">{f.reply}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       {/* Instructor CTA */}

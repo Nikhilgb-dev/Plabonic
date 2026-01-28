@@ -5,6 +5,7 @@ import logo from "../assets/logo.jpg";
 import { Bell, User, LogOut, Settings, Briefcase, Users, LayoutDashboard, Menu, X, Copy, Check } from "lucide-react";
 import Avatar from "./Avatar";
 import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 
 const supportEmail = " reachus@plabonic.com";
 
@@ -42,6 +43,7 @@ export default function Navbar() {
 
   const fetchNotifications = async () => {
     try {
+      const clearedAt = Number(localStorage.getItem("notifications-cleared-at") || 0);
       // Base notifications (job-related)
       const [notifRes, remarksRes] = await Promise.allSettled([
         API.get("/notifications"),
@@ -50,7 +52,10 @@ export default function Navbar() {
 
       let baseNotifications = [];
       if (notifRes.status === "fulfilled") {
-        baseNotifications = notifRes.value.data || [];
+        baseNotifications = (notifRes.value.data || []).filter((n: any) => {
+          const createdAt = new Date(n.createdAt).getTime();
+          return !clearedAt || createdAt > clearedAt;
+        });
       }
 
       let remarkNotifications = [];
@@ -66,7 +71,10 @@ export default function Navbar() {
           createdAt: r.date,
           isRead: false,
           type: "remark",
-        }));
+        })).filter((n: any) => {
+          const createdAt = new Date(n.createdAt).getTime();
+          return !clearedAt || createdAt > clearedAt;
+        });
       }
 
       // Merge both (remarks first, then others)
@@ -121,6 +129,19 @@ export default function Navbar() {
     }
     await API.put(`/notifications/${id}/read`);
     fetchNotifications();
+  };
+
+  const clearNotifications = async () => {
+    try {
+      await API.delete("/notifications");
+      const clearedAt = Date.now();
+      localStorage.setItem("notifications-cleared-at", String(clearedAt));
+      setNotifications([]);
+      toast.success("Notifications cleared");
+    } catch (err) {
+      console.error("Failed to clear notifications", err);
+      toast.error("We couldn't clear notifications. Please try again.");
+    }
   };
 
   const handleNotificationClick = async (n: any) => {
@@ -316,14 +337,26 @@ export default function Navbar() {
                         className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 max-w-md bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden"
                       >
                         <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                          <h3 className="font-semibold text-sm sm:text-base text-gray-800 flex items-center justify-between">
-                            <span>Notifications</span>
-                            {unreadCount > 0 && (
-                              <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded-full">
-                                {unreadCount} new
-                              </span>
+                          <div className="flex items-center justify-between gap-3">
+                            <h3 className="font-semibold text-sm sm:text-base text-gray-800 flex items-center gap-2">
+                              <span>Notifications</span>
+                              {unreadCount > 0 && (
+                                <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded-full">
+                                  {unreadCount} new
+                                </span>
+                              )}
+                            </h3>
+                            {notifications.length > 0 && (
+                              <button
+                                onClick={clearNotifications}
+                                className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                aria-label="Clear notifications"
+                                type="button"
+                              >
+                                Clear all
+                              </button>
                             )}
-                          </h3>
+                          </div>
                         </div>
                         <div className="max-h-[60vh] sm:max-h-96 overflow-y-auto">
                           {notifications.length === 0 ? (

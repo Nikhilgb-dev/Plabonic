@@ -21,4 +21,9 @@ router.put("/:id/read", protect, async (req, res) => {
   res.json(n);
 });
 
+router.delete("/", protect, async (req, res) => {
+  await Notification.deleteMany({ user: req.user._id });
+  res.json({ message: "Notifications cleared" });
+});
+
 export default router;

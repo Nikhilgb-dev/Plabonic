@@ -6,11 +6,13 @@ import {
   getCompanyFeedbacks,
   getMyFeedbacks,
   replyToFeedback,
+  getPublicFeedbacks,
 } from "../controllers/feedback.controller.js";
 
 const router = express.Router();
 
 router.post("/", protect, createFeedback);
+router.get("/public", getPublicFeedbacks);
 router.get("/my", protect, getMyFeedbacks);
 router.get("/company/:companyId", protect, getCompanyFeedbacks);
 router.get("/admin/all", protect, adminOnly, getAllFeedbacks);
