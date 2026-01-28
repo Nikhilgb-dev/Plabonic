@@ -46,7 +46,7 @@ const ReportAbuseModal: React.FC<Props> = ({ jobId, jobTitle, onClose, onSuccess
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to submit report");
+      setError(err.response?.data?.message || "We couldn't submit the report. Please try again.");
     } finally {
       setLoading(false);
     }

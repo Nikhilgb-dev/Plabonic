@@ -18,9 +18,9 @@ router.get("/me", protect, async (req, res) => {
 // DELETE (withdraw)
 router.delete("/:id", protect, async (req, res) => {
   const app = await Application.findById(req.params.id);
-  if (!app) return res.status(404).json({ message: "Application not found" });
+  if (!app) return res.status(404).json({ message: "We could not find that application." });
   if (app.user.toString() !== req.user._id.toString())
-    return res.status(403).json({ message: "Not authorized" });
+    return res.status(403).json({ message: "You do not have permission to do that." });
 
   await app.deleteOne();
   res.json({ message: "Application withdrawn" });
@@ -30,7 +30,7 @@ router.delete("/:id", protect, async (req, res) => {
 router.put("/:id/respond", protect, async (req, res) => {
   const { action } = req.body; // "accept" or "reject"
   if (!["accept", "reject"].includes(action)) {
-    return res.status(400).json({ message: "Invalid action. Must be 'accept' or 'reject'" });
+    return res.status(400).json({ message: "That action is not allowed. Choose accept or reject." });
   }
 
   const app = await Application.findById(req.params.id).populate({
@@ -38,11 +38,11 @@ router.put("/:id/respond", protect, async (req, res) => {
     populate: { path: "company", select: "name logo" },
   });
 
-  if (!app) return res.status(404).json({ message: "Application not found" });
+  if (!app) return res.status(404).json({ message: "We could not find that application." });
   if (app.user.toString() !== req.user._id.toString())
-    return res.status(403).json({ message: "Not authorized" });
+    return res.status(403).json({ message: "You do not have permission to do that." });
   if (app.status !== "hired")
-    return res.status(400).json({ message: "Can only respond to hired applications" });
+    return res.status(400).json({ message: "You can only respond to applications that are marked as hired." });
 
   app.status = action === "accept" ? "accepted" : "rejected";
   if (action === "accept") {
@@ -56,3 +56,4 @@ router.put("/:id/respond", protect, async (req, res) => {
 });
 
 export default router;
+

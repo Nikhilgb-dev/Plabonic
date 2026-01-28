@@ -29,7 +29,7 @@ const getDateRangeFilter = (req) => {
     (startDate && Number.isNaN(parsedStart.getTime())) ||
     (endDate && Number.isNaN(parsedEnd.getTime()))
   ) {
-    return { error: "Invalid date range" };
+    return { error: "Please provide a valid date range." };
   }
 
   const createdAt = {};
@@ -52,7 +52,7 @@ export const createUser = async (req, res) => {
     const user = await User.create({ name, email, password: hashed, phone, role });
     res.status(201).json(user);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -60,7 +60,7 @@ export const updateAdminProfile = async (req, res) => {
   try {
     const { name, password } = req.body;
     const admin = await User.findById(req.user._id);
-    if (!admin) return res.status(404).json({ message: "Admin not found" });
+    if (!admin) return res.status(404).json({ message: "We could not find that admin account." });
 
     if (name) admin.name = name;
     if (password) admin.password = await bcrypt.hash(password, 10);
@@ -68,7 +68,7 @@ export const updateAdminProfile = async (req, res) => {
 
     res.json({ message: "Admin profile updated", admin });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -77,17 +77,17 @@ export const getAllUsers = async (req, res) => {
     const users = await User.find().select("-password");
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -101,29 +101,29 @@ export const updateUser = async (req, res) => {
       runValidators: true,
     }).select("-password");
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     res.json(user);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
 export const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     res.json({ message: "User deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const blockUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     if (user.role === "admin") {
-      return res.status(400).json({ message: "Admin accounts cannot be blocked" });
+      return res.status(400).json({ message: "Admin accounts cannot be blocked." });
     }
 
     user.blocked = !user.blocked;
@@ -134,7 +134,7 @@ export const blockUser = async (req, res) => {
       user,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -144,7 +144,7 @@ export const createJob = async (req, res) => {
     const job = await Job.create({ ...req.body, postedBy: req.user._id });
     res.status(201).json(job);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -155,7 +155,7 @@ export const getAllJobs = async (req, res) => {
       .populate("company", "name logo");
     res.json(jobs);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -184,7 +184,7 @@ export const getAdminJobStats = async (req, res) => {
     });
   } catch (err) {
     console.error("Error in getAdminJobStats:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -212,7 +212,7 @@ export const getAllApplications = async (req, res) => {
 
     res.json({ total, page, limit, applications });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -222,7 +222,7 @@ export const updateApplicationStatus = async (req, res) => {
     const application = await Application.findById(req.params.id);
 
     if (!application)
-      return res.status(404).json({ message: "Application not found" });
+      return res.status(404).json({ message: "We could not find that application." });
 
     if (
       ![
@@ -234,7 +234,7 @@ export const updateApplicationStatus = async (req, res) => {
         "rejected",
       ].includes(status)
     ) {
-      return res.status(400).json({ message: "Invalid status" });
+      return res.status(400).json({ message: "That status is not valid." });
     }
 
     if (
@@ -260,7 +260,7 @@ export const updateApplicationStatus = async (req, res) => {
 
     res.json({ message: "Application status updated", application });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -270,17 +270,17 @@ export const updateJob = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
     res.json(job);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
 export const verifyJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
 
     job.isVerified = !job.isVerified;
     await job.save();
@@ -290,17 +290,17 @@ export const verifyJob = async (req, res) => {
       job,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const deleteJob = async (req, res) => {
   try {
     const job = await Job.findByIdAndDelete(req.params.id);
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
     res.json({ message: "Job deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -313,7 +313,7 @@ export const createCommunity = async (req, res) => {
     });
     res.status(201).json(community);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -325,7 +325,7 @@ export const getAllCommunities = async (req, res) => {
     );
     res.json(communities);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -340,10 +340,10 @@ export const updateCommunity = async (req, res) => {
       }
     );
     if (!community)
-      return res.status(404).json({ message: "Community not found" });
+      return res.status(404).json({ message: "We could not find that community." });
     res.json(community);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -351,10 +351,10 @@ export const deleteCommunity = async (req, res) => {
   try {
     const community = await Community.findByIdAndDelete(req.params.id);
     if (!community)
-      return res.status(404).json({ message: "Community not found" });
+      return res.status(404).json({ message: "We could not find that community." });
     res.json({ message: "Community deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -364,7 +364,7 @@ export const createPost = async (req, res) => {
     const post = await Post.create({ ...req.body, author: req.user._id });
     res.status(201).json(post);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -373,7 +373,7 @@ export const getAllPosts = async (req, res) => {
     const posts = await Post.find().populate("author", "name email");
     res.json(posts);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -383,20 +383,20 @@ export const updatePost = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) return res.status(404).json({ message: "We could not find that post." });
     res.json(post);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
 export const deletePost = async (req, res) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) return res.status(404).json({ message: "We could not find that post." });
     res.json({ message: "Post deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -409,7 +409,7 @@ export const getAllFreelancers = async (req, res) => {
     );
     res.json(freelancers);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -417,7 +417,7 @@ export const verifyFreelancer = async (req, res) => {
   try {
     const freelancer = await Freelancer.findById(req.params.id);
     if (!freelancer)
-      return res.status(404).json({ message: "Freelancer not found" });
+      return res.status(404).json({ message: "We could not find that freelancer." });
 
     freelancer.isVerified = !freelancer.isVerified;
     await freelancer.save();
@@ -429,7 +429,7 @@ export const verifyFreelancer = async (req, res) => {
       freelancer,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -437,10 +437,10 @@ export const deleteFreelancer = async (req, res) => {
   try {
     const freelancer = await Freelancer.findByIdAndDelete(req.params.id);
     if (!freelancer)
-      return res.status(404).json({ message: "Freelancer not found" });
+      return res.status(404).json({ message: "We could not find that freelancer." });
     res.json({ message: "Freelancer deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -460,7 +460,7 @@ export const getAllAbuseReports = async (req, res) => {
     res.json(reports);
   } catch (err) {
     console.error("Error in getAllAbuseReports:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -473,7 +473,7 @@ export const updateAbuseReportStatus = async (req, res) => {
       return res.status(404).json({ message: "Abuse report not found" });
 
     if (!["pending", "reviewed", "resolved"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
+      return res.status(400).json({ message: "That status is not valid." });
     }
 
     report.status = status;
@@ -481,14 +481,14 @@ export const updateAbuseReportStatus = async (req, res) => {
 
     res.json({ message: "Abuse report status updated", report });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const blockCompany = async (req, res) => {
   try {
     const company = await Company.findById(req.params.id);
-    if (!company) return res.status(404).json({ message: "Company not found" });
+    if (!company) return res.status(404).json({ message: "We could not find that company." });
 
     company.blocked = !company.blocked;
     await company.save();
@@ -501,7 +501,7 @@ export const blockCompany = async (req, res) => {
       company,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -523,28 +523,28 @@ export const reviewCompanyResponse = async (req, res) => {
       report.responseReviewed = false;
       report.status = "pending"; // or keep as responded, but require new response
     } else {
-      return res.status(400).json({ message: "Invalid action" });
+      return res.status(400).json({ message: "That action is not allowed." });
     }
 
     await report.save();
 
     res.json({ message: "Company response reviewed", report });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const blockJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
 
     job.blocked = !job.blocked;
     await job.save();
 
     res.json({ message: `Job ${job.blocked ? "blocked" : "unblocked"}`, job });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -589,7 +589,7 @@ export const exportUsersExcel = async (req, res) => {
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -677,7 +677,7 @@ export const exportCompaniesExcel = async (req, res) => {
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -729,7 +729,7 @@ export const exportJobsExcel = async (req, res) => {
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -782,6 +782,8 @@ export const exportFreelancersExcel = async (req, res) => {
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
+
+

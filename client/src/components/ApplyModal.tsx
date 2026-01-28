@@ -142,11 +142,11 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ jobId, onClose, initialContact,
   const validateStep = (step: number): boolean => {
     if (step === 1) {
       if (!name || !email || !phone) {
-        toast.error("Please fill all required contact fields.");
+        toast.error("Please complete all required contact fields.");
         return false;
       }
       if (!validateEmail(email)) {
-        toast.error("Please enter a valid email.");
+        toast.error("Please enter a valid email address.");
         return false;
       }
       if (!validatePhone(phone)) {
@@ -158,14 +158,14 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ jobId, onClose, initialContact,
     if (step === 2) {
     if (resumeMode === "upload") {
       if (!resumeFile) {
-        toast.error("Please upload a resume.");
+        toast.error("Please upload a resume to continue.");
         return false;
       }
       return true;
     }
     if (resumeMode === "existing") {
       if (!selectedResume) {
-        toast.error("Please select a saved resume or upload a new one.");
+        toast.error("Select a saved resume or upload a new one to continue.");
         return false;
       }
       return true;
@@ -176,12 +176,12 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ jobId, onClose, initialContact,
     if (step === 3) {
       if (!isFresher) {
         if (years === 0) {
-          toast.error("Please specify years of experience.");
+          toast.error("Please enter your years of experience.");
           return false;
         }
         for (let exp of experienceHistory) {
           if (!exp.companyName || !exp.jobTitle) {
-            toast.error("Please complete all experience fields.");
+            toast.error("Please complete all experience fields before submitting.");
             return false;
           }
         }
@@ -255,7 +255,7 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ jobId, onClose, initialContact,
       onApplied?.(jobId);
       onClose();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to apply");
+      toast.error(err.response?.data?.message || "We couldn't submit your application. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -988,3 +988,4 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ jobId, onClose, initialContact,
 };
 
 export default ApplyModal;
+

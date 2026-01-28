@@ -6,7 +6,7 @@ export const createMarketingCard = async (req, res) => {
     const { name, title, description, originalPrice, price, coverImage, logo, badges = {}, gallery = [] } = req.body;
 
     if (!name || !title || !description || !price || !coverImage || !logo) {
-      return res.status(400).json({ message: "name, title, description, price, coverImage, and logo are required" });
+      return res.status(400).json({ message: "Please provide name, title, description, price, cover image, and logo." });
     }
 
     const normalizedBadges = {
@@ -31,7 +31,7 @@ export const createMarketingCard = async (req, res) => {
     res.status(201).json(card);
   } catch (err) {
     console.error("Failed to create marketing card", err);
-    res.status(500).json({ message: "Failed to create marketing card" });
+    res.status(500).json({ message: "We couldn't create the marketing card. Please try again." });
   }
 };
 
@@ -41,7 +41,7 @@ export const getMarketingCards = async (_req, res) => {
     res.json(cards);
   } catch (err) {
     console.error("Failed to fetch marketing cards", err);
-    res.status(500).json({ message: "Failed to fetch marketing cards" });
+    res.status(500).json({ message: "We couldn't load marketing cards. Please try again." });
   }
 };
 
@@ -52,7 +52,7 @@ export const getMarketingCardById = async (req, res) => {
     res.json(card);
   } catch (err) {
     console.error("Failed to fetch marketing card", err);
-    res.status(500).json({ message: "Failed to fetch marketing card" });
+    res.status(500).json({ message: "We couldn't load the marketing card. Please try again." });
   }
 };
 
@@ -62,7 +62,7 @@ export const createMarketingEnquiry = async (req, res) => {
     const { id } = req.params;
 
     if (!buyerName || !email || !mobile) {
-      return res.status(400).json({ message: "buyerName, email, and mobile are required" });
+      return res.status(400).json({ message: "Please provide your name, email, and mobile number." });
     }
 
     const card = await MarketingCard.findById(id);
@@ -86,7 +86,7 @@ export const createMarketingEnquiry = async (req, res) => {
     res.status(201).json(enquiry);
   } catch (err) {
     console.error("Failed to create marketing enquiry", err);
-    res.status(500).json({ message: "Failed to create marketing enquiry" });
+    res.status(500).json({ message: "We couldn't submit the enquiry. Please try again." });
   }
 };
 
@@ -96,7 +96,7 @@ export const updateMarketingCard = async (req, res) => {
     const { name, title, description, originalPrice, price, coverImage, logo, badges = {}, gallery = [] } = req.body;
 
     if (!name || !title || !description || !price || !coverImage || !logo) {
-      return res.status(400).json({ message: "name, title, description, price, coverImage, and logo are required" });
+      return res.status(400).json({ message: "Please provide name, title, description, price, cover image, and logo." });
     }
 
     const normalizedBadges = {
@@ -126,7 +126,7 @@ export const updateMarketingCard = async (req, res) => {
     res.json(card);
   } catch (err) {
     console.error("Failed to update marketing card", err);
-    res.status(500).json({ message: "Failed to update marketing card" });
+    res.status(500).json({ message: "We couldn't update the marketing card. Please try again." });
   }
 };
 
@@ -138,7 +138,7 @@ export const deleteMarketingCard = async (req, res) => {
     res.json({ message: "Marketing card deleted successfully" });
   } catch (err) {
     console.error("Failed to delete marketing card", err);
-    res.status(500).json({ message: "Failed to delete marketing card" });
+    res.status(500).json({ message: "We couldn't delete the marketing card. Please try again." });
   }
 };
 
@@ -148,6 +148,7 @@ export const getMarketingEnquiries = async (_req, res) => {
     res.json(enquiries);
   } catch (err) {
     console.error("Failed to fetch marketing enquiries", err);
-    res.status(500).json({ message: "Failed to fetch marketing enquiries" });
+    res.status(500).json({ message: "We couldn't load marketing enquiries. Please try again." });
   }
 };
+

@@ -72,7 +72,7 @@ const ManageJobsPage: React.FC = () => {
                 const { data } = await API.get("/users/me");
                 setRole(data.role);
             } catch (err: any) {
-                toast.error("Failed to fetch user role");
+                toast.error("We couldn't load your role. Please try again.");
             }
         };
         getUser();
@@ -87,7 +87,7 @@ const ManageJobsPage: React.FC = () => {
                     : await API.get("/companies/me/jobs");
             setJobs(res.data.jobs || res.data);
         } catch (err) {
-            toast.error("Failed to load jobs");
+            toast.error("We couldn't load jobs. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -162,7 +162,7 @@ const ManageJobsPage: React.FC = () => {
             resetForm();
             loadJobs();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to save job");
+            toast.error(err.response?.data?.message || "We couldn't save the job. Please try again.");
         }
     };
 
@@ -192,7 +192,7 @@ const ManageJobsPage: React.FC = () => {
             toast.success("Job deleted successfully");
             loadJobs();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to delete job");
+            toast.error(err.response?.data?.message || "We couldn't delete the job. Please try again.");
         }
     };
 
@@ -592,3 +592,4 @@ const ManageJobsPage: React.FC = () => {
 };
 
 export default ManageJobsPage;
+

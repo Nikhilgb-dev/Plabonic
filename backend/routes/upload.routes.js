@@ -8,13 +8,13 @@ const router = Router();
 function ensureImage(req, res, next) {
   const isImage = (req.file?.mimetype || "").startsWith("image/");
   if (!isImage)
-    return res.status(400).json({ message: "Only image files allowed" });
+    return res.status(400).json({ message: "Please upload an image file." });
   next();
 }
 
 router.post("/", upload.single("file"), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ message: "No file provided" });
+    if (!req.file) return res.status(400).json({ message: "Please choose a file to upload." });
 
     const tenantId =
       (req.tenant && String(req.tenant)) ||
@@ -50,13 +50,13 @@ router.post("/", upload.single("file"), async (req, res) => {
     });
   } catch (err) {
     console.error("Generic upload failed:", err);
-    return res.status(500).json({ message: err.message || "Upload failed" });
+    return res.status(500).json({ message: "We couldn't upload the file. Please try again." });
   }
 });
 
 router.post("/student-photo", upload.single("file"), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ message: "No file provided" });
+    if (!req.file) return res.status(400).json({ message: "Please choose a file to upload." });
 
     // optional: folder per-tenant
     const folder = `instaclass/students/${req.tenant}`;
@@ -82,7 +82,7 @@ router.post("/student-photo", upload.single("file"), async (req, res) => {
       format: result.format,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message || "Upload failed" });
+    res.status(500).json({ message: "We couldn't upload the file. Please try again." });
   }
 });
 
@@ -93,7 +93,7 @@ router.post(
   async (req, res) => {
     try {
       if (!req.file)
-        return res.status(400).json({ message: "No file provided" });
+        return res.status(400).json({ message: "Please choose a file to upload." });
 
       const tenantFolder = req.tenant ? String(req.tenant) : "public";
       const folder = `instaclass/teachers/${tenantFolder}`;
@@ -120,9 +120,10 @@ router.post(
         format: result.format,
       });
     } catch (err) {
-      res.status(500).json({ message: err.message || "Upload failed" });
+      res.status(500).json({ message: "We couldn't upload the file. Please try again." });
     }
   }
 );
 
 export default router;
+

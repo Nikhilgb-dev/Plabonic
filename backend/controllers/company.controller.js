@@ -37,7 +37,7 @@ export const registerCompany = async (req, res) => {
     // Check if company admin email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser)
-      return res.status(400).json({ message: "Email already in use" });
+      return res.status(400).json({ message: "That email is already in use. Try another or sign in." });
 
     // Upload logo if provided
     let logo = "";
@@ -102,7 +102,7 @@ export const registerCompany = async (req, res) => {
     });
   } catch (err) {
     console.error("Error in registerCompany:", err);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -138,7 +138,7 @@ export const createCompanyByAdmin = async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
+      return res.status(400).json({ message: "That email is already in use. Try another or sign in." });
     }
 
     let logo = "";
@@ -215,7 +215,7 @@ export const createCompanyByAdmin = async (req, res) => {
     });
   } catch (err) {
     console.error("Error in createCompanyByAdmin:", err);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -224,7 +224,7 @@ export const getAllCompanies = async (req, res) => {
     const companies = await Company.find().populate("admins", "name email");
     res.json(companies);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -235,17 +235,17 @@ export const getCompanyById = async (req, res) => {
       "admins",
       "name email"
     );
-    if (!company) return res.status(404).json({ message: "Company not found" });
+    if (!company) return res.status(404).json({ message: "We could not find that company." });
     res.json(company);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const verifyCompany = async (req, res) => {
   try {
     const company = await Company.findById(req.params.id);
-    if (!company) return res.status(404).json({ message: "Company not found" });
+    if (!company) return res.status(404).json({ message: "We could not find that company." });
 
     // Toggle verified status
     company.verified = !company.verified;
@@ -253,7 +253,7 @@ export const verifyCompany = async (req, res) => {
 
     res.json(company);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -261,7 +261,7 @@ export const verifyCompany = async (req, res) => {
 export const deleteCompany = async (req, res) => {
   try {
     const company = await Company.findByIdAndDelete(req.params.id);
-    if (!company) return res.status(404).json({ message: "Company not found" });
+    if (!company) return res.status(404).json({ message: "We could not find that company." });
 
     // OPTIONAL cleanup: if you want to unset the company ref on users:
     // await User.updateMany({ company: company._id }, { $unset: { company: "" } });
@@ -269,17 +269,17 @@ export const deleteCompany = async (req, res) => {
 
     res.json({ message: "Company deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const deleteMyJob = async (req, res) => {
   try {
     const job = await Job.findByIdAndDelete(req.params.id);
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
     res.json({ message: "Job deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -288,20 +288,20 @@ export const updateMyJob = async (req, res) => {
     const job = await Job.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
     res.json(job);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const getMyCompany = async (req, res) => {
   try {
     const company = await Company.findById(req.user.company);
-    if (!company) return res.status(404).json({ message: "Company not found" });
+    if (!company) return res.status(404).json({ message: "We could not find that company." });
     res.json(company);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -323,7 +323,7 @@ export const updateMyCompany = async (req, res) => {
       authorizedSignatory,
     } = req.body;
     const company = await Company.findById(req.user.company);
-    if (!company) return res.status(404).json({ message: "Company not found" });
+    if (!company) return res.status(404).json({ message: "We could not find that company." });
 
     if (name) company.name = name;
     if (domain) company.domain = domain;
@@ -360,7 +360,7 @@ export const updateMyCompany = async (req, res) => {
     await company.save();
     res.json({ message: "Company info updated successfully", company });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -375,10 +375,10 @@ export const getMyCompanyProfile = async (req, res) => {
       "admins",
       "name email"
     );
-    if (!company) return res.status(404).json({ message: "Company not found" });
+    if (!company) return res.status(404).json({ message: "We could not find that company." });
     res.json(company);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -412,7 +412,7 @@ export const getMyJobs = async (req, res) => {
 
     res.json({ total, page, limit, jobs: normalized });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -443,7 +443,7 @@ export const createEmployeeForCompany = async (req, res) => {
     // Check for duplicates
     const existing = await User.findOne({ email });
     if (existing)
-      return res.status(400).json({ message: "Email already exists" });
+      return res.status(400).json({ message: "That email is already in use. Try another or sign in." });
 
     // Handle optional photo upload
     let profilePhoto = "";
@@ -479,7 +479,7 @@ export const createEmployeeForCompany = async (req, res) => {
     });
   } catch (err) {
     console.error("Error in createEmployeeForCompany:", err);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -501,7 +501,7 @@ export const updateCompanyApplicationStatus = async (req, res) => {
       .populate("user", "name email");
 
     if (!application) {
-      return res.status(404).json({ message: "Application not found" });
+      return res.status(404).json({ message: "We could not find that application." });
     }
 
     // Safety: ensure the job belongs to the company of the logged-in user
@@ -513,7 +513,7 @@ export const updateCompanyApplicationStatus = async (req, res) => {
     ) {
       return res
         .status(403)
-        .json({ message: "Not authorized to modify this application" });
+        .json({ message: "You do not have permission to do that. to modify this application" });
     }
 
     // Keep previous status to detect changes
@@ -591,7 +591,7 @@ export const updateCompanyApplicationStatus = async (req, res) => {
     res.json({ message: "Application updated", application: updated });
   } catch (err) {
     console.error("❌ Error updating company application status:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -603,7 +603,7 @@ export const createJobForCompany = async (req, res) => {
         .json({ message: "No company linked to this account" });
 
     const company = await Company.findById(req.user.company);
-    if (!company) return res.status(404).json({ message: "Company not found" });
+    if (!company) return res.status(404).json({ message: "We could not find that company." });
 
     if (company.blocked) {
       return res.status(403).json({ message: "Company is blocked from posting jobs. Please contact admin." });
@@ -642,7 +642,7 @@ export const createJobForCompany = async (req, res) => {
     res.status(201).json(job);
   } catch (err) {
     console.error("Error creating company job:", err);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -654,7 +654,7 @@ export const getMyEmployees = async (req, res) => {
     );
     res.json(employees);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -674,7 +674,7 @@ export const fireEmployee = async (req, res) => {
     ) {
       return res
         .status(403)
-        .json({ message: "Not authorized to modify this employee" });
+        .json({ message: "You do not have permission to do that. to modify this employee" });
     }
 
     // Remove company association and optionally demote role to 'user'
@@ -684,7 +684,7 @@ export const fireEmployee = async (req, res) => {
 
     res.json({ message: "Employee fired/removed from company", employee });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -710,7 +710,7 @@ export const getCompanyApplicants = async (req, res) => {
 
     res.json({ total, page, limit, applications });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -758,7 +758,7 @@ export const getCompanyDashboard = async (req, res) => {
     });
   } catch (err) {
     console.error("Error in getCompanyDashboard:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -766,7 +766,7 @@ export const addCompanyRemark = async (req, res) => {
   try {
     const { remark } = req.body;
     const company = await Company.findById(req.params.id);
-    if (!company) return res.status(404).json({ message: "Company not found" });
+    if (!company) return res.status(404).json({ message: "We could not find that company." });
 
     company.remarks = remark;
     company.remarksHistory.push({
@@ -777,7 +777,7 @@ export const addCompanyRemark = async (req, res) => {
     await company.save();
     res.json({ message: "Remark added successfully", company });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -787,7 +787,7 @@ export const companyNotifications = async (req, res) => {
       $or: [{ _id: req.user.company }, { admins: req.user._id }],
     }).select("remarks remarksHistory");
 
-    if (!company) return res.status(404).json({ message: "Company not found" });
+    if (!company) return res.status(404).json({ message: "We could not find that company." });
     const sorted = (company.remarksHistory || []).sort(
       (a, b) => new Date(b.date) - new Date(a.date)
     );
@@ -797,7 +797,7 @@ export const companyNotifications = async (req, res) => {
       remarksHistory: sorted,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -819,7 +819,7 @@ export const getCompanyAbuseReports = async (req, res) => {
     res.json(reports);
   } catch (err) {
     console.error("Error in getCompanyAbuseReports:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -834,7 +834,7 @@ export const updateAbuseReport = async (req, res) => {
 
     // Ensure the report belongs to this company's job
     if (report.job.company.toString() !== companyId.toString()) {
-      return res.status(403).json({ message: "Not authorized to update this report" });
+      return res.status(403).json({ message: "You do not have permission to do that. to update this report" });
     }
 
     report.companyResponse = companyResponse;
@@ -845,6 +845,8 @@ export const updateAbuseReport = async (req, res) => {
     res.json({ message: "Abuse report updated", report });
   } catch (err) {
     console.error("Error in updateAbuseReport:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
+
+

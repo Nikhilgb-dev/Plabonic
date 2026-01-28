@@ -119,7 +119,7 @@ export const createFreelancer = async (req, res) => {
     return res.status(201).json(responsePayload);
   } catch (err) {
     console.error("❌ Error creating freelancer:", err);
-    return res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -128,7 +128,7 @@ export const applyToFreelancer = async (req, res) => {
     const { id } = req.params; // freelancer ID
     const freelancer = await Freelancer.findById(id);
     if (!freelancer)
-      return res.status(404).json({ message: "Freelancer not found" });
+      return res.status(404).json({ message: "We could not find that freelancer." });
 
     const { clientName, contactNumber, officialEmail, requirements, message } =
       req.body;
@@ -137,7 +137,7 @@ export const applyToFreelancer = async (req, res) => {
     const wordCount = requirements.trim().split(/\s+/).length;
     if (wordCount < 50) {
       return res.status(400).json({
-        message: "Requirements must be at least 50 words",
+        message: "Please enter at least 50 words in the requirements field.",
       });
     }
 
@@ -155,7 +155,7 @@ export const applyToFreelancer = async (req, res) => {
     if (existing)
       return res
         .status(400)
-        .json({ message: "Already applied for this freelancer" });
+        .json({ message: "You have already applied for this freelancer." });
 
     const application = await FreelancerApplication.create({
       freelancer: id,
@@ -175,7 +175,7 @@ export const applyToFreelancer = async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Error applying to freelancer:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -189,7 +189,7 @@ export const getFreelancerApplications = async (req, res) => {
 
     res.json(applications);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -204,7 +204,7 @@ export const getMyFreelancerApplications = async (req, res) => {
 
     res.json(applications);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -227,17 +227,17 @@ export const getAllFreelancers = async (req, res) => {
 
     res.json(result);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const getFreelancerById = async (req, res) => {
   try {
     const freelancer = await Freelancer.findById(req.params.id);
-    if (!freelancer) return res.status(404).json({ message: "Not found" });
+    if (!freelancer) return res.status(404).json({ message: "We could not find the requested item." });
     res.json(freelancer);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -258,10 +258,10 @@ export const updateFreelancer = async (req, res) => {
     );
 
     if (!freelancer)
-      return res.status(404).json({ message: "Freelancer not found" });
+      return res.status(404).json({ message: "We could not find that freelancer." });
     res.json({ message: "Freelancer updated successfully", freelancer });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -269,10 +269,10 @@ export const deleteFreelancer = async (req, res) => {
   try {
     const freelancer = await Freelancer.findByIdAndDelete(req.params.id);
     if (!freelancer)
-      return res.status(404).json({ message: "Freelancer not found" });
+      return res.status(404).json({ message: "We could not find that freelancer." });
     res.json({ message: "Freelancer deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -282,10 +282,10 @@ export const getMyFreelancerProfile = async (req, res) => {
       $or: [{ createdBy: req.user._id }, { email: req.user.email }],
     });
     if (!freelancer)
-      return res.status(404).json({ message: "Freelancer profile not found" });
+      return res.status(404).json({ message: "We could not find your freelancer profile." });
     res.json(freelancer);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -295,7 +295,7 @@ export const updateMyFreelancerProfile = async (req, res) => {
       $or: [{ createdBy: req.user._id }, { email: req.user.email }],
     });
     if (!freelancer)
-      return res.status(404).json({ message: "Freelancer profile not found" });
+      return res.status(404).json({ message: "We could not find your freelancer profile." });
 
     const updates = { ...req.body };
     delete updates.createdBy; // Should not be updated
@@ -325,7 +325,7 @@ export const updateMyFreelancerProfile = async (req, res) => {
       freelancer,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -343,11 +343,11 @@ export const updateApplicationStatus = async (req, res) => {
     ).populate("user", "name email");
 
     if (!application)
-      return res.status(404).json({ message: "Application not found" });
+      return res.status(404).json({ message: "We could not find that application." });
 
     res.json({ message: "Status updated successfully", application });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -359,21 +359,21 @@ export const withdrawFreelancerApplication = async (req, res) => {
     });
 
     if (!application)
-      return res.status(404).json({ message: "Application not found" });
+      return res.status(404).json({ message: "We could not find that application." });
 
     res.json({ message: "Application withdrawn successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const updateFreelancerApplication = async (req, res) => {
   try {
     const application = await FreelancerApplication.findById(req.params.id);
-    if (!application) return res.status(404).json({ message: "Application not found" });
+    if (!application) return res.status(404).json({ message: "We could not find that application." });
 
     if (application.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
+      return res.status(403).json({ message: "You do not have permission to do that." });
     }
 
     if (["hired", "accepted", "rejected"].includes(application.status)) {
@@ -385,11 +385,11 @@ export const updateFreelancerApplication = async (req, res) => {
     if (requirements !== undefined) {
       const trimmed = String(requirements).trim();
       if (!trimmed) {
-        return res.status(400).json({ message: "Requirements are required" });
+        return res.status(400).json({ message: "Please describe your requirements." });
       }
       const wordCount = trimmed.split(/\s+/).length;
       if (wordCount < 50) {
-        return res.status(400).json({ message: "Requirements must be at least 50 words" });
+        return res.status(400).json({ message: "Please enter at least 50 words in the requirements field." });
       }
       application.requirements = trimmed;
     }
@@ -406,7 +406,7 @@ export const updateFreelancerApplication = async (req, res) => {
     await application.save();
     res.json({ message: "Application updated successfully", application });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -414,22 +414,24 @@ export const respondToFreelancerOffer = async (req, res) => {
   try {
     const { action } = req.body; // "accept" or "reject"
     if (!["accept", "reject"].includes(action)) {
-      return res.status(400).json({ message: "Invalid action. Must be 'accept' or 'reject'" });
+      return res.status(400).json({ message: "That action is not allowed. Choose accept or reject." });
     }
 
     const application = await FreelancerApplication.findById(req.params.id).populate("freelancer", "name qualification location photo");
 
-    if (!application) return res.status(404).json({ message: "Application not found" });
+    if (!application) return res.status(404).json({ message: "We could not find that application." });
     if (application.user.toString() !== req.user._id.toString())
-      return res.status(403).json({ message: "Not authorized" });
+      return res.status(403).json({ message: "You do not have permission to do that." });
     if (application.status !== "hired")
-      return res.status(400).json({ message: "Can only respond to hired applications" });
+      return res.status(400).json({ message: "You can only respond to applications that are marked as hired." });
 
     application.status = action === "accept" ? "accepted" : "rejected";
     await application.save();
 
     res.json({ message: `Offer ${action}ed successfully`, application });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
+
+

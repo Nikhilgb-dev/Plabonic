@@ -61,7 +61,7 @@ const AdminFeedbacks: React.FC = () => {
 
   const handleReplySubmit = async (): Promise<void> => {
     if (!replyText.trim()) {
-      toast.error("Please write a reply");
+      toast.error("Please write a reply before sending.");
       return;
     }
     try {
@@ -72,7 +72,7 @@ const AdminFeedbacks: React.FC = () => {
       fetchFeedbacks();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to send reply");
+      toast.error("We couldn't send the reply. Please try again.");
     }
   };
 
@@ -338,3 +338,6 @@ const AdminFeedbacks: React.FC = () => {
 };
 
 export default AdminFeedbacks;
+
+
+

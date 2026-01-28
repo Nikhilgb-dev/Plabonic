@@ -8,16 +8,16 @@ export const companyLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+    if (!user) return res.status(401).json({ message: "We could not sign you in. Check your email and password, then try again." });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "We could not sign you in. Check your email and password, then try again." });
 
     if (user.role !== "company_admin")
       return res
         .status(403)
-        .json({ message: "Account is not a company admin" });
+        .json({ message: "This account is not a company admin." });
 
     const company = user.company ? await Company.findById(user.company) : null;
 
@@ -30,6 +30,8 @@ export const companyLogin = async (req, res) => {
       token: generateToken(user._id, user.role),
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
+
+

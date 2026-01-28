@@ -12,7 +12,7 @@ export const createUser = async (req, res) => {
     const user = await User.create({ name, email, password: hashed, role });
     res.status(201).json(user);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -22,17 +22,17 @@ export const getAllUsers = async (req, res) => {
     const users = await User.find().select("-password");
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const getMyProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -51,7 +51,7 @@ export const updateMyProfile = async (req, res) => {
     delete updates.joinDate; // Join date should not be updated
 
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
 
     // Update fields
     Object.keys(updates).forEach(key => {
@@ -76,7 +76,7 @@ export const updateMyProfile = async (req, res) => {
       user: { ...user.toObject(), password: undefined },
     });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -84,10 +84,10 @@ export const updateMyProfile = async (req, res) => {
 export const deleteMyAccount = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.user._id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     res.json({ message: "Account deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -95,10 +95,10 @@ export const deleteMyAccount = async (req, res) => {
 export const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -113,10 +113,10 @@ export const updateUser = async (req, res) => {
       runValidators: true,
     }).select("-password");
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     res.json(user);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -124,10 +124,10 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     res.json({ message: "User deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -135,10 +135,10 @@ export const deleteUser = async (req, res) => {
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -154,7 +154,7 @@ export const updateProfile = async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -193,7 +193,7 @@ export const toggleFollow = async (req, res) => {
 
     res.json({ message: isFollowing ? "Unfollowed" : "Followed" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -204,7 +204,7 @@ export const saveJob = async (req, res) => {
     const userId = req.user._id;
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
 
     if (user.savedJobs.includes(jobId)) {
       return res.status(400).json({ message: "Job already saved" });
@@ -215,7 +215,7 @@ export const saveJob = async (req, res) => {
 
     res.json({ message: "Job saved successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -225,14 +225,14 @@ export const unsaveJob = async (req, res) => {
     const userId = req.user._id;
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
 
     user.savedJobs = user.savedJobs.filter(id => id.toString() !== jobId);
     await user.save();
 
     res.json({ message: "Job unsaved successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -243,10 +243,10 @@ export const getSavedJobs = async (req, res) => {
       path: "savedJobs",
       populate: { path: "company", select: "name logo" },
     });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
     res.json(user.savedJobs);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -257,7 +257,7 @@ export const saveFreelancer = async (req, res) => {
     const userId = req.user._id;
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
 
     if (user.savedFreelancers.includes(freelancerId)) {
       return res.status(400).json({ message: "Freelancer already saved" });
@@ -268,7 +268,7 @@ export const saveFreelancer = async (req, res) => {
 
     res.json({ message: "Freelancer saved successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -278,13 +278,15 @@ export const unsaveFreelancer = async (req, res) => {
     const userId = req.user._id;
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
 
     user.savedFreelancers = user.savedFreelancers.filter(id => id.toString() !== freelancerId);
     await user.save();
 
     res.json({ message: "Freelancer unsaved successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
+
+

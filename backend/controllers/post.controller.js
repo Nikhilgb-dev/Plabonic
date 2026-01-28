@@ -9,7 +9,7 @@ export const createPost = async (req, res) => {
     });
     res.status(201).json(post);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -31,7 +31,7 @@ export const getFeedPosts = async (req, res) => {
 
     res.json(posts);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -39,7 +39,7 @@ export const getFeedPosts = async (req, res) => {
 export const toggleLike = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) return res.status(404).json({ message: "We could not find that post." });
 
     const userId = req.user._id.toString();
     const alreadyLiked = post.likes.some((id) => id.toString() === userId);
@@ -53,7 +53,7 @@ export const toggleLike = async (req, res) => {
     await post.save();
     res.json({ likes: post.likes.length, liked: !alreadyLiked });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -62,7 +62,7 @@ export const addComment = async (req, res) => {
   try {
     const { text } = req.body;
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) return res.status(404).json({ message: "We could not find that post." });
 
     const comment = { user: req.user._id, text };
     post.comments.push(comment);
@@ -70,7 +70,7 @@ export const addComment = async (req, res) => {
 
     res.status(201).json(post.comments[post.comments.length - 1]);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -78,7 +78,7 @@ export const addComment = async (req, res) => {
 export const sharePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) return res.status(404).json({ message: "We could not find that post." });
 
     const userId = req.user._id.toString();
     if (post.shares.includes(userId)) {
@@ -98,6 +98,8 @@ export const sharePost = async (req, res) => {
 
     res.status(201).json({ message: "Post shared", sharedPost });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
+
+

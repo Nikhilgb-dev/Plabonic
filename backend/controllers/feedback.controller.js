@@ -10,7 +10,7 @@ export const createFeedback = async (req, res) => {
     if (!message || !targetType)
       return res
         .status(400)
-        .json({ message: "Message and targetType are required" });
+        .json({ message: "Please include a message and a target type." });
 
     if (submittedBy === "company" && targetType !== "platform") {
       return res
@@ -32,7 +32,7 @@ export const createFeedback = async (req, res) => {
     res.status(201).json(feedback);
   } catch (err) {
     console.error("❌ Error in createFeedback:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -41,7 +41,7 @@ export const replyToFeedback = async (req, res) => {
     const { reply } = req.body;
 
     if (!reply || reply.trim() === "")
-      return res.status(400).json({ message: "Reply cannot be empty" });
+      return res.status(400).json({ message: "Please write a reply before sending." });
 
     const feedback = await Feedback.findById(req.params.id);
     if (!feedback)
@@ -55,7 +55,7 @@ export const replyToFeedback = async (req, res) => {
     res.json({ message: "Reply added successfully", feedback });
   } catch (err) {
     console.error("❌ Error replying to feedback:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -68,7 +68,7 @@ export const getAllFeedbacks = async (req, res) => {
 
     res.json(feedbacks);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -84,7 +84,7 @@ export const getCompanyFeedbacks = async (req, res) => {
 
     res.json(feedbacks);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -98,6 +98,8 @@ export const getMyFeedbacks = async (req, res) => {
     const feedbacks = await Feedback.find(filter).sort({ createdAt: -1 });
     res.json(feedbacks);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
+
+

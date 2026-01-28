@@ -55,7 +55,7 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !title || !description || !price) {
-      toast.error("All fields are required.");
+      toast.error("Please complete all required fields.");
       return;
     }
     setLoading(true);
@@ -100,7 +100,7 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
       const message =
         (err as any)?.response?.data?.message ||
         (err as Error)?.message ||
-        `Failed to ${card ? 'update' : 'save'} card. Please try again.`;
+        `We couldn't ${card ? 'update' : 'save'} the card. Please try again.`;
       toast.error(message);
     } finally {
       setLoading(false);
@@ -276,3 +276,4 @@ const MarketingCardModal: React.FC<Props> = ({ onClose, onSaved, card }) => {
 };
 
 export default MarketingCardModal;
+

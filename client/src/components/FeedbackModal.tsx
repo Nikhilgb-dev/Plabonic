@@ -38,7 +38,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ onClose, targetType, targ
             onClose();
         } catch (err) {
             console.error(err);
-            toast.error("Failed to send feedback");
+            toast.error("We couldn't send feedback. Please try again.");
         } finally {
             setLoading(false);
         }

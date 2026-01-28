@@ -26,7 +26,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.newPassword !== form.confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error("Passwords do not match. Please re-enter them.");
       return;
     }
     setLoading(true);
@@ -39,7 +39,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
       onClose();
       setForm({ email: "", newPassword: "", confirmPassword: "" });
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to reset password");
+      toast.error(err.response?.data?.message || "We couldn't reset the password. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -126,3 +126,4 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
 };
 
 export default ForgotPasswordModal;
+

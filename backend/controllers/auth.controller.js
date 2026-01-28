@@ -22,7 +22,7 @@ export const register = async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser)
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "An account with this email already exists. Try signing in." });
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -55,7 +55,7 @@ export const register = async (req, res) => {
     });
   } catch (err) {
     console.error("Register Error:", err);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -65,11 +65,11 @@ export const login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user)
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "We could not sign you in. Check your email and password, then try again." });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "We could not sign you in. Check your email and password, then try again." });
 
     res.json({
       _id: user._id,
@@ -79,7 +79,7 @@ export const login = async (req, res) => {
       token: generateToken(user._id, user.role),
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -88,7 +88,7 @@ export const forgotPassword = async (req, res) => {
     const { email, newPassword } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "We could not find that user." });
 
     const hashed = await bcrypt.hash(newPassword, 10);
     user.password = hashed;
@@ -96,6 +96,8 @@ export const forgotPassword = async (req, res) => {
 
     res.json({ message: "Password reset successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
+
+

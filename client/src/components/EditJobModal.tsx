@@ -40,7 +40,7 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ jobId, onClose, onJobUpdate
       onJobUpdated();
       onClose();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update job");
+      toast.error(err.response?.data?.message || "We couldn't update the job. Please try again.");
     }
   };
 
@@ -96,3 +96,4 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ jobId, onClose, onJobUpdate
 };
 
 export default EditJobModal;
+

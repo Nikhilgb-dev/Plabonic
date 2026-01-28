@@ -56,7 +56,7 @@ const ManageUsers: React.FC = () => {
                 const res = await API.get("/admin/users");
                 setUsers(res.data);
             } catch (err) {
-                toast.error("Failed to load users");
+                toast.error("We couldn't load users. Please try again.");
             } finally {
                 setLoading(false);
             }
@@ -110,7 +110,7 @@ const ManageUsers: React.FC = () => {
             setUsers(users.map(u => u._id === userId ? { ...u, blocked: !blocked } : u));
             toast.success(`User ${!blocked ? "blocked" : "unblocked"}`);
         } catch (err) {
-            toast.error("Failed to update user");
+            toast.error("We couldn't update the user. Please try again.");
         }
     };
 
@@ -121,7 +121,7 @@ const ManageUsers: React.FC = () => {
             setUsers(users.filter((u) => u._id !== userId));
             toast.success("User deleted");
         } catch (err) {
-            toast.error("Failed to delete user");
+            toast.error("We couldn't delete the user. Please try again.");
         }
     };
 
@@ -202,3 +202,4 @@ const ManageUsers: React.FC = () => {
 };
 
 export default ManageUsers;
+

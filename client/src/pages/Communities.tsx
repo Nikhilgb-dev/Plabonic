@@ -48,7 +48,7 @@ const Communities = () => {
             setCoverImageFile(null);
             fetchCommunities();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to create community");
+            toast.error(err.response?.data?.message || "We couldn't create the community. Please try again.");
         }
     };
 
@@ -121,3 +121,4 @@ const Communities = () => {
 };
 
 export default Communities;
+

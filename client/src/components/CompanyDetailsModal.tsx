@@ -22,7 +22,7 @@ const CompanyDetailsModal: React.FC<Props> = ({ company, onClose, onRefresh, isA
             onRefresh();
             onClose();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to update status");
+            toast.error(err.response?.data?.message || "We couldn't update the status. Please try again.");
         }
     };
 
@@ -36,7 +36,7 @@ const CompanyDetailsModal: React.FC<Props> = ({ company, onClose, onRefresh, isA
                 onRefresh();
                 onClose();
             } catch (err: any) {
-                toast.error(err.response?.data?.message || "Failed to delete company");
+                toast.error(err.response?.data?.message || "We couldn't delete the company. Please try again.");
             }
         }
     };
@@ -235,3 +235,4 @@ const CompanyDetailsModal: React.FC<Props> = ({ company, onClose, onRefresh, isA
 };
 
 export default CompanyDetailsModal;
+

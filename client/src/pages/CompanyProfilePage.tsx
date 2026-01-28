@@ -32,7 +32,7 @@ const CompanyProfilePage: React.FC = () => {
                 const res = await API.get("/companies/me");
                 setCompany(res.data);
             } catch (err: any) {
-                toast.error(err.response?.data?.message || "Failed to load profile");
+                toast.error(err.response?.data?.message || "We couldn't load the profile. Please try again.");
             } finally {
                 setLoading(false);
             }
@@ -142,7 +142,7 @@ const CompanyProfilePage: React.FC = () => {
                             const res = await API.get("/companies/me");
                             setCompany(res.data);
                         } catch (err: any) {
-                            toast.error(err.response?.data?.message || "Failed to reload profile");
+                            toast.error(err.response?.data?.message || "We couldn't reload the profile. Please try again.");
                         }
                     };
                     loadCompany();
@@ -153,3 +153,4 @@ const CompanyProfilePage: React.FC = () => {
 };
 
 export default CompanyProfilePage;
+

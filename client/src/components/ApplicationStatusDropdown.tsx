@@ -53,7 +53,7 @@ const ApplicationStatusDropdown: React.FC<Props> = ({
             toast.success("Status updated");
             onUpdated?.();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to update");
+            toast.error(err.response?.data?.message || "We couldn't update this item. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -61,7 +61,7 @@ const ApplicationStatusDropdown: React.FC<Props> = ({
 
     const handleRejectConfirm = async () => {
         if (!rejectionReason.trim()) {
-            toast.error("Please provide a rejection reason");
+            toast.error("Please provide a reason for rejection.");
             return;
         }
         setLoading(true);
@@ -78,7 +78,7 @@ const ApplicationStatusDropdown: React.FC<Props> = ({
             setShowRejectModal(false);
             setRejectionReason("");
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to update");
+            toast.error(err.response?.data?.message || "We couldn't update this item. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -141,3 +141,4 @@ const ApplicationStatusDropdown: React.FC<Props> = ({
 };
 
 export default ApplicationStatusDropdown;
+

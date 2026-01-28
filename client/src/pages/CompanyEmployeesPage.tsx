@@ -24,7 +24,7 @@ const CompanyEmployeesPage: React.FC = () => {
             const res = await API.get("/companies/me/employees");
             setEmployees(res.data);
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to load employees");
+            toast.error(err.response?.data?.message || "We couldn't load employees. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -37,7 +37,7 @@ const CompanyEmployeesPage: React.FC = () => {
             toast.success("Employee removed");
             loadEmployees();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to remove employee");
+            toast.error(err.response?.data?.message || "We couldn't remove this employee. Please try again.");
         }
     };
 
@@ -111,3 +111,4 @@ const CompanyEmployeesPage: React.FC = () => {
 };
 
 export default CompanyEmployeesPage;
+

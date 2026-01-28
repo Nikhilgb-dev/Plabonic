@@ -26,7 +26,7 @@ const CompanyLoginPage: React.FC = () => {
             toast.success("Logged in as " + company?.name);
             navigate("/company/dashboard");
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Login failed");
+            toast.error(err.response?.data?.message || "We couldn't sign you in. Check your email and password, then try again.");
         } finally {
             setLoading(false);
         }
@@ -98,3 +98,4 @@ const CompanyLoginPage: React.FC = () => {
 };
 
 export default CompanyLoginPage;
+

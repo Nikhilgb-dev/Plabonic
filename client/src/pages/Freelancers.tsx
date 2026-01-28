@@ -52,7 +52,7 @@ const Freelancers: React.FC = () => {
       const res = await API.get("/freelancers");
       setFreelancers(res.data);
     } catch (err) {
-      toast.error("Failed to load freelancers");
+      toast.error("We couldn't load freelancers. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -60,11 +60,11 @@ const Freelancers: React.FC = () => {
 
   const handleApply = (id: string) => {
     if (!user) {
-      toast.error("Please login to apply for this service");
+      toast.error("Please sign in to apply for this service.");
       return;
     }
     if (user?.blocked) {
-      toast.error("Your account is blocked. Please contact admin.");
+      toast.error("Your account is blocked. Please contact support.");
       return;
     }
     setSelectedFreelancerId(id);
@@ -73,7 +73,7 @@ const Freelancers: React.FC = () => {
 
   const handleSave = async (freelancerId: string) => {
     if (!user) {
-      toast.error("Please login to save freelancers");
+      toast.error("Please sign in to save freelancers.");
       return;
     }
     try {
@@ -87,7 +87,7 @@ const Freelancers: React.FC = () => {
         toast.success("Freelancer saved");
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to save freelancer");
+      toast.error(err.response?.data?.message || "We couldn't save the freelancer. Please try again.");
     }
   };
 
@@ -371,3 +371,4 @@ const Freelancers: React.FC = () => {
 };
 
 export default Freelancers;
+

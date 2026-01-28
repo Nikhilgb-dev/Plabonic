@@ -22,7 +22,7 @@ const AdminJobDetailsModal: React.FC<Props> = ({ job, onClose, onRefresh }) => {
             onRefresh();
             onClose();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to update remarks");
+            toast.error(err.response?.data?.message || "We couldn't update the remarks. Please try again.");
         } finally {
             setIsSaving(false);
         }
@@ -36,7 +36,7 @@ const AdminJobDetailsModal: React.FC<Props> = ({ job, onClose, onRefresh }) => {
             onRefresh();
             onClose();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to verify job");
+            toast.error(err.response?.data?.message || "We couldn't verify this job. Please try again.");
         } finally {
             setIsVerifying(false);
         }
@@ -222,3 +222,4 @@ const AdminJobDetailsModal: React.FC<Props> = ({ job, onClose, onRefresh }) => {
 };
 
 export default AdminJobDetailsModal;
+

@@ -65,7 +65,7 @@ const FreelancerDashboard: React.FC = () => {
         setApplications(applicationsRes.data);
       }
     } catch (err: any) {
-      toast.error("Failed to load dashboard data");
+      toast.error("We couldn't load your dashboard data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -84,7 +84,7 @@ const FreelancerDashboard: React.FC = () => {
       toast.success("Application status updated");
       fetchFreelancerData();
     } catch (err: any) {
-      toast.error("Failed to update status");
+      toast.error("We couldn't update the status. Please try again.");
     }
   };
 
@@ -443,7 +443,7 @@ const FreelancerDashboard: React.FC = () => {
                 <button
                   onClick={() => {
                     if (!rejectionReason.trim()) {
-                      toast.error("Please provide a rejection reason");
+                      toast.error("Please provide a reason for rejection.");
                       return;
                     }
                     if (rejectingApplicationId) {
@@ -467,3 +467,4 @@ const FreelancerDashboard: React.FC = () => {
 };
 
 export default FreelancerDashboard;
+

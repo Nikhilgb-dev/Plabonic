@@ -26,11 +26,11 @@ const CreateCandidateModal: React.FC<CreateCandidateModalProps> = ({ onClose, on
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.password || !form.confirmPassword || !form.phone) {
-      toast.error("Please fill in all required fields");
+      toast.error("Please complete all required fields.");
       return;
     }
     if (form.password !== form.confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error("Passwords do not match. Please re-enter them.");
       return;
     }
     try {
@@ -39,7 +39,7 @@ const CreateCandidateModal: React.FC<CreateCandidateModalProps> = ({ onClose, on
       onCandidateCreated();
       onClose();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to create candidate");
+      toast.error(err.response?.data?.message || "We couldn't create the candidate. Please try again.");
     }
   };
 
@@ -149,3 +149,6 @@ const CreateCandidateModal: React.FC<CreateCandidateModalProps> = ({ onClose, on
 };
 
 export default CreateCandidateModal;
+
+
+

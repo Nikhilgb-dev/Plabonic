@@ -28,7 +28,7 @@ const EditCommunityModal: React.FC<EditCommunityModalProps> = ({ communityId, on
       onCommunityUpdated();
       onClose();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update community");
+      toast.error(err.response?.data?.message || "We couldn't update the community. Please try again.");
     }
   };
 

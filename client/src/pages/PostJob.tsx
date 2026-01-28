@@ -35,7 +35,7 @@ const PostJob = () => {
       await API.post("/jobs", form);
       toast.success("Job posted successfully!");
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to post job");
+      toast.error(err.response?.data?.message || "We couldn't post the job. Please try again.");
     }
   };
 
@@ -58,3 +58,4 @@ const PostJob = () => {
 };
 
 export default PostJob;
+

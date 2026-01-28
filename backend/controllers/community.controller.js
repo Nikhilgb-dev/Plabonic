@@ -16,7 +16,7 @@ export const createCommunity = async (req, res) => {
     });
     res.status(201).json(community);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -29,7 +29,7 @@ export const getCommunities = async (req, res) => {
     );
     res.json(communities);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -41,10 +41,10 @@ export const getCommunityById = async (req, res) => {
       "name email"
     );
     if (!community)
-      return res.status(404).json({ message: "Community not found" });
+      return res.status(404).json({ message: "We could not find that community." });
     res.json(community);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -60,10 +60,10 @@ export const updateCommunity = async (req, res) => {
       }
     );
     if (!community)
-      return res.status(404).json({ message: "Community not found" });
+      return res.status(404).json({ message: "We could not find that community." });
     res.json(community);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -72,9 +72,11 @@ export const deleteCommunity = async (req, res) => {
   try {
     const community = await Community.findByIdAndDelete(req.params.id);
     if (!community)
-      return res.status(404).json({ message: "Community not found" });
+      return res.status(404).json({ message: "We could not find that community." });
     res.json({ message: "Community deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
+
+

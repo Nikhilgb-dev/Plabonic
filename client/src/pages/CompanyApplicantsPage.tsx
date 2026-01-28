@@ -36,7 +36,7 @@ const CompanyApplicantsPage: React.FC = () => {
             const res = await API.get("/companies/me/applicants");
             setApplicants(res.data.applications || res.data);
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to load applicants");
+            toast.error(err.response?.data?.message || "We couldn't load applicants. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -114,3 +114,4 @@ const CompanyApplicantsPage: React.FC = () => {
 };
 
 export default CompanyApplicantsPage;
+

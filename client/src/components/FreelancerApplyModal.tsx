@@ -84,12 +84,12 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
     e.preventDefault();
 
     if (wordCount < 50) {
-      toast.error("Requirements must be at least 50 words");
+      toast.error("Please enter at least 50 words in the requirements field.");
       return;
     }
 
     if (!resume && !isEdit) {
-      toast.error("Please upload your resume");
+      toast.error("Please upload your resume to continue.");
       return;
     }
 
@@ -120,7 +120,7 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
       onSaved?.();
       onClose();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to apply");
+      toast.error(err?.response?.data?.message || "We couldn't submit your application. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -293,4 +293,5 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
 };
 
 export default FreelancerApplyModal;
+
 

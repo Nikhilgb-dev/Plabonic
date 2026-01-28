@@ -47,7 +47,7 @@ const Login = () => {
       }
 
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Login failed");
+      toast.error(err.response?.data?.message || "We couldn't sign you in. Check your email and password, then try again.");
     }
   };
 
@@ -181,3 +181,4 @@ const Login = () => {
 };
 
 export default Login;
+

@@ -102,7 +102,7 @@ const MarketingDetail: React.FC = () => {
     if (!card || !id) return;
 
     if (!buyerName || !email || !mobile) {
-      toast.error("Please fill in your name, email, and mobile number.");
+      toast.error("Please enter your name, email, and mobile number.");
       return;
     }
 
@@ -124,7 +124,7 @@ const MarketingDetail: React.FC = () => {
       const message =
         (err as any)?.response?.data?.message ||
         (err as Error)?.message ||
-        "Failed to submit enquiry";
+        "We couldn't submit the enquiry. Please try again.";
       toast.error(message);
     }
   };
@@ -381,7 +381,7 @@ const MarketingDetail: React.FC = () => {
               )
             ) : (
               <div className="p-4 sm:p-5 rounded-2xl border border-gray-200 bg-white shadow-sm text-center">
-                <p className="text-lg font-semibold text-gray-900">Please login first</p>
+                <p className="text-lg font-semibold text-gray-900">Please sign in first</p>
                 <p className="text-sm text-gray-600 mt-2">You need to be logged in to make a payment.</p>
               </div>
             )}
@@ -424,3 +424,5 @@ const MarketingDetail: React.FC = () => {
 };
 
 export default MarketingDetail;
+
+

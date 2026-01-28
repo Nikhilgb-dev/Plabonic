@@ -31,7 +31,7 @@ const MarketingAdminPanel: React.FC = () => {
       setEnquiries(enquiriesRes.data);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to load marketing data");
+      toast.error("We couldn't load marketing data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const MarketingAdminPanel: React.FC = () => {
       toast.success("Marketing card deleted");
     } catch (err) {
       console.error(err);
-      toast.error("Failed to delete card");
+      toast.error("We couldn't delete the card. Please try again.");
     } finally {
       setDeletingCard(null);
     }
@@ -251,3 +251,4 @@ const MarketingAdminPanel: React.FC = () => {
 };
 
 export default MarketingAdminPanel;
+

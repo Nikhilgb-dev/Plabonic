@@ -42,7 +42,7 @@ export const applyJob = async (req, res) => {
     //   ? await uploadToCloudinary(req.file, "resumes")
     //   : null;
     // if (!resumeUrl)
-    //   return res.status(400).json({ message: "Resume file missing" })
+    //   return res.status(400).json({ message: "Please attach your resume to continue." })
     // ;
 
     let resumeUrl;
@@ -53,12 +53,12 @@ export const applyJob = async (req, res) => {
     } else if (savedResumes.length) {
       resumeUrl = savedResumes[0];
     } else {
-      return res.status(400).json({ message: "Resume file missing" });
+      return res.status(400).json({ message: "Please attach your resume to continue." });
     }
 
     // check job exists
     const job = await Job.findById(jobId);
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
 
     // prevent duplicate applications
     const existing = await Application.findOne({
@@ -68,7 +68,7 @@ export const applyJob = async (req, res) => {
     if (existing) {
       return res
         .status(400)
-        .json({ message: "You already applied for this job" });
+        .json({ message: "You have already applied for this job." });
     }
 
     // parse contact: can be JSON string or object, fallback to req.user values
@@ -100,7 +100,7 @@ export const applyJob = async (req, res) => {
     if (!finalContact.name || !finalContact.email || !finalContact.phone) {
       return res
         .status(400)
-        .json({ message: "Contact name, email and phone are required" });
+        .json({ message: "Please provide a contact name, email, and phone number." });
     }
 
     // handle experience (string or object)
@@ -217,7 +217,7 @@ export const applyJob = async (req, res) => {
     });
   } catch (err) {
     console.error("Apply Job Error:", err);
-    return res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -227,7 +227,7 @@ export const getMyApplicationProfile = async (req, res) => {
     if (!profile) return res.json(null);
     res.json(profile);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -240,13 +240,13 @@ export const createJob = async (req, res) => {
     if (req.user.company) {
       const company = await Company.findById(req.user.company);
       if (company && company.blocked) {
-        return res.status(403).json({ message: "Your company is blocked and cannot post jobs" });
+        return res.status(403).json({ message: "Your company is blocked from posting jobs. Please contact support." });
       }
     }
     const job = await Job.create({ ...req.body, postedBy: req.user._id });
     res.status(201).json(job);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -293,7 +293,7 @@ export const getJobs = async (req, res) => {
     res.status(200).json(jobsWithFlag);
   } catch (err) {
     console.error("❌ Error in getJobs:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -307,7 +307,7 @@ export const getJobById = async (req, res) => {
       getUserFromRequest(req),
     ]);
 
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
 
     let hasApplied = false;
     if (user) {
@@ -320,7 +320,7 @@ export const getJobById = async (req, res) => {
 
     res.json({ ...job.toObject(), hasApplied });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -335,7 +335,7 @@ export const getJobCategories = async (req, res) => {
     ]);
     res.json(categories);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -348,10 +348,10 @@ export const updateJob = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
     res.json(job);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "We couldn't process that request. Please check your input and try again." });
   }
 };
 
@@ -365,7 +365,7 @@ export const reportAbuse = async (req, res) => {
 
     // Check if job exists
     const job = await Job.findById(jobId);
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
 
     // Prevent duplicate reports from same user
     const existingReport = await AbuseReport.findOne({
@@ -373,7 +373,7 @@ export const reportAbuse = async (req, res) => {
       job: jobId,
     });
     if (existingReport) {
-      return res.status(400).json({ message: "You have already reported this job" });
+      return res.status(400).json({ message: "You have already reported this job." });
     }
 
     // Create abuse report
@@ -394,7 +394,7 @@ export const reportAbuse = async (req, res) => {
     res.status(201).json({ message: "Abuse report submitted successfully", report });
   } catch (err) {
     console.error("Report Abuse Error:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -404,9 +404,11 @@ export const reportAbuse = async (req, res) => {
 export const deleteJob = async (req, res) => {
   try {
     const job = await Job.findByIdAndDelete(req.params.id);
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) return res.status(404).json({ message: "We could not find that job." });
     res.json({ message: "Job deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
+
+

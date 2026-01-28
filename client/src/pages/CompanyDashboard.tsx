@@ -143,8 +143,8 @@ const CompanyDashboard: React.FC = () => {
             setCompanyResponse("");
             fetchAbuseReports();
         } catch (err: any) {
-            console.error("Failed to submit response", err);
-            toast.error(err.response?.data?.message || "Failed to submit response");
+            console.error("We couldn't submit the response. Please try again.", err);
+            toast.error(err.response?.data?.message || "We couldn't submit the response. Please try again.");
         }
     };
 
@@ -164,7 +164,7 @@ const CompanyDashboard: React.FC = () => {
     if (!data)
         return (
             <div className="text-red-500 text-center py-10 text-sm sm:text-base">
-                Failed to load dashboard
+                We couldn't load the dashboard. Please try again.
             </div>
         );
 
@@ -906,3 +906,4 @@ const CompanyDashboard: React.FC = () => {
 };
 
 export default CompanyDashboard;
+

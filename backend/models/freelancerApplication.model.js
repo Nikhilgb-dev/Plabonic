@@ -31,7 +31,7 @@ const freelancerApplicationSchema = new mongoose.Schema(
     requirements: {
       type: String,
       required: true,
-      minlength: [50, "Requirements must be at least 50 words"],
+      minlength: [50, "Please enter at least 50 words in the requirements field."],
     },
     resume: {
       type: String, // Cloudinary URL
@@ -62,3 +62,4 @@ export default mongoose.model(
   "FreelancerApplication",
   freelancerApplicationSchema
 );
+

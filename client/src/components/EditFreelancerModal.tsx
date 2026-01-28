@@ -50,7 +50,7 @@ const EditFreelancerModal: React.FC<EditFreelancerModalProps> = ({
             onUpdated();
             onClose();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Update failed");
+            toast.error(err.response?.data?.message || "We couldn't save your changes. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -232,3 +232,4 @@ const EditFreelancerModal: React.FC<EditFreelancerModalProps> = ({
 };
 
 export default EditFreelancerModal;
+

@@ -269,7 +269,7 @@ const UserDashboard: React.FC = () => {
             try {
                 await Promise.all([fetchApplications(), fetchFreelancerApplications(), fetchSavedJobs(), fetchNotifications(), fetchCurrentUser()]);
             } catch (err) {
-                console.error("Failed to load dashboard data", err);
+                console.error("We couldn't load the dashboard data. Please try again.", err);
             } finally {
                 setLoading(false);
             }
@@ -325,7 +325,7 @@ const UserDashboard: React.FC = () => {
     const startApply = (jobId?: string) => {
         if (!jobId) return;
         if (currentUser?.blocked) {
-            toast.error("Your account is blocked. Please contact admin.");
+            toast.error("Your account is blocked. Please contact support.");
             return;
         }
         setApplyJobId(jobId);
@@ -835,3 +835,5 @@ const UserDashboard: React.FC = () => {
 };
 
 export default UserDashboard;
+
+

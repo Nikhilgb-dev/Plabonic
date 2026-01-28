@@ -93,17 +93,17 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({
         e.preventDefault();
 
         if (!name || !qualification || !email || !password || !confirmPassword || !descriptionOfWork) {
-            toast.error("Please fill all required fields");
+            toast.error("Please complete all required fields.");
             return;
         }
 
         if (password !== confirmPassword) {
-            toast.error("Passwords do not match");
+            toast.error("Passwords do not match. Please re-enter them.");
             return;
         }
 
         if (!acceptTerms) {
-            toast.error("Please accept the terms and conditions");
+            toast.error("Please accept the terms and conditions to continue.");
             return;
         }
 
@@ -155,7 +155,7 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({
             // optional: close after success
             closeModal();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to add freelancer");
+            toast.error(err.response?.data?.message || "We couldn't add the freelancer. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -340,3 +340,5 @@ const AddFreelancer: React.FC<AddFreelancerProps> = ({
 };
 
 export default AddFreelancer;
+
+

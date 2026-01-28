@@ -43,7 +43,7 @@ const AddEmployeeModal: React.FC<Props> = ({ onClose, onCreated }) => {
             onCreated();
             onClose();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to create employee");
+            toast.error(err.response?.data?.message || "We couldn't create the employee. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -170,3 +170,4 @@ const AddEmployeeModal: React.FC<Props> = ({ onClose, onCreated }) => {
 };
 
 export default AddEmployeeModal;
+

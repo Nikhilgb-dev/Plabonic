@@ -24,7 +24,7 @@ const Feed = () => {
             setNewPost("");
             fetchPosts();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to create post");
+            toast.error(err.response?.data?.message || "We couldn't create the post. Please try again.");
         }
     };
 
@@ -102,3 +102,4 @@ const Feed = () => {
 };
 
 export default Feed;
+

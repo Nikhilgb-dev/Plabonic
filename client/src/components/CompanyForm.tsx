@@ -100,11 +100,11 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (form.password !== form.confirmPassword) {
-            toast.error("Passwords do not match");
+            toast.error("Passwords do not match. Please re-enter them.");
             return;
         }
         if (!form.acceptTerms) {
-            toast.error("Please accept the terms and conditions");
+            toast.error("Please accept the terms and conditions to continue.");
             return;
         }
         try {
@@ -175,7 +175,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
             setVerificationDocs(null);
             setStep(1);
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "❌ Registration failed");
+            toast.error(err.response?.data?.message || "We couldn't complete registration. Please check your details and try again.");
         } finally {
             setLoading(false);
         }
@@ -480,3 +480,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
         };
 
 export default CompanyForm;
+
+
+
+

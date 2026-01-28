@@ -84,11 +84,11 @@ const Jobs = () => {
 
   const handleApply = (jobId: string) => {
     if (!user) {
-      toast.error("Please login to apply for jobs");
+      toast.error("Please sign in to apply for jobs.");
       return;
     }
     if (user?.blocked) {
-      toast.error("Your account is blocked. Please contact admin.");
+      toast.error("Your account is blocked. Please contact support.");
       return;
     }
     setSelectedJobId(jobId);
@@ -97,7 +97,7 @@ const Jobs = () => {
 
   const handleSave = async (jobId: string) => {
     if (!user) {
-      toast.error("Please login to save jobs");
+      toast.error("Please sign in to save jobs.");
       return;
     }
     try {
@@ -111,7 +111,7 @@ const Jobs = () => {
         toast.success("Job saved");
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to save job");
+      toast.error(err.response?.data?.message || "We couldn't save the job. Please try again.");
     }
   };
 
@@ -133,7 +133,7 @@ const Jobs = () => {
 
   const handleReportAbuse = (job: any) => {
     if (!user) {
-      toast.error("Please login to report abuse");
+      toast.error("Please sign in to report abuse.");
       return;
     }
     setReportJob(job);
@@ -539,3 +539,4 @@ const Jobs = () => {
 };
 
 export default Jobs;
+

@@ -30,15 +30,15 @@ const Signup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.password || !form.confirmPassword || !form.phone) {
-      toast.error("Please fill in all required fields");
+      toast.error("Please complete all required fields.");
       return;
     }
     if (form.password !== form.confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error("Passwords do not match. Please re-enter them.");
       return;
     }
     if (!form.acceptTerms) {
-      toast.error("Please accept the terms and conditions");
+      toast.error("Please accept the terms and conditions to continue.");
       return;
     }
     try {
@@ -54,7 +54,7 @@ const Signup = () => {
       toast.success("Signup successful!");
       navigate("/");
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Signup failed");
+      toast.error(err.response?.data?.message || "We couldn't create your account. Please check your details and try again.");
     }
   };
 
@@ -217,3 +217,7 @@ const Signup = () => {
 };
 
 export default Signup;
+
+
+
+

@@ -221,14 +221,14 @@ const Dashboard = () => {
   const handleExport = async (endpoint: string, filename: string) => {
     try {
       if ((exportStartDate && !exportEndDate) || (!exportStartDate && exportEndDate)) {
-        toast.error("Select both start and end dates to export a range.");
+        toast.error("Please select both start and end dates to export a range.");
         return;
       }
       if (exportStartDate && exportEndDate) {
         const start = new Date(exportStartDate);
         const end = new Date(exportEndDate);
         if (start > end) {
-          toast.error("Start date must be before end date.");
+          toast.error("Start date must be before the end date.");
           return;
         }
       }
@@ -251,8 +251,8 @@ const Dashboard = () => {
       window.URL.revokeObjectURL(url);
       toast.success(`Exported ${filename}`);
     } catch (err: any) {
-      console.error("Failed to export data", err);
-      toast.error(err?.response?.data?.message || "Failed to export data");
+      console.error("We couldn't export the data. Please try again.", err);
+      toast.error(err?.response?.data?.message || "We couldn't export the data. Please try again.");
     }
   };
 
@@ -313,7 +313,7 @@ const Dashboard = () => {
       });
       fetchJobs();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to post job");
+      toast.error(err.response?.data?.message || "We couldn't post the job. Please try again.");
     }
   };
 
@@ -364,7 +364,7 @@ const Dashboard = () => {
         fetchCompanies();
         fetchAbuseReports();
       } catch (err: any) {
-        toast.error(err.response?.data?.message || `Failed to ${action} company`);
+        toast.error(err.response?.data?.message || `We couldn't ${action} the company. Please try again.`);
       }
     }
   };
@@ -377,7 +377,7 @@ const Dashboard = () => {
         toast.success(`Job ${action}ed successfully`);
         fetchAbuseReports();
       } catch (err: any) {
-        toast.error(err.response?.data?.message || `Failed to ${action} job`);
+        toast.error(err.response?.data?.message || `We couldn't ${action} the job. Please try again.`);
       }
     }
   };
@@ -388,7 +388,7 @@ const Dashboard = () => {
       fetchAbuseReports();
       toast.success("Abuse report status updated");
     } catch (err) {
-      toast.error("Failed to update report status");
+      toast.error("We couldn't update the report status. Please try again.");
     }
   };
 
@@ -398,7 +398,7 @@ const Dashboard = () => {
       fetchAbuseReports();
       toast.success(`Company response ${action}d`);
     } catch (err) {
-      toast.error("Failed to review response");
+      toast.error("We couldn't review the response. Please try again.");
     }
   };
 
@@ -451,7 +451,7 @@ const Dashboard = () => {
         toast.success(`User ${action}ed successfully`);
         fetchUsers();
       } catch (err: any) {
-        toast.error(err.response?.data?.message || `Failed to ${action} user`);
+        toast.error(err.response?.data?.message || `We couldn't ${action} the user. Please try again.`);
       }
     }
   };
@@ -1933,3 +1933,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+

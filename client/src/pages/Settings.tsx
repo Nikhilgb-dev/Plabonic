@@ -70,7 +70,7 @@ const Settings = () => {
             };
             navigate(getDashboardPath());
         } catch (err) {
-            alert("Failed to update profile.");
+            alert("We couldn't update your profile. Please try again.");
         } finally {
             setSaving(false);
         }
@@ -92,7 +92,7 @@ const Settings = () => {
             setForm(res.data.user);
             alert("Profile photo updated successfully!");
         } catch (err) {
-            alert("Failed to update profile photo.");
+            alert("We couldn't update your profile photo. Please try again.");
         } finally {
             setUploadingPhoto(false);
         }
@@ -106,7 +106,7 @@ const Settings = () => {
             localStorage.removeItem("token");
             window.location.href = "/";
         } catch {
-            alert("Failed to delete account.");
+            alert("We couldn't delete your account. Please try again.");
         }
     };
 
@@ -743,7 +743,7 @@ const Settings = () => {
                                                     setForm(res.data);
                                                     alert("Resume uploaded successfully!");
                                                 } catch (err) {
-                                                    alert("Failed to upload resume.");
+                                                    alert("We couldn't upload your resume. Please try again.");
                                                 }
                                             }}
                                             className="w-full border rounded-md p-2"
@@ -1252,7 +1252,7 @@ const Settings = () => {
                                             setFreelancerForm(res.data);
                                             alert("Resume uploaded successfully!");
                                         } catch (err) {
-                                            alert("Failed to upload resume.");
+                                            alert("We couldn't upload your resume. Please try again.");
                                         }
                                     }}
                                     className="w-full border rounded-md p-2"
@@ -1377,3 +1377,4 @@ const Settings = () => {
 };
 
 export default Settings;
+
