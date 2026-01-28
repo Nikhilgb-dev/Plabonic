@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import API from "@/api/api";
 import { useCompany } from "../contexts/CompanyContext";
 import { useNavigate } from "react-router-dom";
+import SkillsInput from "@/components/SkillsInput";
 
 interface Job {
     _id?: string;
@@ -56,6 +57,12 @@ const ManageJobsPage: React.FC = () => {
         if (!digits) return "";
         return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
+    const parseSkills = (value?: string) =>
+        (value || "")
+            .split(/[,\n]/)
+            .map((part) => part.trim())
+            .filter((part) => part.length > 0);
+    const skillsList = useMemo(() => parseSkills(form.skillsRequired), [form.skillsRequired]);
 
     const { company, refreshCompany } = useCompany();
 
@@ -389,13 +396,10 @@ const ManageJobsPage: React.FC = () => {
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Skills Required
                                 </label>
-                                <textarea
-                                    name="skillsRequired"
-                                    placeholder="List the required skills..."
-                                    value={form.skillsRequired}
-                                    onChange={handleChange}
-                                    className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                                    rows={3}
+                                <SkillsInput
+                                    value={skillsList}
+                                    onChange={(next) => setForm({ ...form, skillsRequired: next.join(", ") })}
+                                    inputClassName="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                 />
                             </div>
 

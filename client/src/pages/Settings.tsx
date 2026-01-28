@@ -4,6 +4,7 @@ import API from "@/api/api";
 import { motion } from "framer-motion";
 import { Camera, Trash2, Save, Building2, User, Shield } from "lucide-react";
 import Avatar from "@/components/Avatar";
+import SkillsInput from "@/components/SkillsInput";
 
 const Settings = () => {
     const navigate = useNavigate();
@@ -47,6 +48,7 @@ const Settings = () => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
+
 
     const handleSave = async () => {
         setSaving(true);
@@ -357,32 +359,26 @@ const Settings = () => {
                             </div>
                             <div>
                                 <label className="text-sm text-gray-600">Technical Skills (comma separated)</label>
-                                <input
-                                    type="text"
-                                    name="technicalSkills"
-                                    value={form.technicalSkills ? form.technicalSkills.join(", ") : ""}
-                                    onChange={(e) => setForm({ ...form, technicalSkills: e.target.value.split(", ").filter(s => s.trim()) })}
-                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                <SkillsInput
+                                    value={form.technicalSkills || []}
+                                    onChange={(next) => setForm({ ...form, technicalSkills: next })}
+                                    inputClassName="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                             <div>
                                 <label className="text-sm text-gray-600">Soft Skills (comma separated)</label>
-                                <input
-                                    type="text"
-                                    name="softSkills"
-                                    value={form.softSkills ? form.softSkills.join(", ") : ""}
-                                    onChange={(e) => setForm({ ...form, softSkills: e.target.value.split(", ").filter(s => s.trim()) })}
-                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                <SkillsInput
+                                    value={form.softSkills || []}
+                                    onChange={(next) => setForm({ ...form, softSkills: next })}
+                                    inputClassName="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                             <div>
                                 <label className="text-sm text-gray-600">Interested Skills to Learn (comma separated)</label>
-                                <input
-                                    type="text"
-                                    name="interestedSkills"
-                                    value={form.interestedSkills ? form.interestedSkills.join(", ") : ""}
-                                    onChange={(e) => setForm({ ...form, interestedSkills: e.target.value.split(", ").filter(s => s.trim()) })}
-                                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                <SkillsInput
+                                    value={form.interestedSkills || []}
+                                    onChange={(next) => setForm({ ...form, interestedSkills: next })}
+                                    inputClassName="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                             <div>
@@ -453,12 +449,10 @@ const Settings = () => {
                                 <>
                                     <div>
                                         <label className="text-sm text-gray-600">Skills (comma separated)</label>
-                                        <input
-                                            type="text"
-                                            name="skills"
-                                            value={form.skills ? form.skills.join(", ") : ""}
-                                            onChange={(e) => setForm({ ...form, skills: e.target.value.split(", ").filter(s => s.trim()) })}
-                                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                        <SkillsInput
+                                            value={form.skills || []}
+                                            onChange={(next) => setForm({ ...form, skills: next })}
+                                            inputClassName="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
                                         />
                                     </div>
                                     <div>
@@ -1081,11 +1075,11 @@ const Settings = () => {
                             </div>
                             <div>
                                 <label className="text-sm text-gray-600">Skills / Expertise (comma separated)</label>
-                                <input
-                                    type="text"
-                                    value={freelancerForm.skills ? freelancerForm.skills.join(", ") : ""}
-                                    onChange={(e) => setFreelancerForm({ ...freelancerForm, skills: e.target.value.split(", ").filter(s => s.trim()) })}
-                                    className="w-full border rounded-md p-2"
+                                <SkillsInput
+                                    value={freelancerForm.skills || []}
+                                    onChange={(next) => setFreelancerForm({ ...freelancerForm, skills: next })}
+                                    inputClassName="w-full border rounded-md p-2"
+                                    chipClassName="rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-medium text-green-700"
                                 />
                             </div>
                             <div>

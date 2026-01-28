@@ -1,5 +1,6 @@
 // src/components/JobFormModal.tsx
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
+import SkillsInput from "@/components/SkillsInput";
 
 type JobFormProps = {
     initialData?: {
@@ -39,6 +40,12 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
         if (!digits) return "";
         return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
+    const parseSkills = (value?: string) =>
+        (value || "")
+            .split(/[,\n]/)
+            .map((part) => part.trim())
+            .filter((part) => part.length > 0);
+    const skillsList = useMemo(() => parseSkills(form.skillsRequired), [form.skillsRequired]);
 
     useEffect(() => {
         if (initialData) {
@@ -155,7 +162,11 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
 
                     <div>
                         <label className="block text-sm font-medium">Skills Required</label>
-                        <textarea name="skillsRequired" value={form.skillsRequired} onChange={handleChange} rows={2} className="w-full px-3 py-2 border rounded-md" />
+                        <SkillsInput
+                            value={skillsList}
+                            onChange={(next) => setForm((s) => ({ ...s, skillsRequired: next.join(", ") }))}
+                            inputClassName="w-full px-3 py-2 border rounded-md"
+                        />
                     </div>
 
                     <div>

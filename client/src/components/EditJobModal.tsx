@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import API from "../api/api";
 import { toast } from "react-hot-toast";
+import SkillsInput from "@/components/SkillsInput";
 
 interface EditJobModalProps {
   jobId: string;
@@ -15,6 +16,12 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ jobId, onClose, onJobUpdate
     if (!digits) return "";
     return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
+  const parseSkills = (value?: string) =>
+    (value || "")
+      .split(/[,\n]/)
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
+  const skillsList = useMemo(() => parseSkills(form.skillsRequired), [form.skillsRequired]);
 
   useEffect(() => {
     API.get(`/jobs/${jobId}`).then((res) => {
@@ -67,7 +74,11 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ jobId, onClose, onJobUpdate
           </select>
           <textarea name="description" placeholder="Job Description" value={form.description} onChange={handleChange} className="w-full mb-2 p-2 border" />
           <textarea name="roleAndResponsibility" placeholder="Role and Responsibility" value={form.roleAndResponsibility} onChange={handleChange} className="w-full mb-2 p-2 border" />
-          <textarea name="skillsRequired" placeholder="Skills Required" value={form.skillsRequired} onChange={handleChange} className="w-full mb-2 p-2 border" />
+          <SkillsInput
+            value={skillsList}
+            onChange={(next) => setForm({ ...form, skillsRequired: next.join(", ") })}
+            inputClassName="w-full mb-2 p-2 border"
+          />
           <textarea name="preferredQualifications" placeholder="Preferred Qualifications" value={form.preferredQualifications} onChange={handleChange} className="w-full mb-2 p-2 border" />
           <input type="date" name="expiresAt" placeholder="Expiry Date" value={form.expiresAt ? new Date(form.expiresAt).toISOString().split('T')[0] : ""} onChange={handleChange} className="w-full mb-2 p-2 border" />
           <div className="flex justify-end gap-4">
