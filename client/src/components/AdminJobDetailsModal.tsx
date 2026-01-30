@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import API from "../api/api";
 import toast from "react-hot-toast";
 import Avatar from "./Avatar";
+import { formatSalaryRange } from "@/utils/salary";
 
 interface Props {
     job: any;
@@ -113,13 +114,7 @@ const AdminJobDetailsModal: React.FC<Props> = ({ job, onClose, onRefresh }) => {
                                     <span className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Salary Range</span>
                                 </div>
                                 <p className="text-gray-900 font-medium">
-                                    {job.minSalary && job.maxSalary
-                                        ? `₹${job.minSalary.toLocaleString()} - ₹${job.maxSalary.toLocaleString()} Rupees`
-                                        : job.minSalary
-                                        ? `From ₹${job.minSalary.toLocaleString()} Rupees`
-                                        : job.maxSalary
-                                        ? `Up to ₹${job.maxSalary.toLocaleString()} Rupees`
-                                        : "Not specified"}
+                                    {formatSalaryRange(job.minSalary, job.maxSalary, job.salaryType) || "Not specified"}
                                 </p>
                             </div>
                         )}

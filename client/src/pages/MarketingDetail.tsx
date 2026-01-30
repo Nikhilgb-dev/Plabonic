@@ -218,9 +218,8 @@ const MarketingDetail: React.FC = () => {
                   {gallery.map((_, idx) => (
                     <span
                       key={idx}
-                      className={`h-2 w-2 rounded-full ${
-                        idx === active ? "bg-blue-600" : "bg-white/70"
-                      }`}
+                      className={`h-2 w-2 rounded-full ${idx === active ? "bg-blue-600" : "bg-white/70"
+                        }`}
                     />
                   ))}
                 </div>
@@ -311,7 +310,7 @@ const MarketingDetail: React.FC = () => {
                   onSubmit={handleEnquiry}
                   className="space-y-3 p-4 sm:p-5 rounded-2xl border border-gray-200 bg-white shadow-sm"
                 >
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">Payment Form</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">We will reach you shortly</h3>
 
                   <div className="grid gap-3 sm:grid-cols-2">
                     <label className="block">

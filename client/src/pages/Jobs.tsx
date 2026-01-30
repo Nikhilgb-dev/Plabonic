@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import API from "../api/api";
+import { formatSalaryRange } from "@/utils/salary";
 import ApplyModal from "../components/ApplyModal";
 import JobDetailsModal from "./JobDetailsModal";
 import ReportAbuseModal from "../components/ReportAbuseModal";
@@ -414,10 +415,9 @@ const Jobs = () => {
                         🕒 {job.employmentType}
                       </span>
                     )}
-                    {job.minSalary && (
+                    {(job.minSalary || job.maxSalary) && (
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700">
-                        ₹{job.minSalary.toLocaleString()}
-                        {job.maxSalary ? ` - ${job.maxSalary.toLocaleString()}` : ""}
+                        {formatSalaryRange(job.minSalary, job.maxSalary, job.salaryType)}
                       </span>
                     )}
                     {job.blocked && (

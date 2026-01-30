@@ -624,6 +624,7 @@ export const createJobForCompany = async (req, res) => {
       location,
       minSalary,
       maxSalary,
+      salaryType,
       employmentType,
       status,
       expiresAt,
@@ -640,6 +641,7 @@ export const createJobForCompany = async (req, res) => {
       location,
       minSalary: minSalary ? parseFloat(minSalary) : undefined,
       maxSalary: maxSalary ? parseFloat(maxSalary) : undefined,
+      salaryType,
       employmentType,
       status: status || "open",
       expiresAt,
@@ -857,5 +859,3 @@ export const updateAbuseReport = async (req, res) => {
     res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }
 };
-
-

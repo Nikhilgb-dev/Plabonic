@@ -1,6 +1,7 @@
 // src/components/JobFormModal.tsx
 import React, { useMemo, useState, useEffect } from "react";
 import SkillsInput from "@/components/SkillsInput";
+import { formatIndianInput, parseIndianInput, SalaryType } from "@/utils/salary";
 
 type JobFormProps = {
     initialData?: {
@@ -14,6 +15,7 @@ type JobFormProps = {
         employmentType?: string;
         minSalary?: number;
         maxSalary?: number;
+        salaryType?: SalaryType;
         status?: "open" | "closed";
     } | null;
     onClose: () => void;
@@ -32,14 +34,11 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
         employmentType: "Full-time",
         minSalary: undefined as number | undefined,
         maxSalary: undefined as number | undefined,
+        salaryType: "Monthly" as SalaryType,
         status: "open" as "open" | "closed",
     });
     const [submitting, setSubmitting] = useState(false);
-    const formatNumberInput = (value: string) => {
-        const digits = value.replace(/[^\d]/g, "");
-        if (!digits) return "";
-        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    };
+    const salaryOptions: SalaryType[] = ["Monthly", "LPA", "CTC"];
     const parseSkills = (value?: string) =>
         (value || "")
             .split(/[,\n]/)
@@ -59,6 +58,7 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
                 employmentType: initialData.employmentType || "Full-time",
                 minSalary: initialData.minSalary,
                 maxSalary: initialData.maxSalary,
+                salaryType: initialData.salaryType || "Monthly",
                 status: initialData.status || "open",
             });
         }
@@ -124,10 +124,10 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
                                 name="minSalary"
                                 type="text"
                                 placeholder="e.g. 800,000"
-                                value={form.minSalary ? form.minSalary.toLocaleString() : ""}
+                                value={form.minSalary ? form.minSalary.toLocaleString("en-IN") : ""}
                                 onChange={(e) => {
-                                    const formatted = formatNumberInput(e.target.value);
-                                    const numericValue = formatted ? Number(formatted.replace(/,/g, "")) : undefined;
+                                    const formatted = formatIndianInput(e.target.value);
+                                    const numericValue = parseIndianInput(formatted);
                                     setForm({ ...form, minSalary: numericValue });
                                 }}
                                 className="w-full px-3 py-2 border rounded-md"
@@ -139,14 +139,36 @@ const JobFormModal: React.FC<JobFormProps> = ({ initialData, onClose, onCreate, 
                                 name="maxSalary"
                                 type="text"
                                 placeholder="e.g. 1,200,000"
-                                value={form.maxSalary ? form.maxSalary.toLocaleString() : ""}
+                                value={form.maxSalary ? form.maxSalary.toLocaleString("en-IN") : ""}
                                 onChange={(e) => {
-                                    const formatted = formatNumberInput(e.target.value);
-                                    const numericValue = formatted ? Number(formatted.replace(/,/g, "")) : undefined;
+                                    const formatted = formatIndianInput(e.target.value);
+                                    const numericValue = parseIndianInput(formatted);
                                     setForm({ ...form, maxSalary: numericValue });
                                 }}
                                 className="w-full px-3 py-2 border rounded-md"
                             />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Salary Type</label>
+                        <div className="flex flex-wrap gap-2">
+                            {salaryOptions.map((option) => (
+                                <label
+                                    key={option}
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm cursor-pointer transition-all ${form.salaryType === option
+                                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                                        : "border-gray-200 text-gray-600 hover:border-gray-300"
+                                        }`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={form.salaryType === option}
+                                        onChange={() => setForm({ ...form, salaryType: option })}
+                                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    {option}
+                                </label>
+                            ))}
                         </div>
                     </div>
 

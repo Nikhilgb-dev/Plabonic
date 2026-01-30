@@ -10,6 +10,7 @@ import FeedbackButton from "@/components/FeedbackButton";
 import ApplyModal from "@/components/ApplyModal";
 import FreelancerApplyModal from "@/components/FreelancerApplyModal";
 import toast from "react-hot-toast";
+import { formatSalaryRange } from "@/utils/salary";
 
 type AnyObj = Record<string, any>;
 
@@ -688,14 +689,7 @@ const UserDashboard: React.FC = () => {
                                         <td className="p-3">{job.company?.name || "—"}</td>
                                         <td className="p-3">{job.location || "—"}</td>
                                         <td className="p-3">
-                                            {job.minSalary && job.maxSalary
-                                                ? `₹${job.minSalary.toLocaleString()} - ₹${job.maxSalary.toLocaleString()}`
-                                                : job.minSalary
-                                                    ? `From ₹${job.minSalary.toLocaleString()}`
-                                                    : job.maxSalary
-                                                        ? `Up to ₹${job.maxSalary.toLocaleString()}`
-                                                        : "Not specified"
-                                            }
+                                            {formatSalaryRange(job.minSalary, job.maxSalary, job.salaryType) || "Not specified"}
                                         </td>
                                         <td className="p-3 text-right space-x-3">
                                             <button onClick={() => setSelectedJob(job)} className="text-blue-600 hover:underline text-sm inline-flex items-center">

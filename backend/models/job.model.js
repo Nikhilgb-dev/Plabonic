@@ -10,6 +10,11 @@ const jobSchema = new mongoose.Schema(
     location: String,
     minSalary: { type: Number },
     maxSalary: { type: Number },
+    salaryType: {
+      type: String,
+      enum: ["Monthly", "LPA", "CTC"],
+      default: "Monthly",
+    },
     employmentType: {
       type: String,
       enum: ["Full-time", "Part-time", "Contract", "Internship", "Remote", "Hybrid", "Work from home"],

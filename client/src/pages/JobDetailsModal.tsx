@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../api/api";
+import { formatSalaryRange } from "@/utils/salary";
 
 interface JobDetailsModalProps {
     jobId: string;
@@ -227,12 +228,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                                             Salary Range
                                         </p>
                                         <p className="text-xl font-bold text-green-700">
-                                            {job.minSalary && job.maxSalary
-                                                ? `Rs. ${job.minSalary.toLocaleString()} - Rs. ${job.maxSalary.toLocaleString()}`
-                                                : job.minSalary
-                                                ? `Rs. ${job.minSalary.toLocaleString()}+`
-                                                : `Up to Rs. ${job.maxSalary.toLocaleString()}`
-                                            }
+                                            {formatSalaryRange(job.minSalary, job.maxSalary, job.salaryType)}
                                         </p>
                                     </div>
                                 </div>

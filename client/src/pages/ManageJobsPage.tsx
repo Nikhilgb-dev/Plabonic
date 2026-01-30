@@ -4,6 +4,7 @@ import API from "@/api/api";
 import { useCompany } from "../contexts/CompanyContext";
 import { useNavigate } from "react-router-dom";
 import SkillsInput from "@/components/SkillsInput";
+import { formatIndianInput, formatSalaryRange, parseIndianInput, SalaryType } from "@/utils/salary";
 
 interface Job {
     _id?: string;
@@ -16,6 +17,7 @@ interface Job {
     employmentType?: string;
     minSalary?: number;
     maxSalary?: number;
+    salaryType?: SalaryType;
     company?: string;
     applicantsCount?: number;
     status?: string;
@@ -49,14 +51,11 @@ const ManageJobsPage: React.FC = () => {
         employmentType: "Full-time",
         minSalary: undefined,
         maxSalary: undefined,
+        salaryType: "Monthly",
         company: "",
     });
 
-    const formatNumberInput = (value: string) => {
-        const digits = value.replace(/[^\d]/g, "");
-        if (!digits) return "";
-        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    };
+    const salaryOptions: SalaryType[] = ["Monthly", "LPA", "CTC"];
     const parseSkills = (value?: string) =>
         (value || "")
             .split(/[,\n]/)
@@ -135,6 +134,7 @@ const ManageJobsPage: React.FC = () => {
             employmentType: "Full-time",
             minSalary: undefined,
             maxSalary: undefined,
+            salaryType: "Monthly",
             company: role === "company_admin" ? company?._id : "",
         });
         setEditingJob(null);
@@ -178,6 +178,7 @@ const ManageJobsPage: React.FC = () => {
             employmentType: job.employmentType || "Full-time",
             minSalary: job.minSalary,
             maxSalary: job.maxSalary,
+            salaryType: job.salaryType || "Monthly",
             company: job.company || "",
         });
         setShowForm(true);
@@ -336,10 +337,10 @@ const ManageJobsPage: React.FC = () => {
                                         name="minSalary"
                                         type="text"
                                         placeholder="e.g. 800,000"
-                                        value={form.minSalary ? form.minSalary.toLocaleString() : ""}
+                                        value={form.minSalary ? form.minSalary.toLocaleString("en-IN") : ""}
                                         onChange={(e) => {
-                                            const formatted = formatNumberInput(e.target.value);
-                                            const numericValue = formatted ? Number(formatted.replace(/,/g, "")) : undefined;
+                                            const formatted = formatIndianInput(e.target.value);
+                                            const numericValue = parseIndianInput(formatted);
                                             setForm({ ...form, minSalary: numericValue });
                                         }}
                                         className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -353,14 +354,38 @@ const ManageJobsPage: React.FC = () => {
                                         name="maxSalary"
                                         type="text"
                                         placeholder="e.g. 1,200,000"
-                                        value={form.maxSalary ? form.maxSalary.toLocaleString() : ""}
+                                        value={form.maxSalary ? form.maxSalary.toLocaleString("en-IN") : ""}
                                         onChange={(e) => {
-                                            const formatted = formatNumberInput(e.target.value);
-                                            const numericValue = formatted ? Number(formatted.replace(/,/g, "")) : undefined;
+                                            const formatted = formatIndianInput(e.target.value);
+                                            const numericValue = parseIndianInput(formatted);
                                             setForm({ ...form, maxSalary: numericValue });
                                         }}
                                         className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Salary Type
+                                </label>
+                                <div className="flex flex-wrap gap-3">
+                                    {salaryOptions.map((option) => (
+                                        <label
+                                            key={option}
+                                            className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm cursor-pointer transition-all ${form.salaryType === option
+                                                ? "border-blue-500 bg-blue-50 text-blue-700"
+                                                : "border-gray-200 text-gray-600 hover:border-gray-300"
+                                                }`}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={form.salaryType === option}
+                                                onChange={() => setForm({ ...form, salaryType: option })}
+                                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            {option}
+                                        </label>
+                                    ))}
                                 </div>
                             </div>
 
@@ -501,11 +526,7 @@ const ManageJobsPage: React.FC = () => {
                                                                 <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                                 </svg>
-                                                                {job.minSalary && job.maxSalary
-                                                                    ? `${job.minSalary.toLocaleString()}-${job.maxSalary.toLocaleString()} Rupees`
-                                                                    : job.minSalary
-                                                                        ? `${job.minSalary.toLocaleString()} Rupees`
-                                                                        : `${job.maxSalary?.toLocaleString()} Rupees`}
+                                                                {formatSalaryRange(job.minSalary, job.maxSalary, job.salaryType)}
                                                             </span>
                                                         )}
                                                         {job.blocked && (

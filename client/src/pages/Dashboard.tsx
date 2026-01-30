@@ -87,14 +87,16 @@ const Dashboard = () => {
     employmentType: "Full-time",
     minSalary: undefined as number | undefined,
     maxSalary: undefined as number | undefined,
+    salaryType: "Monthly" as "Monthly" | "LPA" | "CTC",
     company: "",
   });
 
   const formatNumberInput = (value: string) => {
     const digits = value.replace(/[^\d]/g, "");
     if (!digits) return "";
-    return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return new Intl.NumberFormat("en-IN").format(Number(digits));
   };
+  const salaryOptions: Array<"Monthly" | "LPA" | "CTC"> = ["Monthly", "LPA", "CTC"];
 
   const navigate = useNavigate();
 
@@ -319,6 +321,7 @@ const Dashboard = () => {
         employmentType: "Full-time",
         minSalary: undefined,
         maxSalary: undefined,
+        salaryType: "Monthly",
         company: "",
       });
       fetchJobs();
@@ -1274,7 +1277,7 @@ const Dashboard = () => {
                                 name="minSalary"
                                 type="text"
                                 placeholder="e.g. 800,000"
-                                value={form.minSalary ? form.minSalary.toLocaleString() : ""}
+                                value={form.minSalary ? form.minSalary.toLocaleString("en-IN") : ""}
                                 onChange={(e) => {
                                   const formatted = formatNumberInput(e.target.value);
                                   const numericValue = formatted ? Number(formatted.replace(/,/g, "")) : undefined;
@@ -1291,7 +1294,7 @@ const Dashboard = () => {
                                 name="maxSalary"
                                 type="text"
                                 placeholder="e.g. 1,200,000"
-                                value={form.maxSalary ? form.maxSalary.toLocaleString() : ""}
+                                value={form.maxSalary ? form.maxSalary.toLocaleString("en-IN") : ""}
                                 onChange={(e) => {
                                   const formatted = formatNumberInput(e.target.value);
                                   const numericValue = formatted ? Number(formatted.replace(/,/g, "")) : undefined;
@@ -1299,6 +1302,30 @@ const Dashboard = () => {
                                 }}
                                 className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
                               />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Salary Type
+                            </label>
+                            <div className="flex flex-wrap gap-2">
+                              {salaryOptions.map((option) => (
+                                <label
+                                  key={option}
+                                  className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm cursor-pointer transition-all ${form.salaryType === option
+                                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                                    : "border-gray-200 text-gray-600 hover:border-gray-300"
+                                    }`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={form.salaryType === option}
+                                    onChange={() => setForm({ ...form, salaryType: option })}
+                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                  />
+                                  {option}
+                                </label>
+                              ))}
                             </div>
                           </div>
 
