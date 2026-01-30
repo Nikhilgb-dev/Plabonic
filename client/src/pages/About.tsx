@@ -1,5 +1,5 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
     ShieldCheck,
     Sparkles,
@@ -9,6 +9,8 @@ import {
     ArrowRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+
+const supportEmail = "Plabonic.hq@gmail.com";
 
 const ABOUT = {
     title: "About Plabonic",
@@ -62,9 +64,12 @@ function PrimaryButton({ children }: { children: React.ReactNode }) {
     );
 }
 
-function OutlineButton({ children }: { children: React.ReactNode }) {
+function OutlineButton({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
     return (
-        <button className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-900 shadow-sm transition hover:bg-slate-50 active:scale-[0.99]">
+        <button
+            onClick={onClick}
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-900 shadow-sm transition hover:bg-slate-50 active:scale-[0.99]"
+        >
             {children}
         </button>
     );
@@ -79,6 +84,19 @@ function Tile({ children }: { children: React.ReactNode }) {
 }
 
 export default function AboutUsPage() {
+    const [showContactModal, setShowContactModal] = useState(false);
+    const contactModalRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (contactModalRef.current && !contactModalRef.current.contains(event.target as Node)) {
+                setShowContactModal(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     return (
         <div className="min-h-screen bg-white text-slate-900">
             {/* Hero */}
@@ -173,7 +191,7 @@ export default function AboutUsPage() {
                                 ))}
 
                                 <div className="pt-2">
-                                    <OutlineButton>
+                                    <OutlineButton onClick={() => setShowContactModal(true)}>
                                         Contact Plabonic <MessageSquareText className="h-4 w-4" />
                                     </OutlineButton>
                                 </div>
@@ -198,6 +216,67 @@ export default function AboutUsPage() {
                     </div>
                 </div>
             </section>
+
+            {/* Contact Plabonic Modal */}
+            <AnimatePresence>
+                {showContactModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[1000] bg-black/60 flex items-center justify-center"
+                        onClick={() => setShowContactModal(false)}
+                    >
+                        <motion.div
+                            ref={contactModalRef}
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white rounded-xl shadow-xl p-4 sm:p-6 w-full max-w-sm sm:max-w-md max-h-[85vh] overflow-y-auto mx-4"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="space-y-3 sm:space-y-4">
+                                <h3 className="text-base sm:text-lg font-semibold text-gray-800">Get Hello</h3>
+                                <p className="text-xs sm:text-sm text-gray-600">
+                                    Share your query and we will respond as soon as possible.
+                                </p>
+                                <div>
+                                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="email"
+                                            value={supportEmail}
+                                            readOnly
+                                            className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                                        />
+                                        <button
+                                            onClick={() => navigator.clipboard.writeText(supportEmail)}
+                                            className="flex items-center gap-1 px-3 py-2 text-xs sm:text-sm rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors"
+                                            title="Copy email"
+                                        >
+                                            Copy
+                                        </button>
+                                    </div>
+                                </div>
+                                <a
+                                    href={`mailto:${supportEmail}?subject=${encodeURIComponent("Support request from Plabonic")}`}
+                                    className="block w-full px-4 py-2 text-xs sm:text-sm text-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    Open Mail App
+                                </a>
+                            </div>
+                            <div className="mt-4 sm:mt-6 flex justify-end">
+                                <button
+                                    onClick={() => setShowContactModal(false)}
+                                    className="px-4 py-2 text-xs sm:text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
