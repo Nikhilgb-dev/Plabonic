@@ -341,11 +341,14 @@ const Dashboard = () => {
   );
 
   // ===== Action Handlers =====
-  const handleDeleteJob = (jobId: string) => {
-    if (window.confirm("Are you sure you want to delete this job?")) {
-      API.delete(`/jobs/${jobId}`).then(() => {
-        setJobs(jobs.filter((job) => job._id !== jobId));
-      });
+  const handleDeleteJob = async (jobId: string) => {
+    if (!window.confirm("Are you sure you want to delete this job?")) return;
+    try {
+      await API.delete(`/admin/jobs/${jobId}`);
+      setJobs((prev) => prev.filter((job) => job._id !== jobId));
+      toast.success("Job deleted successfully");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "We couldn't delete the job. Please try again.");
     }
   };
 
@@ -1137,7 +1140,7 @@ const Dashboard = () => {
                                           whileTap={{ scale: 0.95 }}
                                           className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                           title="Edit"
-                                          onClick={() => navigate("/admin/jobs")}
+                                          onClick={() => handleEditJob(job._id)}
                                         >
                                           <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                         </motion.button>
@@ -1146,6 +1149,7 @@ const Dashboard = () => {
                                           whileTap={{ scale: 0.95 }}
                                           className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                           title="Delete"
+                                          onClick={() => handleDeleteJob(job._id)}
                                         >
                                           <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                         </motion.button>
@@ -1912,10 +1916,11 @@ const Dashboard = () => {
             {showEditJobModal && selectedJobId && (
               <EditJobModal
                 jobId={selectedJobId}
+                saveEndpointBase="/admin/jobs"
                 onClose={() => setShowEditJobModal(false)}
                 onJobUpdated={() => {
                   setShowEditJobModal(false);
-                  API.get("/jobs").then((res) => setJobs(res.data));
+                  API.get("/admin/jobs").then((res) => setJobs(res.data));
                 }}
               />
             )}

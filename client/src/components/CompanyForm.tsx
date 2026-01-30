@@ -11,8 +11,6 @@ interface CompanyFormData {
     type: string;
     salary: string;
     registeredOfficeAddress: string;
-    tagline: string;
-    description: string;
     email: string;
     contactNumber: string;
     password: string;
@@ -23,7 +21,6 @@ interface CompanyFormData {
     registrationName: string;
     panOrTanOrGst: string;
     dateOfIncorporation: string;
-    directorAndKmpDetails: string;
 }
 
 interface Props {
@@ -45,8 +42,6 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
         type: "",
         salary: "",
         registeredOfficeAddress: "",
-        tagline: "",
-        description: "",
         email: "",
         contactNumber: "",
         password: "",
@@ -57,7 +52,6 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
         registrationName: "",
         panOrTanOrGst: "",
         dateOfIncorporation: "",
-        directorAndKmpDetails: "",
     });
 
     useEffect(() => {
@@ -156,8 +150,6 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                 type: "",
                 salary: "",
                 registeredOfficeAddress: "",
-                tagline: "",
-                description: "",
                 email: "",
                 contactNumber: "",
                 password: "",
@@ -168,7 +160,6 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                 registrationName: "",
                 panOrTanOrGst: "",
                 dateOfIncorporation: "",
-                directorAndKmpDetails: "",
             });
             setLogo(null);
             setSignature(null);
@@ -298,27 +289,6 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                             placeholder="Registered Office Address"
                             className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
                         />
-                        <textarea
-                            name="directorAndKmpDetails"
-                            value={form.directorAndKmpDetails}
-                            onChange={handleChange}
-                            placeholder="Director and Key Managerial Personnel Details"
-                            className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
-                        />
-                        <textarea
-                            name="description"
-                            value={form.description}
-                            onChange={handleChange}
-                            placeholder="Company Description"
-                            className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
-                        />
-                        <input
-                            name="tagline"
-                            value={form.tagline}
-                            onChange={handleChange}
-                            placeholder="Company Tagline"
-                            className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
-                        />
                         <div className={`grid grid-cols-1 ${mode === "edit" ? "" : "sm:grid-cols-2"} gap-3`}>
                             <input
                                 name="email"
@@ -435,10 +405,10 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                                 className="mr-2"
                             />
                             <label htmlFor="acceptTerms" className="text-sm">
-                              I accept the{" "}
-                              <Link to="/terms" className="text-brand underline">
-                                Terms and Conditions
-                              </Link>
+                                I accept the{" "}
+                                <Link to="/terms" className="text-brand underline">
+                                    Terms and Conditions
+                                </Link>
                             </label>
                         </div>
                     </div>
@@ -474,10 +444,10 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                         </button>
                     )}
                 </div>
-              </form>
-            </div>
-          );
-        };
+            </form>
+        </div>
+    );
+};
 
 export default CompanyForm;
 

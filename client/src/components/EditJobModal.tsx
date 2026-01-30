@@ -7,9 +7,10 @@ interface EditJobModalProps {
   jobId: string;
   onClose: () => void;
   onJobUpdated: () => void;
+  saveEndpointBase?: string;
 }
 
-const EditJobModal: React.FC<EditJobModalProps> = ({ jobId, onClose, onJobUpdated }) => {
+const EditJobModal: React.FC<EditJobModalProps> = ({ jobId, onClose, onJobUpdated, saveEndpointBase }) => {
   const [form, setForm] = useState({ title: "", description: "", roleAndResponsibility: "", skillsRequired: "", preferredQualifications: "", location: "", minSalary: undefined as number | undefined, maxSalary: undefined as number | undefined, employmentType: "Full-time", expiresAt: "" });
   const formatNumberInput = (value: string) => {
     const digits = value.replace(/[^\d]/g, "");
@@ -35,7 +36,8 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ jobId, onClose, onJobUpdate
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await API.put(`/jobs/${jobId}`, form);
+      const endpointBase = saveEndpointBase || "/jobs";
+      await API.put(`${endpointBase}/${jobId}`, form);
       toast.success("Job updated successfully!");
       onJobUpdated();
       onClose();

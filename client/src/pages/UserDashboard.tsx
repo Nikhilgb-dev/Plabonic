@@ -386,7 +386,7 @@ const UserDashboard: React.FC = () => {
             </div>
 
             {/* Stats grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <StatCard title="Total Applications" value={stats.totalApplications} />
                 <StatCard title="Job Applications" value={stats.jobApplications} />
                 <StatCard title="Freelancer Applications" value={stats.freelanceApps} />
