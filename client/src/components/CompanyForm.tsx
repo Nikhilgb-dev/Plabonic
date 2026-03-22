@@ -136,7 +136,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
 
             if (mode === "self") {
                 setTimeout(() => {
-                    window.location.href = "/company/login";
+                    window.location.href = "/login";
                 }, 800);
             } else if (onSuccess) {
                 setTimeout(() => onSuccess(), 800);
