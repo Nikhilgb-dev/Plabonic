@@ -7,7 +7,7 @@ import Avatar from "./Avatar";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 
-const supportEmail = " reachus@plabonic.com";
+const supportEmail = "  Plabonic.jobs@gmail.com ";
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);

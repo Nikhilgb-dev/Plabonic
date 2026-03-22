@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const supportEmail = "Plabonic.hq@gmail.com";
+const supportEmail = "reachus@plabonic.com";
 
 const ABOUT = {
     title: "About Plabonic",

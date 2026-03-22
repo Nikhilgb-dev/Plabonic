@@ -9,6 +9,7 @@ import {
     BriefcaseBusiness,
     Users2,
     UserSearch,
+    MessageSquare,
     LogOut,
 } from "lucide-react";
 import Avatar from "./Avatar";
@@ -19,6 +20,7 @@ const navItems = [
     { path: "/company/jobs", label: "Jobs Postings", icon: BriefcaseBusiness },
     { path: "/company/employees", label: "Employees", icon: Users2 },
     { path: "/company/profile", label: "Profile", icon: Building2 },
+    { path: "/company/feedback", label: "Feedback", icon: MessageSquare },
 ];
 
 const CompanyLayout: React.FC = () => {

@@ -41,6 +41,7 @@ import Freelancers from "./pages/Freelancers";
 import AddFreelancer from "./pages/AddFreelancer";
 import FreelancerRegister from "./pages/FreelancerRegister";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
+import FreelancerFeedbackPage from "./pages/FreelancerFeedbackPage";
 import MarketingDetail from "./pages/MarketingDetail";
 import AboutUsPage from "./pages/About";
 import Terms from "./pages/Terms";
@@ -81,6 +82,7 @@ export default function App() {
 
               <Route path="/user/dashboard" element={<UserDashboard />} />
               <Route path="/freelancer/dashboard" element={<FreelancerDashboard />} />
+              <Route path="/freelancer/feedback" element={<FreelancerFeedbackPage />} />
 
               <Route path="/dashboard/feedback" element={<UserFeedbackPage />} />
               <Route

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import API from "../api/api";
 import toast from "react-hot-toast";
 import { Calendar, Users, Download } from "lucide-react";
 import EditFreelancerModal from "../components/EditFreelancerModal";
+import FeedbackButton from "../components/FeedbackButton";
 
 interface Application {
   _id: string;
@@ -129,25 +131,36 @@ const FreelancerDashboard: React.FC = () => {
 
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-            Freelancer Dashboard
-          </h1>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                Freelancer Dashboard
+              </h1>
 
-          {freelancer && (
-            <div className="flex flex-wrap items-center gap-3 text-gray-600">
-              <span className="inline-flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                <span className="truncate max-w-[200px] sm:max-w-none">
-                  {freelancer.name}
-                </span>
-              </span>
+              {freelancer && (
+                <div className="flex flex-wrap items-center gap-3 text-gray-600">
+                  <span className="inline-flex items-center gap-2">
+                    <Users className="w-5 h-5" />
+                    <span className="truncate max-w-[200px] sm:max-w-none">
+                      {freelancer.name}
+                    </span>
+                  </span>
 
-              <span className="inline-flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                Expires: {formatDate(freelancer.expiryDate)}
-              </span>
+                  <span className="inline-flex items-center gap-2">
+                    <Calendar className="w-5 h-5" />
+                    Expires: {formatDate(freelancer.expiryDate)}
+                  </span>
+                </div>
+              )}
             </div>
-          )}
+
+            <Link
+              to="/freelancer/feedback"
+              className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+            >
+              Feedback
+            </Link>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -462,6 +475,7 @@ const FreelancerDashboard: React.FC = () => {
           </div>
         )}
       </div>
+      <FeedbackButton targetType="platform" />
     </div>
   );
 };

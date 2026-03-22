@@ -911,6 +911,7 @@ const CompanyDashboard: React.FC = () => {
                     </div>
                 </div>
             )}
+            <FeedbackButton targetType="platform" />
         </div>
     );
 };

@@ -571,7 +571,7 @@ const Terms = () => {
               this Agreement, you may contact us at:
             </p>
             <p className="mt-2">Plabonic</p>
-            <p>Email: reachus@plabonic.com</p>
+            <p>Email:  Plabonic.jobs@gmail.com </p>
             <a href="https://www.plabonic.com">Website: https://www.plabonic.com</a>
           </div>
         </section>
@@ -767,7 +767,7 @@ const Terms = () => {
               <h3 className="text-lg font-semibold">11. Contact Information</h3>
               <p>For questions, concerns, or requests related to this Privacy Policy, contact:</p>
               <p className="mt-2">Plabonic</p>
-              <p>Email: reachus@plabonic.com</p>
+              <p>Email:  Plabonic.jobs@gmail.com </p>
               <p>Website: https://www.plabonic.com</p>
             </div>
           </div>

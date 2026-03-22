@@ -35,6 +35,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ onClose, targetType, targ
                 rating,
             });
             toast.success("Feedback submitted successfully!");
+            onSubmitted?.();
             onClose();
         } catch (err) {
             console.error(err);

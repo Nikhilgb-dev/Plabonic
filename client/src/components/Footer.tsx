@@ -12,7 +12,7 @@ const links = [
   { label: "Terms", to: "/terms" },
 ];
 
-const supportEmail = "Plabonic.hq@gmail.com";
+const supportEmail = "reachus@plabonic.com";
 
 export default function Footer() {
   const [showHelpModal, setShowHelpModal] = useState(false);
