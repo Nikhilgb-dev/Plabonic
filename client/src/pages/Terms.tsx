@@ -584,7 +584,6 @@ const Terms = () => {
             <h2 className="text-2xl font-bold text-gray-900">
               Plabonic Privacy Policy
             </h2>
-            <p className="text-sm text-gray-600 mt-2">Last updated: [Add Date]</p>
           </header>
 
           <div className="space-y-6 text-gray-800 leading-relaxed">

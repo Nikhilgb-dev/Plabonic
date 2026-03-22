@@ -7,6 +7,7 @@ import {
     LayoutDashboard,
     Building2,
     BriefcaseBusiness,
+    Plus,
     Users2,
     UserSearch,
     MessageSquare,
@@ -87,7 +88,12 @@ const CompanyLayout: React.FC = () => {
                                         size={18}
                                         className="text-gray-500 group-hover:text-blue-600 transition"
                                     />
-                                    {item.label}
+                                    <span className="flex-1">{item.label}</span>
+                                    {item.path === "/company/jobs" && (
+                                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-50 text-blue-600 text-xs font-bold">
+                                            <Plus size={12} />
+                                        </span>
+                                    )}
                                 </NavLink>
                             );
                         })}
@@ -126,6 +132,11 @@ const CompanyLayout: React.FC = () => {
                                 >
                                     <Icon size={16} />
                                     <span className="hidden sm:inline">{item.label}</span>
+                                    {item.path === "/company/jobs" && (
+                                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                                            <Plus size={10} />
+                                        </span>
+                                    )}
                                 </NavLink>
                             );
                         })}
