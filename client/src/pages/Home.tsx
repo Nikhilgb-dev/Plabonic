@@ -14,6 +14,18 @@ export default function EduleLanding() {
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(true);
 
+  const fetchFeedbacks = async () => {
+    try {
+      setFeedbackLoading(true);
+      const res = await API.get("/feedbacks/public?limit=6");
+      setFeedbacks(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Error fetching feedbacks", err);
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
+
   useEffect(() => {
     let cancelled = false;
 
@@ -61,22 +73,47 @@ export default function EduleLanding() {
   }, []);
 
   useEffect(() => {
-    const fetchFeedbacks = async () => {
-      try {
-        const res = await API.get("/feedbacks/public?limit=6");
-        setFeedbacks(Array.isArray(res.data) ? res.data : []);
-      } catch (err) {
-        console.error("Error fetching feedbacks", err);
-      } finally {
-        setFeedbackLoading(false);
+    fetchFeedbacks();
+
+    const handleFeedbackUpdate = () => {
+      fetchFeedbacks();
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "public-feedback-updated-at") {
+        fetchFeedbacks();
       }
     };
-    fetchFeedbacks();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchFeedbacks();
+      }
+    };
+
+    window.addEventListener("public-feedback-updated", handleFeedbackUpdate);
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("focus", handleFeedbackUpdate);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    const interval = window.setInterval(fetchFeedbacks, 15000);
+
+    return () => {
+      window.removeEventListener("public-feedback-updated", handleFeedbackUpdate);
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("focus", handleFeedbackUpdate);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.clearInterval(interval);
+    };
   }, []);
 
   const marqueeLogos: string[] = companyLogos.length
     ? [...companyLogos, ...companyLogos, ...companyLogos]
     : [];
+  const testimonialMarquee = feedbacks.length
+    ? [...feedbacks, ...feedbacks]
+    : [];
+  const shouldUseTestimonialMarquee = feedbacks.length > 4;
 
   // const categories = [
   //   "UI/UX Design",
@@ -325,8 +362,8 @@ export default function EduleLanding() {
           <div className="flex flex-col items-center text-center mb-10">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Feedback</p>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">What people say about Plabonic</h2>
-            <p className="text-sm text-gray-600 mt-3 max-w-2xl">
-              Real feedback from users and companies using the platform.
+            <p className="mt-3 max-w-2xl text-sm text-gray-600">
+              Handpicked testimonials selected by the admin team, displayed as a live showcase on the home page.
             </p>
           </div>
 
@@ -334,60 +371,166 @@ export default function EduleLanding() {
             <p className="text-sm text-gray-500 text-center">Loading feedback...</p>
           )}
           {!feedbackLoading && feedbacks.length === 0 && (
-            <p className="text-sm text-gray-500 text-center">No feedback yet.</p>
+            <p className="text-sm text-gray-500 text-center">No featured feedback yet.</p>
           )}
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {feedbacks.map((f) => {
-              const authorName = f.submittedBy === "company" ? f.company?.name : f.user?.name;
-              const avatarSrc = f.submittedBy === "company" ? f.company?.logo : f.user?.profilePhoto;
-              const rating = Number(f.rating || 0);
-              return (
-                <div
-                  key={f._id}
-                  className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5 flex flex-col gap-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      src={avatarSrc}
-                      alt={authorName || "Feedback author"}
-                      className="w-11 h-11 rounded-full border border-gray-200"
-                    />
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 truncate">
-                        {authorName || "Anonymous"}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {f.submittedBy === "company" ? "Company" : "User"}
-                      </p>
-                    </div>
-                  </div>
+          {feedbacks.length > 0 && shouldUseTestimonialMarquee && (
+            <div className="relative overflow-hidden">
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-blue-50 via-white/90 to-transparent sm:w-24" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-indigo-50 via-white/90 to-transparent sm:w-24" />
+              <motion.div
+                className="flex w-max gap-5 py-4"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+              >
+                {testimonialMarquee.map((feedback, index) => {
+                  const authorName =
+                    feedback.submittedBy === "company"
+                      ? feedback.company?.name
+                      : feedback.user?.name;
+                  const avatarSrc =
+                    feedback.submittedBy === "company"
+                      ? feedback.company?.logo
+                      : feedback.user?.profilePhoto;
+                  const rating = Number(feedback.rating || 0);
 
-                  {rating > 0 && (
-                    <div className="flex items-center gap-1 text-yellow-500">
-                      {Array.from({ length: 5 }).map((_, idx) => (
-                        <Star
-                          key={idx}
-                          className={`w-4 h-4 ${idx < rating ? "fill-yellow-400" : "fill-transparent text-gray-300"}`}
+                  return (
+                    <article
+                      key={`${feedback._id}-${index}`}
+                      className="flex min-h-[280px] w-[280px] shrink-0 flex-col justify-between rounded-[28px] border border-blue-100 bg-white/95 p-6 shadow-[0_18px_60px_rgba(37,99,235,0.08)] backdrop-blur sm:w-[340px]"
+                    >
+                      <div>
+                        <div className="mb-5 flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Avatar
+                              src={avatarSrc}
+                              alt={authorName || "Feedback author"}
+                              className="h-12 w-12 rounded-full border border-blue-100"
+                            />
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-semibold text-gray-900">
+                                {authorName || "Anonymous"}
+                              </p>
+                              <p className="text-xs uppercase tracking-[0.18em] text-blue-600">
+                                {feedback.submittedBy === "company" ? "Company" : "User"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mb-4 text-4xl font-serif leading-none text-blue-200">"</div>
+
+                        {rating > 0 && (
+                          <div className="mb-4 flex items-center gap-1 text-yellow-500">
+                            {Array.from({ length: 5 }).map((_, idx) => (
+                              <Star
+                                key={idx}
+                                className={`h-4 w-4 ${idx < rating ? "fill-yellow-400" : "fill-transparent text-gray-300"}`}
+                              />
+                            ))}
+                          </div>
+                        )}
+
+                        {feedback.subject && (
+                          <p className="mb-2 text-base font-semibold text-gray-900">
+                            {feedback.subject}
+                          </p>
+                        )}
+
+                        <p className="text-sm leading-7 text-gray-600 line-clamp-5">
+                          {feedback.message}
+                        </p>
+                      </div>
+
+                      <div className="mt-6 border-t border-gray-100 pt-4">
+                        {feedback.reply ? (
+                          <p className="text-xs leading-6 text-blue-700 line-clamp-3">
+                            Admin reply: {feedback.reply}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-gray-400">
+                            Shared on Plabonic
+                          </p>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </motion.div>
+            </div>
+          )}
+
+          {feedbacks.length > 0 && !shouldUseTestimonialMarquee && (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+              {feedbacks.map((feedback) => {
+                const authorName =
+                  feedback.submittedBy === "company"
+                    ? feedback.company?.name
+                    : feedback.user?.name;
+                const avatarSrc =
+                  feedback.submittedBy === "company"
+                    ? feedback.company?.logo
+                    : feedback.user?.profilePhoto;
+                const rating = Number(feedback.rating || 0);
+
+                return (
+                  <article
+                    key={feedback._id}
+                    className="flex min-h-[260px] flex-col justify-between rounded-[28px] border border-blue-100 bg-white/95 p-6 shadow-[0_18px_60px_rgba(37,99,235,0.08)]"
+                  >
+                    <div>
+                      <div className="mb-5 flex items-start gap-3">
+                        <Avatar
+                          src={avatarSrc}
+                          alt={authorName || "Feedback author"}
+                          className="h-12 w-12 rounded-full border border-blue-100"
                         />
-                      ))}
-                    </div>
-                  )}
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-gray-900">
+                            {authorName || "Anonymous"}
+                          </p>
+                          <p className="text-xs uppercase tracking-[0.18em] text-blue-600">
+                            {feedback.submittedBy === "company" ? "Company" : "User"}
+                          </p>
+                        </div>
+                      </div>
 
-                  {f.subject && (
-                    <p className="text-sm font-semibold text-gray-900">{f.subject}</p>
-                  )}
-                  <p className="text-sm text-gray-600 leading-relaxed line-clamp-4">{f.message}</p>
-                  {f.reply && (
-                    <div className="mt-2 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2">
-                      <p className="text-xs font-semibold text-blue-700">Admin reply</p>
-                      <p className="text-xs text-blue-700/80 mt-1 line-clamp-3">{f.reply}</p>
+                      {rating > 0 && (
+                        <div className="mb-4 flex items-center gap-1 text-yellow-500">
+                          {Array.from({ length: 5 }).map((_, idx) => (
+                            <Star
+                              key={idx}
+                              className={`h-4 w-4 ${idx < rating ? "fill-yellow-400" : "fill-transparent text-gray-300"}`}
+                            />
+                          ))}
+                        </div>
+                      )}
+
+                      {feedback.subject && (
+                        <p className="mb-2 text-base font-semibold text-gray-900">
+                          {feedback.subject}
+                        </p>
+                      )}
+
+                      <p className="text-sm leading-7 text-gray-600 line-clamp-5">
+                        {feedback.message}
+                      </p>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+
+                    <div className="mt-6 border-t border-gray-100 pt-4">
+                      {feedback.reply ? (
+                        <p className="text-xs leading-6 text-blue-700 line-clamp-3">
+                          Admin reply: {feedback.reply}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-gray-400">Shared on Plabonic</p>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

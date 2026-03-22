@@ -32,6 +32,5 @@ export type MarketingEnquiry = {
   buyerName: string;
   email: string;
   mobile: string;
-  whatsappNumber?: string;
   createdAt: string;
 };

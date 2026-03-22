@@ -222,11 +222,21 @@ const Dashboard = () => {
   }, [abuseReports, abuseCompanyFilter, abuseStatusFilter, abuseOrderFilter]);
 
   const abuseTableRef = useRef<HTMLDivElement>(null);
+  const applicationsSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // always reset horizontal scroll so first column is visible
     abuseTableRef.current?.scrollTo({ left: 0 });
   }, [abuseCompanyFilter, abuseStatusFilter, abuseOrderFilter, filteredAbuseReports.length]);
+
+  const scrollToApplicationsSection = (status: string) => {
+    setAppStatusFilter(status);
+    setAppCompanyFilter("all");
+    setAppOrderFilter("desc");
+    requestAnimationFrame(() => {
+      applicationsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
 
 
   const handleExport = async (endpoint: string, filename: string) => {
@@ -498,6 +508,44 @@ const Dashboard = () => {
     (report) => report.status === "pending"
   ).length;
 
+  const applicationStatsData = [
+    {
+      label: "Total Applicants",
+      value: applications.length,
+      status: "all",
+      accent: "bg-blue-50 text-blue-700 border-blue-100",
+      cta: "View all",
+    },
+    {
+      label: "Hired",
+      value: applications.filter((application) => application.status === "hired").length,
+      status: "hired",
+      accent: "bg-emerald-50 text-emerald-700 border-emerald-100",
+      cta: "View hired",
+    },
+    {
+      label: "Interview",
+      value: applications.filter((application) => application.status === "interview").length,
+      status: "interview",
+      accent: "bg-violet-50 text-violet-700 border-violet-100",
+      cta: "View interviews",
+    },
+    {
+      label: "Offer",
+      value: applications.filter((application) => application.status === "offer").length,
+      status: "offer",
+      accent: "bg-amber-50 text-amber-700 border-amber-100",
+      cta: "View offers",
+    },
+    {
+      label: "Rejected",
+      value: applications.filter((application) => application.status === "rejected").length,
+      status: "rejected",
+      accent: "bg-rose-50 text-rose-700 border-rose-100",
+      cta: "View rejected",
+    },
+  ];
+
   const statsData = [
     {
       icon: Briefcase,
@@ -629,6 +677,39 @@ const Dashboard = () => {
                   )}
                 </motion.div>
               ))}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18 }}
+              className="mb-6 sm:mb-8"
+            >
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">Application Pipeline</h2>
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    Click any box to jump to the applications section with that filter applied.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+                {applicationStatsData.map((stat) => (
+                  <button
+                    key={stat.label}
+                    type="button"
+                    onClick={() => scrollToApplicationsSection(stat.status)}
+                    className={`rounded-xl border p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${stat.accent}`}
+                  >
+                    <p className="text-xs sm:text-sm font-medium opacity-90">{stat.label}</p>
+                    <p className="mt-2 text-2xl sm:text-3xl font-bold">{stat.value}</p>
+                    <p className="mt-3 inline-flex items-center gap-1 text-xs sm:text-sm font-semibold">
+                      {stat.cta}
+                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </p>
+                  </button>
+                ))}
+              </div>
             </motion.div>
 
             <motion.div
@@ -1392,6 +1473,7 @@ const Dashboard = () => {
 
 
             <motion.div
+              ref={applicationsSectionRef}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
@@ -1420,7 +1502,8 @@ const Dashboard = () => {
                       <option value="all">All Statuses</option>
                       <option value="applied">Applied</option>
                       <option value="reviewed">Reviewed</option>
-                      <option value="shortlisted">Shortlisted</option>
+                      <option value="interview">Interview</option>
+                      <option value="offer">Offer</option>
                       <option value="rejected">Rejected</option>
                       <option value="hired">Hired</option>
                     </select>

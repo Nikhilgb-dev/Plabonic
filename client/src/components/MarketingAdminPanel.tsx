@@ -179,7 +179,6 @@ const MarketingAdminPanel: React.FC = () => {
                   <tr>
                     <th className="px-3 py-2 text-left font-semibold">Buyer</th>
                     <th className="px-3 py-2 text-left font-semibold">Contact</th>
-                    <th className="px-3 py-2 text-left font-semibold">WhatsApp</th>
                     <th className="px-3 py-2 text-left font-semibold">Card</th>
                     <th className="px-3 py-2 text-left font-semibold">Qty</th>
                     <th className="px-3 py-2 text-left font-semibold">Total</th>
@@ -193,9 +192,6 @@ const MarketingAdminPanel: React.FC = () => {
                       <td className="px-3 py-2 text-gray-600">
                         <div>{entry.email}</div>
                         <div className="text-xs text-gray-500">{entry.mobile}</div>
-                      </td>
-                      <td className="px-3 py-2 text-gray-600">
-                        {entry.whatsappNumber || "-"}
                       </td>
                       <td className="px-3 py-2 text-gray-700">
                         <div className="font-semibold text-gray-900">{entry.cardTitle}</div>

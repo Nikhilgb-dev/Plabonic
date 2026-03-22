@@ -58,7 +58,7 @@ export const getMarketingCardById = async (req, res) => {
 
 export const createMarketingEnquiry = async (req, res) => {
   try {
-    const { buyerName, email, mobile, quantity = 1, whatsappNumber } = req.body;
+    const { buyerName, email, mobile, quantity = 1 } = req.body;
     const { id } = req.params;
 
     if (!buyerName || !email || !mobile) {
@@ -80,7 +80,6 @@ export const createMarketingEnquiry = async (req, res) => {
       buyerName,
       email,
       mobile,
-      whatsappNumber,
     });
 
     res.status(201).json(enquiry);

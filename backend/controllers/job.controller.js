@@ -259,9 +259,8 @@ export const getJobs = async (req, res) => {
     const requestUser = req.user || (await getUserFromRequest(req));
     const now = new Date();
     let query = {
-      $or: [{ isExpired: false }, { isExpired: { $exists: false } }],
-      $or: [{ expiresAt: { $gte: now } }, { expiresAt: { $exists: false } }],
       status: "open",
+      blocked: { $ne: true },
     };
 
     if (requestUser) {
@@ -272,12 +271,6 @@ export const getJobs = async (req, res) => {
       }
     }
 
-    if (!requestUser || (requestUser.role !== "admin" && requestUser.role !== "company_admin")) {
-      const activeCompanies = await Company.find({ blocked: { $ne: true } }).select("_id");
-      const activeCompanyIds = activeCompanies.map((c) => c._id);
-      query = { ...query, company: { $in: activeCompanyIds } };
-    }
-
     const jobs = await Job.find(query)
       .sort({ createdAt: -1 })
       .populate("postedBy", "name email")
@@ -286,7 +279,12 @@ export const getJobs = async (req, res) => {
     const filteredJobs =
       requestUser && (requestUser.role === "admin" || requestUser.role === "company_admin")
         ? jobs
-        : jobs.filter((job) => job.company && job.company.blocked !== true);
+        : jobs.filter((job) => {
+            const companyActive = !job.company || job.company.blocked !== true;
+            const notExpired = job.isExpired !== true;
+
+            return companyActive && notExpired;
+          });
 
     let appliedJobs = [];
     if (requestUser?._id) {
@@ -319,9 +317,8 @@ export const getJobById = async (req, res) => {
     ]);
 
     if (!job) return res.status(404).json({ message: "We could not find that job." });
-    if (!job.company) return res.status(404).json({ message: "We could not find that job." });
     if (!user || (user.role !== "admin" && user.role !== "company_admin")) {
-      if (job.company.blocked) {
+      if (job.company?.blocked) {
         return res.status(404).json({ message: "We could not find that job." });
       }
     }

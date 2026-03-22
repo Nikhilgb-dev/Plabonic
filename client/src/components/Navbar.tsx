@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import API from "../api/api";
 import logo from "../assets/logo.jpg";
-import { Bell, User, LogOut, Settings, Briefcase, Users, LayoutDashboard, Menu, X, Copy, Check } from "lucide-react";
+import { Bell, User, LogOut, Briefcase, Users, LayoutDashboard, Menu, X, Copy, Check } from "lucide-react";
 import Avatar from "./Avatar";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -226,7 +226,13 @@ export default function Navbar() {
     return null;
   };
 
+  const getProfileLink = () => {
+    if (user?.role) return { to: "/settings", label: "My Profile" };
+    return null;
+  };
+
   const dashboardLink = getDashboardLink();
+  const profileLink = getProfileLink();
 
   const handleGmailCompose = () => {
     const subject = encodeURIComponent("Support request from Plabonic");
@@ -433,14 +439,16 @@ export default function Navbar() {
                           <p className="text-xs text-gray-500 truncate">{user.email}</p>
                         </div>
                         <div className="py-2">
-                          <NavLink
-                            to="/settings"
-                            onClick={() => setShowUserMenu(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            <Settings className="w-4 h-4" />
-                            <span>Settings</span>
-                          </NavLink>
+                          {profileLink && (
+                            <NavLink
+                              to={profileLink.to}
+                              onClick={() => setShowUserMenu(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            >
+                              <User className="w-4 h-4" />
+                              <span>{profileLink.label}</span>
+                            </NavLink>
+                          )}
                           <button
                             onClick={handleLogout}
                             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -564,14 +572,16 @@ export default function Navbar() {
                   </NavLink>
                 )}
 
-                <NavLink
-                  to="/settings"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <Settings className="w-5 h-5 flex-shrink-0" />
-                  <span>Settings</span>
-                </NavLink>
+                {profileLink && (
+                  <NavLink
+                    to={profileLink.to}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <User className="w-5 h-5 flex-shrink-0" />
+                    <span>{profileLink.label}</span>
+                  </NavLink>
+                )}
 
                 <button
                   onClick={() => {

@@ -24,7 +24,6 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
     requirements: "",
     message: "",
   });
-  const [resume, setResume] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [prepopulating, setPrepopulating] = useState(true);
@@ -67,7 +66,6 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
             requirements: "",
             message: latestApplication.message || "",
           });
-          // Note: Resume cannot be prepopulated for security reasons
         }
       } catch (error) {
         // keep silent — not critical
@@ -88,11 +86,6 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
       return;
     }
 
-    if (!resume && !isEdit) {
-      toast.error("Please upload your resume to continue.");
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -102,9 +95,6 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
       formDataToSend.append("officialEmail", formData.officialEmail);
       formDataToSend.append("requirements", formData.requirements);
       formDataToSend.append("message", formData.message);
-      if (resume) {
-        formDataToSend.append("resume", resume);
-      }
 
       if (isEdit) {
         await API.put(`/freelancers/applications/${application._id}`, formDataToSend, {
@@ -235,23 +225,6 @@ const FreelancerApplyModal: React.FC<FreelancerApplyModalProps> = ({
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none text-sm sm:text-base"
               />
               <p className="text-sm text-gray-500 mt-1">Word count: {wordCount} (minimum 50)</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Supporting Document {isEdit ? "(Optional)" : "*"}
-              </label>
-              <input
-                type="file"
-                accept=".pdf,.doc,.docx"
-                onChange={(e) => setResume(e.target.files?.[0] || null)}
-                required={!isEdit}
-                className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm sm:text-base
-                  file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-              />
-              {isEdit && (
-                <p className="text-xs text-gray-500 mt-1">Leave blank to keep your existing resume.</p>
-              )}
             </div>
 
             <div>

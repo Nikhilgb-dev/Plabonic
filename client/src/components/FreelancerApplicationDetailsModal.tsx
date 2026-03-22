@@ -1,14 +1,18 @@
 import React from "react";
-import { Download, X } from "lucide-react";
+import { Download, Pencil, X } from "lucide-react";
 
 interface FreelancerApplicationDetailsModalProps {
   application: any;
   onClose: () => void;
+  onEdit?: (application: any) => void;
+  canEdit?: boolean;
 }
 
 const FreelancerApplicationDetailsModal: React.FC<FreelancerApplicationDetailsModalProps> = ({
   application,
   onClose,
+  onEdit,
+  canEdit = false,
 }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -112,22 +116,32 @@ const FreelancerApplicationDetailsModal: React.FC<FreelancerApplicationDetailsMo
               </div>
             )}
 
-            {/* Resume */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Resume</h3>
-              <a
-                href={application.resume}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                View Resume
-              </a>
-            </div>
+            {application.resume ? (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Resume</h3>
+                <a
+                  href={application.resume}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  View Resume
+                </a>
+              </div>
+            ) : null}
           </div>
 
-          <div className="mt-6 flex justify-end">
+          <div className="mt-6 flex justify-end gap-3">
+            {canEdit && onEdit ? (
+              <button
+                onClick={() => onEdit(application)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                <Pencil className="w-4 h-4" />
+                Edit
+              </button>
+            ) : null}
             <button
               onClick={onClose}
               className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"

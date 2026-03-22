@@ -236,7 +236,7 @@ export default function AboutUsPage() {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="space-y-3 sm:space-y-4">
-                                <h3 className="text-base sm:text-lg font-semibold text-gray-800">Get Hello</h3>
+                                <h3 className="text-base sm:text-lg font-semibold text-gray-800">Get in touch</h3>
                                 <p className="text-xs sm:text-sm text-gray-600">
                                     Share your query and we will respond as soon as possible.
                                 </p>

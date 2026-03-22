@@ -7,10 +7,11 @@ export const createFeedback = async (req, res) => {
     const { message, rating, targetType, targetId, subject } = req.body;
     const submittedBy = req.user.role === "company_admin" ? "company" : "user";
 
-    if (!message || !targetType)
+    if (!message || !targetType) {
       return res
         .status(400)
         .json({ message: "Please include a message and a target type." });
+    }
 
     if (submittedBy === "company" && targetType !== "platform") {
       return res
@@ -31,8 +32,10 @@ export const createFeedback = async (req, res) => {
 
     res.status(201).json(feedback);
   } catch (err) {
-    console.error("❌ Error in createFeedback:", err);
-    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
+    console.error("Error in createFeedback:", err);
+    res
+      .status(500)
+      .json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -40,12 +43,16 @@ export const replyToFeedback = async (req, res) => {
   try {
     const { reply } = req.body;
 
-    if (!reply || reply.trim() === "")
-      return res.status(400).json({ message: "Please write a reply before sending." });
+    if (!reply || reply.trim() === "") {
+      return res
+        .status(400)
+        .json({ message: "Please write a reply before sending." });
+    }
 
     const feedback = await Feedback.findById(req.params.id);
-    if (!feedback)
+    if (!feedback) {
       return res.status(404).json({ message: "Feedback not found" });
+    }
 
     feedback.reply = reply;
     feedback.repliedAt = new Date();
@@ -54,8 +61,59 @@ export const replyToFeedback = async (req, res) => {
 
     res.json({ message: "Reply added successfully", feedback });
   } catch (err) {
-    console.error("❌ Error replying to feedback:", err);
-    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
+    console.error("Error replying to feedback:", err);
+    res
+      .status(500)
+      .json({ message: "Something went wrong on our side. Please try again." });
+  }
+};
+
+export const toggleFeedbackHomepageVisibility = async (req, res) => {
+  try {
+    const { showOnHome } = req.body;
+
+    if (typeof showOnHome !== "boolean") {
+      return res
+        .status(400)
+        .json({ message: "Please provide a valid homepage visibility value." });
+    }
+
+    const feedback = await Feedback.findById(req.params.id);
+    if (!feedback) {
+      return res.status(404).json({ message: "Feedback not found" });
+    }
+
+    feedback.showOnHome = showOnHome;
+    await feedback.save();
+
+    res.json({
+      message: showOnHome
+        ? "Feedback will now appear on the home page."
+        : "Feedback was removed from the home page.",
+      feedback,
+    });
+  } catch (err) {
+    console.error("Error updating feedback homepage visibility:", err);
+    res
+      .status(500)
+      .json({ message: "Something went wrong on our side. Please try again." });
+  }
+};
+
+export const deleteFeedback = async (req, res) => {
+  try {
+    const feedback = await Feedback.findByIdAndDelete(req.params.id);
+
+    if (!feedback) {
+      return res.status(404).json({ message: "Feedback not found" });
+    }
+
+    res.json({ message: "Feedback deleted successfully." });
+  } catch (err) {
+    console.error("Error deleting feedback:", err);
+    res
+      .status(500)
+      .json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -68,7 +126,9 @@ export const getAllFeedbacks = async (req, res) => {
 
     res.json(feedbacks);
   } catch (err) {
-    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
+    res
+      .status(500)
+      .json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -84,7 +144,9 @@ export const getCompanyFeedbacks = async (req, res) => {
 
     res.json(feedbacks);
   } catch (err) {
-    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
+    res
+      .status(500)
+      .json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
@@ -98,22 +160,25 @@ export const getMyFeedbacks = async (req, res) => {
     const feedbacks = await Feedback.find(filter).sort({ createdAt: -1 });
     res.json(feedbacks);
   } catch (err) {
-    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
+    res
+      .status(500)
+      .json({ message: "Something went wrong on our side. Please try again." });
   }
 };
 
 export const getPublicFeedbacks = async (req, res) => {
   try {
     const limit = Math.min(Number(req.query.limit || 6), 12);
-    const feedbacks = await Feedback.find({ targetType: "platform" })
+    const feedbacks = await Feedback.find({ showOnHome: true })
       .populate("user", "name profilePhoto")
       .populate("company", "name logo")
       .sort({ createdAt: -1 })
       .limit(limit);
+
     res.json(feedbacks);
   } catch (err) {
-    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
+    res
+      .status(500)
+      .json({ message: "Something went wrong on our side. Please try again." });
   }
 };
-
-

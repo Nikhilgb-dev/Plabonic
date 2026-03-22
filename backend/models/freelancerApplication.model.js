@@ -35,7 +35,7 @@ const freelancerApplicationSchema = new mongoose.Schema(
     },
     resume: {
       type: String, // Cloudinary URL
-      required: true,
+      required: false,
     },
     message: {
       type: String,

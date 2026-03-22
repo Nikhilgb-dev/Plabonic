@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, Star, Building2, Reply, X, Send } from "lucide-react";
+import { MessageCircle, Star, Building2, Reply, X, Send, Trash2 } from "lucide-react";
 import Avatar from "../components/Avatar";
 import toast from "react-hot-toast";
 
@@ -18,6 +18,7 @@ interface Feedback {
   user?: { name: string; profilePhoto?: string };
   company?: { name: string };
   createdAt: string;
+  showOnHome?: boolean;
 }
 
 const AdminFeedbacks: React.FC = () => {
@@ -30,7 +31,12 @@ const AdminFeedbacks: React.FC = () => {
   const [replyText, setReplyText] = useState("");
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
 
-  // ===== Fetch Feedbacks =====
+  const notifyHomepageFeedbackUpdate = () => {
+    const timestamp = Date.now().toString();
+    localStorage.setItem("public-feedback-updated-at", timestamp);
+    window.dispatchEvent(new Event("public-feedback-updated"));
+  };
+
   const fetchFeedbacks = async (): Promise<void> => {
     try {
       setLoading(true);
@@ -49,11 +55,13 @@ const AdminFeedbacks: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (filter === "all") setFiltered(feedbacks);
-    else setFiltered(feedbacks.filter((f) => f.targetType === filter));
+    if (filter === "all") {
+      setFiltered(feedbacks);
+      return;
+    }
+    setFiltered(feedbacks.filter((feedback) => feedback.targetType === filter));
   }, [filter, feedbacks]);
 
-  // ===== Reply Handling =====
   const openReplyModal = (id: string): void => {
     setSelectedFeedback(id);
     setShowReplyModal(true);
@@ -64,6 +72,7 @@ const AdminFeedbacks: React.FC = () => {
       toast.error("Please write a reply before sending.");
       return;
     }
+
     try {
       await API.put(`/feedbacks/${selectedFeedback}/reply`, { reply: replyText });
       toast.success("Reply sent successfully!");
@@ -76,11 +85,52 @@ const AdminFeedbacks: React.FC = () => {
     }
   };
 
-  // ===== UI =====
+  const handleHomepageVisibility = async (
+    id: string,
+    showOnHome: boolean
+  ): Promise<void> => {
+    try {
+      await API.put(`/feedbacks/${id}/homepage`, { showOnHome });
+      toast.success(
+        showOnHome
+          ? "Feedback added to the home page."
+          : "Feedback removed from the home page."
+      );
+      notifyHomepageFeedbackUpdate();
+      setFeedbacks((prev) =>
+        prev.map((item) =>
+          item._id === id ? { ...item, showOnHome } : item
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      toast.error("We couldn't update home page visibility. Please try again.");
+    }
+  };
+
+  const handleDeleteFeedback = async (id: string): Promise<void> => {
+    const confirmed = window.confirm(
+      "Delete this feedback permanently? This action cannot be undone."
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await API.delete(`/feedbacks/${id}`);
+      toast.success("Feedback deleted successfully.");
+      notifyHomepageFeedbackUpdate();
+      setFeedbacks((prev) => prev.filter((item) => item._id !== id));
+    } catch (err) {
+      console.error(err);
+      toast.error("We couldn't delete the feedback. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -93,27 +143,27 @@ const AdminFeedbacks: React.FC = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Feedback Center</h1>
               <p className="text-gray-600 text-sm">
-                Manage all feedback from users and companies
+                Review every feedback submission and choose what appears on the home page.
               </p>
             </div>
           </div>
         </motion.div>
 
-        {/* Filters */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="flex flex-wrap gap-3 mb-6"
         >
-          {(["all"] as const).map((type) => (
+          {(["all", "platform", "company"] as const).map((type) => (
             <button
               key={type}
               onClick={() => setFilter(type)}
-              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm ${filter === type
-                ? "bg-blue-600 text-white shadow-blue-200"
-                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
-                }`}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm ${
+                filter === type
+                  ? "bg-blue-600 text-white shadow-blue-200"
+                  : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+              }`}
             >
               {type === "all"
                 ? "All Feedback"
@@ -122,13 +172,15 @@ const AdminFeedbacks: React.FC = () => {
                   : "Company Feedback"}
             </button>
           ))}
-          <div className="ml-auto flex items-center gap-2 text-sm text-gray-600">
+          <div className="ml-auto flex flex-wrap items-center gap-2 text-sm text-gray-600">
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-emerald-700">
+              {feedbacks.filter((item) => item.showOnHome).length} on home
+            </span>
             <span className="font-medium">{filtered.length}</span>
-            <span>feedback{filtered.length !== 1 ? 's' : ''}</span>
+            <span>feedback{filtered.length !== 1 ? "s" : ""}</span>
           </div>
         </motion.div>
 
-        {/* Loading State */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
@@ -151,125 +203,159 @@ const AdminFeedbacks: React.FC = () => {
             <div className="overflow-x-auto max-h-[calc(100vh-280px)] overflow-y-auto">
               <div className="grid gap-4 p-4">
                 <AnimatePresence>
-                  {filtered.map((fb, index) => (
-                    <motion.div
-                      key={fb._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ delay: index * 0.03 }}
-                      className="bg-gradient-to-br from-white to-blue-50/30 border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all"
-                    >
-                      <div className="flex flex-col sm:flex-row gap-4">
-                        {/* Left: Author Info */}
-                        <div className="flex items-start gap-3 min-w-fit">
-                          {fb.submittedBy === "user" ? (
-                            <Avatar
-                              src={fb.user?.profilePhoto}
-                              alt={fb.user?.name || "User"}
-                              className="w-12 h-12 rounded-full ring-2 ring-blue-100"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
-                              <Building2 className="w-6 h-6" />
-                            </div>
-                          )}
-                          <div>
-                            <div className="font-semibold text-gray-900">
-                              {fb.submittedBy === "user"
-                                ? fb.user?.name
-                                : fb.company?.name || "Company"}
-                            </div>
-                            <div className="text-xs text-gray-500 capitalize flex items-center gap-2 mt-0.5">
-                              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${fb.submittedBy === "user"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-indigo-100 text-indigo-700"
-                                }`}>
-                                {fb.submittedBy}
-                              </span>
-                              <span>•</span>
-                              <span>{new Date(fb.createdAt).toLocaleDateString()}</span>
-                            </div>
-                          </div>
-                        </div>
+                  {filtered.map((feedback, index) => {
+                    const authorName =
+                      feedback.submittedBy === "user"
+                        ? feedback.user?.name
+                        : feedback.company?.name || "Company";
 
-                        {/* Middle: Content */}
-                        <div className="flex-1 min-w-0">
-                          {/* Type & Target */}
-                          <div className="flex flex-wrap items-center gap-2 mb-3">
-                            <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium capitalize">
-                              {fb.targetType}
-                            </span>
-                            {fb.targetType === "company" && (
-                              <span className="text-xs text-gray-600">
-                                → {fb.targetId?.name || "Company"}
-                              </span>
+                    return (
+                      <motion.div
+                        key={feedback._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ delay: index * 0.03 }}
+                        className="bg-gradient-to-br from-white to-blue-50/30 border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all"
+                      >
+                        <div className="flex flex-col gap-4 sm:flex-row">
+                          <div className="flex items-start gap-3 min-w-fit">
+                            {feedback.submittedBy === "user" ? (
+                              <Avatar
+                                src={feedback.user?.profilePhoto}
+                                alt={feedback.user?.name || "User"}
+                                className="w-12 h-12 rounded-full ring-2 ring-blue-100"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                                <Building2 className="w-6 h-6" />
+                              </div>
                             )}
-                          </div>
-
-                          {/* Message */}
-                          <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                            {fb.message}
-                          </p>
-
-                          {/* Subject */}
-                          <p className="text-sm font-medium text-blue-900 mb-1">
-                            Subject
-                          </p>
-                          <p className="text-sm text-blue-800">
-                            {fb.subject}
-                          </p>
-
-                          {/* Rating */}
-                          {fb.rating && (
-                            <div className="flex items-center gap-1 mb-3">
-                              {Array.from({ length: fb.rating }).map((_, i) => (
-                                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                              ))}
-                              <span className="text-xs text-gray-500 ml-1">
-                                ({fb.rating}/5)
-                              </span>
-                            </div>
-                          )}
-
-                          {/* Reply */}
-                          {fb.reply && (
-                            <div className="bg-blue-50 border-l-4 border-blue-600 rounded-lg p-3 mt-3">
-                              <div className="flex items-start gap-2">
-                                <Reply className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-blue-900 mb-1">
-                                    Admin Reply
-                                  </p>
-                                  <p className="text-sm text-blue-800">
-                                    {fb.reply}
-                                  </p>
-                                  {fb.repliedAt && (
-                                    <div className="text-xs text-blue-600 mt-1">
-                                      {new Date(fb.repliedAt).toLocaleDateString()}
-                                    </div>
-                                  )}
-                                </div>
+                            <div>
+                              <div className="font-semibold text-gray-900">
+                                {authorName}
+                              </div>
+                              <div className="text-xs text-gray-500 capitalize flex items-center gap-2 mt-0.5">
+                                <span
+                                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                    feedback.submittedBy === "user"
+                                      ? "bg-blue-100 text-blue-700"
+                                      : "bg-indigo-100 text-indigo-700"
+                                  }`}
+                                >
+                                  {feedback.submittedBy}
+                                </span>
+                                <span>&bull;</span>
+                                <span>{new Date(feedback.createdAt).toLocaleDateString()}</span>
                               </div>
                             </div>
-                          )}
-                        </div>
+                          </div>
 
-                        {/* Right: Actions */}
-                        <div className="flex sm:flex-col items-center sm:items-end gap-2">
-                          {!fb.reply && (
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-3">
+                              <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium capitalize">
+                                {feedback.targetType}
+                              </span>
+                              {feedback.showOnHome ? (
+                                <span className="px-3 py-1 rounded-lg text-xs font-medium bg-emerald-100 text-emerald-700">
+                                  Showing on home
+                                </span>
+                              ) : null}
+                              {feedback.targetType === "company" ? (
+                                <span className="text-xs text-gray-600">
+                                  for {feedback.targetId?.name || "Company"}
+                                </span>
+                              ) : null}
+                            </div>
+
+                            <p className="text-gray-700 text-sm leading-relaxed mb-3">
+                              {feedback.message}
+                            </p>
+
+                            {feedback.subject ? (
+                              <>
+                                <p className="text-sm font-medium text-blue-900 mb-1">
+                                  Subject
+                                </p>
+                                <p className="text-sm text-blue-800 mb-3">
+                                  {feedback.subject}
+                                </p>
+                              </>
+                            ) : null}
+
+                            {feedback.rating ? (
+                              <div className="flex items-center gap-1 mb-3">
+                                {Array.from({ length: feedback.rating }).map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                                  />
+                                ))}
+                                <span className="text-xs text-gray-500 ml-1">
+                                  ({feedback.rating}/5)
+                                </span>
+                              </div>
+                            ) : null}
+
+                            {feedback.reply ? (
+                              <div className="bg-blue-50 border-l-4 border-blue-600 rounded-lg p-3 mt-3">
+                                <div className="flex items-start gap-2">
+                                  <Reply className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-blue-900 mb-1">
+                                      Admin Reply
+                                    </p>
+                                    <p className="text-sm text-blue-800">
+                                      {feedback.reply}
+                                    </p>
+                                    {feedback.repliedAt ? (
+                                      <div className="text-xs text-blue-600 mt-1">
+                                        {new Date(feedback.repliedAt).toLocaleDateString()}
+                                      </div>
+                                    ) : null}
+                                  </div>
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+
+                          <div className="flex sm:flex-col items-center sm:items-end gap-2">
                             <button
-                              onClick={() => openReplyModal(fb._id)}
-                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-sm hover:shadow-md text-sm font-medium flex items-center gap-2 whitespace-nowrap"
+                              onClick={() =>
+                                handleHomepageVisibility(
+                                  feedback._id,
+                                  !feedback.showOnHome
+                                )
+                              }
+                              className={`px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow-md text-sm font-medium whitespace-nowrap ${
+                                feedback.showOnHome
+                                  ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                              }`}
                             >
-                              <Reply className="w-4 h-4" />
-                              Reply
+                              {feedback.showOnHome ? "Remove from Home" : "Show on Home"}
                             </button>
-                          )}
+                            <button
+                              onClick={() => handleDeleteFeedback(feedback._id)}
+                              className="px-4 py-2 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition-all shadow-sm hover:shadow-md text-sm font-medium flex items-center gap-2 whitespace-nowrap"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Delete
+                            </button>
+                            {!feedback.reply ? (
+                              <button
+                                onClick={() => openReplyModal(feedback._id)}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-sm hover:shadow-md text-sm font-medium flex items-center gap-2 whitespace-nowrap"
+                              >
+                                <Reply className="w-4 h-4" />
+                                Reply
+                              </button>
+                            ) : null}
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </AnimatePresence>
               </div>
             </div>
@@ -277,9 +363,8 @@ const AdminFeedbacks: React.FC = () => {
         )}
       </div>
 
-      {/* Reply Modal */}
       <AnimatePresence>
-        {showReplyModal && (
+        {showReplyModal ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -331,13 +416,10 @@ const AdminFeedbacks: React.FC = () => {
               </div>
             </motion.div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );
 };
 
 export default AdminFeedbacks;
-
-
-

@@ -767,7 +767,15 @@ const UserDashboard: React.FC = () => {
             )}
 
             {selectedFreelancerApplication && (
-                <FreelancerApplicationDetailsModal application={selectedFreelancerApplication} onClose={() => setSelectedFreelancerApplication(null)} />
+                <FreelancerApplicationDetailsModal
+                    application={selectedFreelancerApplication}
+                    canEdit={canEditFreelancerApplication(selectedFreelancerApplication)}
+                    onEdit={(application) => {
+                        setSelectedFreelancerApplication(null);
+                        setEditingFreelancerApplication(application);
+                    }}
+                    onClose={() => setSelectedFreelancerApplication(null)}
+                />
             )}
 
             {selectedOffer && (

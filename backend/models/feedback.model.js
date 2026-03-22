@@ -1,4 +1,3 @@
-// models/feedback.model.js
 import mongoose from "mongoose";
 
 const feedbackSchema = new mongoose.Schema(
@@ -43,7 +42,10 @@ const feedbackSchema = new mongoose.Schema(
       enum: ["user", "company"],
       required: true,
     },
-    // 🆕 Admin Reply Fields
+    showOnHome: {
+      type: Boolean,
+      default: false,
+    },
     reply: {
       type: String,
       default: null,

@@ -12,7 +12,7 @@ interface Application {
   contactNumber: string;
   officialEmail: string;
   requirements: string;
-  resume: string;
+  resume?: string;
   message: string;
   status: string;
   appliedAt: string;
@@ -284,18 +284,19 @@ const FreelancerDashboard: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Resume */}
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <a
-                      href={application.resume}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
-                    >
-                      <Download className="w-4 h-4" />
-                      View Resume
-                    </a>
-                  </div>
+                  {application.resume ? (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <a
+                        href={application.resume}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+                      >
+                        <Download className="w-4 h-4" />
+                        View Resume
+                      </a>
+                    </div>
+                  ) : null}
                 </div>
               ))
             )}

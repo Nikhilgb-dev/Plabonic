@@ -31,7 +31,6 @@ const MarketingDetail: React.FC = () => {
   const [buyerName, setBuyerName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
-  const [whatsappNumber, setWhatsappNumber] = useState("");
   const [quantity, setQuantity] = useState(1);
 
   const [loading, setLoading] = useState(false);
@@ -59,7 +58,6 @@ const MarketingDetail: React.FC = () => {
           setBuyerName(res.data.name || "");
           setEmail(res.data.email || "");
           setMobile(res.data.phone || "");
-          setWhatsappNumber(res.data.phone || "");
         } catch {
           setUser(null);
         }
@@ -114,7 +112,6 @@ const MarketingDetail: React.FC = () => {
         buyerName,
         email,
         mobile,
-        whatsappNumber,
         quantity,
       });
       toast.success("Payment request submitted successfully");
@@ -346,15 +343,6 @@ const MarketingDetail: React.FC = () => {
                       />
                     </label>
 
-                    <label className="block sm:col-span-2">
-                      <span className="text-sm text-gray-600">Preferred WhatsApp Number</span>
-                      <input
-                        type="tel"
-                        value={whatsappNumber}
-                        onChange={(e) => setWhatsappNumber(e.target.value)}
-                        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </label>
                   </div>
 
                   <label className="block">
