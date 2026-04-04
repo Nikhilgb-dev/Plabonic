@@ -10,6 +10,7 @@ import CompanyForm from "@/components/CompanyForm";
 import toast from "react-hot-toast";
 import Avatar from "@/components/Avatar";
 import { Link } from "react-router-dom";
+import { calculateCompanyProfileCompletion } from "@/utils/profileCompletion";
 
 type DashboardData = {
     employeesCount: number;
@@ -38,6 +39,7 @@ const StatCard: React.FC<{ title: string; value: number }> = ({
 
 const CompanyDashboard: React.FC = () => {
     const { company } = useCompany();
+    const profileCompletion = calculateCompanyProfileCompletion(company);
     const [data, setData] = useState<DashboardData | null>(null);
     const [applicants, setApplicants] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -171,6 +173,33 @@ const CompanyDashboard: React.FC = () => {
 
     return (
         <div className="space-y-6 sm:space-y-8 max-w-6xl mx-auto px-3 sm:px-4 lg:px-0">
+            {company && (
+                <div className="bg-white border rounded-lg shadow-sm p-4 sm:p-5 flex items-center gap-4">
+                    <div className="relative">
+                        <div
+                            className="w-16 h-16 rounded-full flex items-center justify-center"
+                            style={{
+                                background: `conic-gradient(#2563eb ${profileCompletion * 3.6}deg, #e5e7eb 0deg)`,
+                            }}
+                        >
+                            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
+                                <Avatar
+                                    src={company.logo}
+                                    alt={company.name || "Company"}
+                                    className="w-10 h-10 rounded-full"
+                                />
+                            </div>
+                        </div>
+                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-semibold text-white">
+                            {profileCompletion}%
+                        </span>
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-900">{company.name || "Company Dashboard"}</h2>
+                        <p className="text-sm text-gray-500">Profile completion: {profileCompletion}%</p>
+                    </div>
+                </div>
+            )}
             {/* ====== STAT CARDS ====== */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
                 <StatCard title="Employees" value={data.employeesCount} />

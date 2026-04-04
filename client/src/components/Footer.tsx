@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import logo from "../assets/logo.jpg";
-import { Copy, Check, MessageCircle, Facebook, Instagram, Linkedin, Send, Twitter, Youtube } from "lucide-react";
+import { Copy, Check, MessageCircle, Facebook, Instagram, Linkedin, Send, Twitter, Youtube, Pin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
@@ -23,6 +23,7 @@ const socialLinks = [
   { label: "Telegram", href: "https://t.me/plabonic", icon: Send },
   { label: "Twitter", href: "https://x.com/PlabonicJobs?s=20", icon: Twitter },
   { label: "YouTube", href: "http://www.youtube.com/@plabonic", icon: Youtube },
+  { label: "Pinterest", href: "https://pin.it/5tk9rG0OL", icon: Pin },
 ];
 
 export default function Footer() {

@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import API from "../api/api";
 import logo from "../assets/logo.jpg";
-import { Bell, User, LogOut, Briefcase, Users, LayoutDashboard, Menu, X, Copy, Check, MessageCircle, Facebook, Instagram, Linkedin, Send, Twitter, Youtube } from "lucide-react";
+import { Bell, User, LogOut, Briefcase, Users, LayoutDashboard, Menu, X, Copy, Check, MessageCircle, Facebook, Instagram, Linkedin, Send, Twitter, Youtube, Pin } from "lucide-react";
 import Avatar from "./Avatar";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -17,6 +17,7 @@ const socialLinks = [
   { label: "Telegram", href: "https://t.me/plabonic", icon: Send },
   { label: "Twitter", href: "https://x.com/PlabonicJobs?s=20", icon: Twitter },
   { label: "YouTube", href: "http://www.youtube.com/@plabonic", icon: Youtube },
+  { label: "Pinterest", href: "https://pin.it/5tk9rG0OL", icon: Pin },
 ];
 
 export default function Navbar() {

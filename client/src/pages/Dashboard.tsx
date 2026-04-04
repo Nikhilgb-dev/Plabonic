@@ -41,6 +41,7 @@ const Dashboard = () => {
   const [companies, setCompanies] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [freelancersCount, setFreelancersCount] = useState(0);
+  const [websiteVisits, setWebsiteVisits] = useState(0);
   const [posts, setPosts] = useState<any[]>([]);
   const [selectedApplicant, setSelectedApplicant] = useState<any | null>(null);
   const [abuseReports, setAbuseReports] = useState<any[]>([]);
@@ -119,6 +120,14 @@ const Dashboard = () => {
       setFreelancersCount(Array.isArray(res.data) ? res.data.length : 0);
     } catch {
       setFreelancersCount(0);
+    }
+  };
+  const fetchWebsiteVisits = async () => {
+    try {
+      const res = await API.get("/analytics/overview");
+      setWebsiteVisits(Number(res.data?.websiteVisits || 0));
+    } catch {
+      setWebsiteVisits(0);
     }
   };
 
@@ -307,6 +316,7 @@ const Dashboard = () => {
       fetchUsers();
       fetchCompanies();
       fetchFreelancersCount();
+      fetchWebsiteVisits();
       fetchApplications();
       fetchAbuseReports();
     } else if (user?.role === "user") {
@@ -575,6 +585,20 @@ const Dashboard = () => {
       cta: "View all",
     },
     {
+      label: "Applied",
+      value: applications.filter((application) => application.status === "applied").length,
+      status: "applied",
+      accent: "bg-sky-50 text-sky-700 border-sky-100",
+      cta: "View applied",
+    },
+    {
+      label: "Reviewed",
+      value: applications.filter((application) => application.status === "reviewed").length,
+      status: "reviewed",
+      accent: "bg-cyan-50 text-cyan-700 border-cyan-100",
+      cta: "View reviewed",
+    },
+    {
       label: "Hired",
       value: applications.filter((application) => application.status === "hired").length,
       status: "hired",
@@ -646,6 +670,15 @@ const Dashboard = () => {
       linkText: "Create new user"
     },
     {
+      icon: Download,
+      label: "Website Visits",
+      value: websiteVisits,
+      bgColor: "bg-amber-50",
+      iconColor: "text-amber-600",
+      action: () => window.scrollTo({ top: 0, behavior: "smooth" }),
+      linkText: "Live total visits"
+    },
+    {
       icon: Star,
       label: "Total Freelancers",
       value: freelancersCount,
@@ -695,7 +728,7 @@ const Dashboard = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-6 sm:mb-8"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-6 mb-6 sm:mb-8"
             >
               {statsData.map((stat, index) => (
                 <motion.div
@@ -751,7 +784,7 @@ const Dashboard = () => {
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-7 gap-3 sm:gap-4">
                 {applicationStatsData.map((stat) => (
                   <button
                     key={stat.label}
@@ -1065,6 +1098,9 @@ const Dashboard = () => {
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">
                         Industry
                       </th>
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">
+                        Contact
+                      </th>
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Status
                       </th>
@@ -1103,6 +1139,9 @@ const Dashboard = () => {
                           </td>
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden md:table-cell">
                             {company.industry || "-"}
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden lg:table-cell">
+                            {company.contactNumber || "-"}
                           </td>
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                             <span
@@ -1776,7 +1815,8 @@ const Dashboard = () => {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           transition={{ delay: index * 0.03 }}
-                          className="hover:bg-blue-50/30 transition-colors align-top"
+                          className="hover:bg-blue-50/30 transition-colors align-top cursor-pointer"
+                          onClick={() => setSelectedApplicant(application)}
                         >
                           <td className="px-6 py-4 align-top">
                             <div className="font-medium text-gray-900 text-sm truncate">
@@ -1802,7 +1842,10 @@ const Dashboard = () => {
                           </td>
 
                           <td className="px-6 py-4 align-top">
-                            <div className="flex flex-col gap-1">
+                            <div
+                              className="flex flex-col gap-1"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <ApplicationStatusDropdown
                                 id={application._id}
                                 currentStatus={application.status}
@@ -1820,7 +1863,10 @@ const Dashboard = () => {
                           <td className="px-6 py-4 align-top text-sm text-gray-500">
                             {application.resume ? (
                               <button
-                                onClick={() => handleResumeView(application)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleResumeView(application);
+                                }}
                                 className="text-blue-600 hover:underline text-sm"
                               >
                                 View
@@ -1839,13 +1885,19 @@ const Dashboard = () => {
                           <td className="px-6 py-4 align-top text-right">
                             <div className="flex items-center justify-end gap-3">
                               <button
-                                onClick={() => setSelectedApplicant(application)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedApplicant(application);
+                                }}
                                 className="text-blue-600 hover:underline text-sm"
                               >
                                 Details
                               </button>
                               <button
-                                onClick={() => handleDeleteApplication(application._id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteApplication(application._id);
+                                }}
                                 className="text-red-600 hover:underline text-sm"
                               >
                                 Delete

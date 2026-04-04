@@ -11,6 +11,8 @@ import ApplyModal from "@/components/ApplyModal";
 import FreelancerApplyModal from "@/components/FreelancerApplyModal";
 import toast from "react-hot-toast";
 import { formatSalaryRange } from "@/utils/salary";
+import Avatar from "@/components/Avatar";
+import { calculateUserProfileCompletion } from "@/utils/profileCompletion";
 
 type AnyObj = Record<string, any>;
 
@@ -376,6 +378,10 @@ const UserDashboard: React.FC = () => {
         () => applications.find((a) => (a.status || "").toLowerCase() === "hired") || null,
         [applications]
     );
+    const profileCompletion = useMemo(
+        () => calculateUserProfileCompletion(currentUser),
+        [currentUser]
+    );
 
     if (loading) return <div className="text-gray-500 p-6">Loading...</div>;
 
@@ -383,7 +389,33 @@ const UserDashboard: React.FC = () => {
         <div className="p-4 sm:p-6 space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Dashboard</h1>
+                <div className="flex items-center gap-4">
+                    {currentUser && (
+                        <div className="relative">
+                            <div
+                                className="w-16 h-16 rounded-full flex items-center justify-center"
+                                style={{
+                                    background: `conic-gradient(#2563eb ${profileCompletion * 3.6}deg, #e5e7eb 0deg)`,
+                                }}
+                            >
+                                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
+                                    <Avatar
+                                        src={currentUser.profilePhoto}
+                                        alt={currentUser.name || "Profile"}
+                                        className="w-10 h-10 rounded-full"
+                                    />
+                                </div>
+                            </div>
+                            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-semibold text-white">
+                                {profileCompletion}%
+                            </span>
+                        </div>
+                    )}
+                    <div>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Dashboard</h1>
+                        <p className="text-sm text-gray-500">Profile completion: {profileCompletion}%</p>
+                    </div>
+                </div>
             </div>
 
             {/* Stats grid */}

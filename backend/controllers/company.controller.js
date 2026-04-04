@@ -38,6 +38,9 @@ export const registerCompany = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser)
       return res.status(400).json({ message: "That email is already in use. Try another or sign in." });
+    if (!contactNumber?.trim()) {
+      return res.status(400).json({ message: "Contact number is required." });
+    }
 
     // Upload logo if provided
     let logo = "";
@@ -74,7 +77,7 @@ export const registerCompany = async (req, res) => {
       logo,
       verificationDocs,
       termsAccepted: acceptTerms,
-      address: registeredOfficeAddress || address,
+      address: registeredOfficeAddress,
     });
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -130,9 +133,9 @@ export const createCompanyByAdmin = async (req, res) => {
       acceptTerms,
     } = req.body;
 
-    if (!name || !domain || !email || !password) {
+    if (!name || !domain || !email || !password || !contactNumber?.trim()) {
       return res.status(400).json({
-        message: "Name, domain, email, and password are required fields",
+        message: "Name, domain, email, password, and contact number are required fields",
       });
     }
 
@@ -178,7 +181,7 @@ export const createCompanyByAdmin = async (req, res) => {
       contactNumber,
       logo,
       verificationDocs,
-      address: registeredOfficeAddress || address,
+      address: registeredOfficeAddress,
       registrationName,
       panOrTanOrGst,
       dateOfIncorporation: normalizedIncorporationDate,

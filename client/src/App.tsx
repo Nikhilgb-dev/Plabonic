@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import API from "./api/api";
 
 // Public pages
 import Home from "./pages/Home";
@@ -49,6 +51,14 @@ import PostJob from "./pages/PostJob";
 import ManageUsers from "./pages/ManageUsers";
 
 export default function App() {
+  useEffect(() => {
+    const visitKey = "plabonic_visit_recorded";
+    if (sessionStorage.getItem(visitKey)) return;
+
+    API.post("/analytics/visit").catch(() => null);
+    sessionStorage.setItem(visitKey, "true");
+  }, []);
+
   return (
     <>
       <CompanyProvider>

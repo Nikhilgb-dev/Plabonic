@@ -209,14 +209,11 @@ export const getAllApplications = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate(
-        "user",
-        "name email profilePhoto headline location termsAccepted"
-      )
+      .populate("user", "-password")
       .populate("job", "title location company")
       .populate({
         path: "job",
-        populate: { path: "company", select: "name logo" },
+        populate: { path: "company", select: "name logo email contactNumber" },
       });
 
     res.json({ total, page, limit, applications });

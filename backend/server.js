@@ -14,6 +14,7 @@ import feedbackRoutes from "./routes/feedback.routes.js";
 import freelanceRoutes from "./routes/freelancer.routes.js";
 import marketingRoutes from "./routes/marketing.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
 import path from "path";
 
 const __dirname = path.resolve();
@@ -44,6 +45,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/freelancers", freelanceRoutes);
 app.use("/api/marketing", marketingRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 app.use(express.static(path.join(__dirname, "/client/dist")));
 

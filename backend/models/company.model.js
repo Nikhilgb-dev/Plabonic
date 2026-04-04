@@ -13,7 +13,7 @@ const companySchema = new mongoose.Schema(
     description: { type: String },
     password: { type: String },
     email: { type: String, required: true },
-    contactNumber: { type: String },
+    contactNumber: { type: String, required: true },
     verificationDocs: [String],
     registrationName: { type: String },
     panOrTanOrGst: { type: String },

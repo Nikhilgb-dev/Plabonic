@@ -1,5 +1,6 @@
 import React from "react";
 import { X } from "lucide-react";
+import Avatar from "./Avatar";
 
 interface ExperienceItem {
     companyName?: string;
@@ -45,6 +46,31 @@ interface Applicant {
         name?: string;
         email?: string;
         profilePhoto?: string;
+        phone?: string;
+        whatsappNumber?: string;
+        headline?: string;
+        about?: string;
+        description?: string;
+        currentLocation?: string;
+        preferredJobLocation?: string;
+        educationalQualification?: string;
+        yearOfGraduation?: number;
+        workExperienceYears?: number;
+        currentEmployer?: string;
+        currentDesignation?: string;
+        noticePeriod?: string;
+        technicalSkills?: string[];
+        softSkills?: string[];
+        interestedSkills?: string[];
+        certifications?: string[];
+        languagesKnown?: string[];
+        skills?: string[];
+        website?: string;
+        socialLinks?: {
+            linkedin?: string;
+            github?: string;
+            twitter?: string;
+        };
     };
     job?: {
         title?: string;
@@ -71,6 +97,7 @@ const ApplicantDetailsModal: React.FC<ApplicantDetailsModalProps> = ({
 
     const {
         user,
+        job,
         resume,
         coverLetter,
         contact,
@@ -78,6 +105,34 @@ const ApplicantDetailsModal: React.FC<ApplicantDetailsModalProps> = ({
         education,
         project,
     } = applicant;
+
+    const profileFields = [
+        ["Headline", user?.headline],
+        ["Phone", user?.phone || contact?.phone],
+        ["WhatsApp", user?.whatsappNumber || contact?.altPhone],
+        ["Current Location", user?.currentLocation],
+        ["Preferred Job Location", user?.preferredJobLocation],
+        ["Qualification", user?.educationalQualification],
+        ["Graduation Year", user?.yearOfGraduation],
+        ["Work Experience", user?.workExperienceYears ? `${user.workExperienceYears} years` : ""],
+        ["Current Employer", user?.currentEmployer],
+        ["Current Designation", user?.currentDesignation],
+        ["Notice Period", user?.noticePeriod],
+        ["Skills", user?.skills?.join(", ")],
+        ["Technical Skills", user?.technicalSkills?.join(", ")],
+        ["Soft Skills", user?.softSkills?.join(", ")],
+        ["Interested Skills", user?.interestedSkills?.join(", ")],
+        ["Certifications", user?.certifications?.join(", ")],
+        ["Languages", user?.languagesKnown?.join(", ")],
+        ["Website", user?.website],
+        [
+            "Social Links",
+            [user?.socialLinks?.linkedin, user?.socialLinks?.github, user?.socialLinks?.twitter]
+                .filter(Boolean)
+                .join(" | "),
+        ],
+        ["About", user?.about || user?.description],
+    ].filter(([, value]) => value);
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -97,6 +152,29 @@ const ApplicantDetailsModal: React.FC<ApplicantDetailsModalProps> = ({
 
                 {/* Body */}
                 <div className="p-6 space-y-8">
+                    <section>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+                            <Avatar
+                                src={user?.profilePhoto}
+                                alt={user?.name || contact?.name || "Applicant"}
+                                className="w-16 h-16 rounded-full border border-gray-200 bg-white"
+                            />
+                            <div className="min-w-0">
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                    {user?.name || contact?.name || "Applicant"}
+                                </h3>
+                                <p className="text-sm text-gray-500 break-all">
+                                    {user?.email || contact?.email || "No email provided"}
+                                </p>
+                                {job?.title && (
+                                    <p className="text-sm text-blue-600 mt-1">
+                                        Applied for {job.title}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </section>
+
                     {/* Contact Info */}
                     <section>
                         <h3 className="text-lg font-semibold text-gray-800 mb-2">
@@ -114,6 +192,26 @@ const ApplicantDetailsModal: React.FC<ApplicantDetailsModalProps> = ({
                             </p>
                         </div>
                     </section>
+
+                    {profileFields.length > 0 && (
+                        <section>
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                                Login & My Profile Details
+                            </h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
+                                {profileFields.map(([label, value]) => (
+                                    <div key={String(label)} className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                            {label}
+                                        </p>
+                                        <p className="mt-1 whitespace-pre-wrap break-words">
+                                            {String(value)}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
 
                     {/* Cover Letter */}
                     {coverLetter && (

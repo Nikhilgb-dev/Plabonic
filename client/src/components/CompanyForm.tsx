@@ -279,6 +279,7 @@ const CompanyForm: React.FC<Props> = ({ mode, onSuccess, initialData }) => {
                                 value={form.contactNumber}
                                 onChange={handleChange}
                                 placeholder="Contact Number"
+                                required
                                 className="border rounded-md px-3 py-2 text-sm sm:text-base w-full"
                             />
                         </div>

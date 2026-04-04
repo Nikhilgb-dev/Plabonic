@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 import { Calendar, Users, Download } from "lucide-react";
 import EditFreelancerModal from "../components/EditFreelancerModal";
 import FeedbackButton from "../components/FeedbackButton";
+import Avatar from "@/components/Avatar";
+import { calculateFreelancerProfileCompletion } from "@/utils/profileCompletion";
 
 interface Application {
   _id: string;
@@ -32,6 +34,7 @@ interface Freelancer {
   location: string;
   expiryDate: string;
   services: any[];
+  photo?: string;
   pricing: {
     min: number;
     max: number;
@@ -50,6 +53,7 @@ const FreelancerDashboard: React.FC = () => {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectingApplicationId, setRejectingApplicationId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  const profileCompletion = calculateFreelancerProfileCompletion(freelancer);
 
   useEffect(() => {
     fetchFreelancerData();
@@ -133,9 +137,35 @@ const FreelancerDashboard: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                Freelancer Dashboard
-              </h1>
+              <div className="flex items-center gap-4 mb-2">
+                {freelancer && (
+                  <div className="relative">
+                    <div
+                      className="w-16 h-16 rounded-full flex items-center justify-center"
+                      style={{
+                        background: `conic-gradient(#2563eb ${profileCompletion * 3.6}deg, #e5e7eb 0deg)`,
+                      }}
+                    >
+                      <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
+                        <Avatar
+                          src={freelancer.photo}
+                          alt={freelancer.name}
+                          className="w-10 h-10 rounded-full"
+                        />
+                      </div>
+                    </div>
+                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-semibold text-white">
+                      {profileCompletion}%
+                    </span>
+                  </div>
+                )}
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                    Freelancer Dashboard
+                  </h1>
+                  <p className="text-sm text-gray-500">Profile completion: {profileCompletion}%</p>
+                </div>
+              </div>
 
               {freelancer && (
                 <div className="flex flex-wrap items-center gap-3 text-gray-600">
