@@ -42,8 +42,14 @@ const CompanyDetailsModal: React.FC<Props> = ({ company, onClose, onRefresh, isA
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 relative animate-fadeIn">
+        <div
+            className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center backdrop-blur-sm"
+            onClick={onClose}
+        >
+            <div
+                className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 relative animate-fadeIn"
+                onClick={(e) => e.stopPropagation()}
+            >
                 {/* Close button */}
                 <button
                     onClick={onClose}
