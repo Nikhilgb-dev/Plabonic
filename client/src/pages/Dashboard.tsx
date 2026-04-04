@@ -670,15 +670,6 @@ const Dashboard = () => {
       linkText: "Create new user"
     },
     {
-      icon: Download,
-      label: "Website Visits",
-      value: websiteVisits,
-      bgColor: "bg-amber-50",
-      iconColor: "text-amber-600",
-      action: () => window.scrollTo({ top: 0, behavior: "smooth" }),
-      linkText: "Live total visits"
-    },
-    {
       icon: Star,
       label: "Total Freelancers",
       value: freelancersCount,
