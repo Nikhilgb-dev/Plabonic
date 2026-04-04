@@ -670,6 +670,13 @@ const Dashboard = () => {
       linkText: "Create new user"
     },
     {
+      icon: Download,
+      label: "Total Members Visited",
+      value: websiteVisits,
+      bgColor: "bg-amber-50",
+      iconColor: "text-amber-600",
+    },
+    {
       icon: Star,
       label: "Total Freelancers",
       value: freelancersCount,
@@ -743,20 +750,21 @@ const Dashboard = () => {
                   {stat.link ? (
                     <Link
                       to={stat.link}
-                      className={`${stat.iconColor} text-xs sm:text-sm font-medium hover:underline flex items-center gap-1 group`}
+                      className={`${stat.iconColor} text-xs sm:text-sm font-medium hover:underline flex items-center gap-1 group whitespace-nowrap`}
                     >
                       {stat.linkText}
                       <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
-                  ) : (
+                  ) : stat.linkText ? (
                     <button
                       onClick={stat.action}
-                      className={`${stat.iconColor} text-xs sm:text-sm font-medium hover:underline flex items-center gap-1 group`}
+                      className={`${stat.iconColor} text-xs sm:text-sm font-medium hover:underline flex items-center gap-1 group whitespace-nowrap`}
                     >
                       {stat.linkText}
                       <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
-                  )}
+                  ) : null
+                  }
                 </motion.div>
               ))}
             </motion.div>
