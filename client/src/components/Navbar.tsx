@@ -2,12 +2,20 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import API from "../api/api";
 import logo from "../assets/logo.jpg";
-import { Bell, User, LogOut, Briefcase, Users, LayoutDashboard, Menu, X, Copy, Check } from "lucide-react";
+import { Bell, User, LogOut, Briefcase, Users, LayoutDashboard, Menu, X, Copy, Check, MessageCircle, Facebook, Instagram, Linkedin, Send } from "lucide-react";
 import Avatar from "./Avatar";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 
 const supportEmail = "  Plabonic.jobs@gmail.com ";
+const whatsappNumber = "+91 79756 05505";
+const socialLinks = [
+  { label: "WhatsApp", href: "https://wa.me/917975605505", icon: MessageCircle },
+  { label: "Facebook", href: "https://www.facebook.com/people/Plabonic-Jobs/pfbid02PjoPz3jiUvGYYsQ8QW8X4UXzxwVcMwB9WNXzHa96AGrFdAgMY7a2sMZxcoDQ4e3gl/?mibextid=wwXIfr&rdid=MQimCDiQNU7WJNYD&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1B78RWnRTJ%2F%3Fmibextid%3DwwXIfr", icon: Facebook },
+  { label: "Instagram", href: "https://www.instagram.com/plabonic.jobs?igsh=MTcxNThmMDR5bmRoMw==", icon: Instagram },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/plabonic/", icon: Linkedin },
+  { label: "Telegram", href: "https://t.me/plabonic", icon: Send },
+];
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);
@@ -616,7 +624,7 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[1000] bg-black bg-opacity-60 flex items-center justify-center mt-40"
+            className="fixed inset-0 z-[1000] flex items-center justify-center p-4 pt-64"
             onClick={() => setShowHelpModal(false)}
           >
             <motion.div
@@ -663,6 +671,24 @@ export default function Navbar() {
                 >
                   Open Gmail Web
                 </a>
+                <div className="pt-1">
+                  <p className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Connect with us</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {socialLinks.map(({ label, href, icon: Icon }) => (
+                      <a
+                        key={label}
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-2 text-xs sm:text-sm rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors text-gray-700"
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span>{label}</span>
+                      </a>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500">WhatsApp: {whatsappNumber}</p>
+                </div>
               </div>
               <div className="mt-4 sm:mt-6 flex justify-end">
                 <button
