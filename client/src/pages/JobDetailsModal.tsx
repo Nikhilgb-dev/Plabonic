@@ -10,6 +10,17 @@ interface JobDetailsModalProps {
     isUserBlocked?: boolean;
 }
 
+const normalizeJobDetail = (value: unknown) => {
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => String(item || "").trim())
+            .filter(Boolean)
+            .join(", ");
+    }
+
+    return typeof value === "string" ? value.trim() : "";
+};
+
 const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
     jobId,
     onClose,
@@ -20,6 +31,9 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
     const [job, setJob] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const isApplied = job?.hasApplied ?? hasApplied ?? false;
+    const roleAndResponsibility = normalizeJobDetail(job?.roleAndResponsibility);
+    const skillsRequired = normalizeJobDetail(job?.skillsRequired);
+    const preferredQualifications = normalizeJobDetail(job?.preferredQualifications);
 
     useEffect(() => {
         setLoading(true);
@@ -265,7 +279,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                         </div>
 
                         {/* Role and Responsibility */}
-                        {job.roleAndResponsibility && (
+                        {roleAndResponsibility && (
                             <div className="mb-6">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -289,14 +303,14 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                                 </div>
                                 <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
                                     <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                        {job.roleAndResponsibility}
+                                        {roleAndResponsibility}
                                     </p>
                                 </div>
                             </div>
                         )}
 
                         {/* Skills Required */}
-                        {job.skillsRequired && (
+                        {skillsRequired && (
                             <div className="mb-6">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -320,14 +334,14 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                                 </div>
                                 <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
                                     <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                        {job.skillsRequired}
+                                        {skillsRequired}
                                     </p>
                                 </div>
                             </div>
                         )}
 
                         {/* Preferred Qualifications */}
-                        {job.preferredQualifications && (
+                        {preferredQualifications && (
                             <div className="mb-6">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -351,14 +365,14 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                                 </div>
                                 <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
                                     <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                        {job.preferredQualifications}
+                                        {preferredQualifications}
                                     </p>
                                 </div>
                             </div>
                         )}
 
                         {/* Role and Responsibility */}
-                        {job.roleAndResponsibility && (
+                        {roleAndResponsibility && (
                             <div className="mb-6">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -382,14 +396,14 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                                 </div>
                                 <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
                                     <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                        {job.roleAndResponsibility}
+                                        {roleAndResponsibility}
                                     </p>
                                 </div>
                             </div>
                         )}
 
                         {/* Skills Required */}
-                        {job.skillsRequired && (
+                        {skillsRequired && (
                             <div className="mb-6">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -413,14 +427,14 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                                 </div>
                                 <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
                                     <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                        {job.skillsRequired}
+                                        {skillsRequired}
                                     </p>
                                 </div>
                             </div>
                         )}
 
                         {/* Preferred Qualifications */}
-                        {job.preferredQualifications && (
+                        {/* {preferredQualifications && (
                             <div className="mb-6">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -444,11 +458,11 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                                 </div>
                                 <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
                                     <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                        {job.preferredQualifications}
+                                        {preferredQualifications}
                                     </p>
                                 </div>
                             </div>
-                        )}
+                        )} */}
 
                         {/* Requirements */}
                         {job.requirements && (

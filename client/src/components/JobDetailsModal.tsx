@@ -11,10 +11,26 @@ interface Props {
     isUserBlocked?: boolean;
 }
 
+const normalizeJobDetail = (value: unknown) => {
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => String(item || "").trim())
+            .filter(Boolean)
+            .join(", ");
+    }
+
+    return typeof value === "string" ? value.trim() : "";
+};
+
 const JobDetailsModal: React.FC<Props> = ({ job, onClose, onApply, isUserBlocked }) => {
     const [showReportModal, setShowReportModal] = useState(false);
 
     if (!job) return null;
+
+    const roleAndResponsibility = normalizeJobDetail(job.roleAndResponsibility);
+    const skillsRequired = normalizeJobDetail(job.skillsRequired);
+    const preferredQualifications = normalizeJobDetail(job.preferredQualifications);
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative animate-fade-in">
@@ -96,7 +112,7 @@ const JobDetailsModal: React.FC<Props> = ({ job, onClose, onApply, isUserBlocked
                     </div>
 
                     {/* Role and Responsibility */}
-                    {job.roleAndResponsibility && (
+                    {roleAndResponsibility && (
                         <div className="mt-6">
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -108,14 +124,14 @@ const JobDetailsModal: React.FC<Props> = ({ job, onClose, onApply, isUserBlocked
                             </div>
                             <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
                                 <p className="text-gray-700 text-sm sm:text-base whitespace-pre-line leading-relaxed">
-                                    {job.roleAndResponsibility}
+                                    {roleAndResponsibility}
                                 </p>
                             </div>
                         </div>
                     )}
 
                     {/* Skills Required */}
-                    {job.skillsRequired && (
+                    {skillsRequired && (
                         <div className="mt-6">
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -127,14 +143,14 @@ const JobDetailsModal: React.FC<Props> = ({ job, onClose, onApply, isUserBlocked
                             </div>
                             <div className="bg-purple-50 rounded-xl p-5 border border-purple-200">
                                 <p className="text-gray-700 text-sm sm:text-base whitespace-pre-line leading-relaxed">
-                                    {job.skillsRequired}
+                                    {skillsRequired}
                                 </p>
                             </div>
                         </div>
                     )}
 
                     {/* Preferred Qualifications */}
-                    {job.preferredQualifications && (
+                    {preferredQualifications && (
                         <div className="mt-6">
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -146,7 +162,7 @@ const JobDetailsModal: React.FC<Props> = ({ job, onClose, onApply, isUserBlocked
                             </div>
                             <div className="bg-orange-50 rounded-xl p-5 border border-orange-200">
                                 <p className="text-gray-700 text-sm sm:text-base whitespace-pre-line leading-relaxed">
-                                    {job.preferredQualifications}
+                                    {preferredQualifications}
                                 </p>
                             </div>
                         </div>
