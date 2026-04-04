@@ -18,6 +18,7 @@ import {
   Building2,
   Users,
   Plus,
+  Minus,
   Edit2,
   Trash2,
   CheckCircle,
@@ -52,6 +53,7 @@ const Dashboard = () => {
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [showFreelancersSection, setShowFreelancersSection] = useState(true);
 
   const [companyFilter, setCompanyFilter] = useState<string>("all");
   const [orderFilter, setOrderFilter] = useState<"asc" | "desc">("desc");
@@ -429,6 +431,17 @@ const Dashboard = () => {
     }
   };
 
+  const handleDeleteAbuseReport = async (reportId: string) => {
+    if (!window.confirm("Are you sure you want to delete this abuse report?")) return;
+    try {
+      await API.delete(`/admin/abuse-reports/${reportId}`);
+      setAbuseReports((prev) => prev.filter((report) => report._id !== reportId));
+      toast.success("Abuse report deleted successfully");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "We couldn't delete the abuse report. Please try again.");
+    }
+  };
+
 
   const calculateCompletion = (user: any) => {
     const fields = [
@@ -521,6 +534,20 @@ const Dashboard = () => {
     }
   };
 
+  const handleDeleteApplication = async (applicationId: string) => {
+    if (!window.confirm("Are you sure you want to delete this application?")) return;
+    try {
+      await API.delete(`/admin/applications/${applicationId}`);
+      setApplications((prev) => prev.filter((application) => application._id !== applicationId));
+      setSelectedApplicant((prev: any) =>
+        prev && prev._id === applicationId ? null : prev
+      );
+      toast.success("Application deleted successfully");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "We couldn't delete the application. Please try again.");
+    }
+  };
+
   const handleEditJob = (jobId: string) => {
     setSelectedJobId(jobId);
     setShowEditJobModal(true);
@@ -599,8 +626,8 @@ const Dashboard = () => {
     {
       icon: Shield,
       label: "Abuse Reports",
-      value: abuseReports.length,
-      subtext: `${pendingAbuseReports} pending`,
+      value: pendingAbuseReports,
+      subtext: "Pending count",
       bgColor: "bg-rose-50",
       iconColor: "text-rose-600",
       action: () =>
@@ -1625,10 +1652,23 @@ const Dashboard = () => {
                     </p>
                   </div>
                 </div>
-
+                <button
+                  type="button"
+                  onClick={() => setShowFreelancersSection((prev) => !prev)}
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  {showFreelancersSection ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                  {showFreelancersSection ? "Minimize" : "Expand"}
+                </button>
               </div>
 
-              <FreelancerList />
+              {showFreelancersSection ? (
+                <FreelancerList />
+              ) : (
+                <div className="px-6 py-5 text-sm text-gray-500">
+                  Freelancer section minimized.
+                </div>
+              )}
             </motion.div>
 
 
@@ -1721,8 +1761,8 @@ const Dashboard = () => {
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[140px]">
                         Applied On
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[120px]">
-                        Details
+                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[180px]">
+                        Actions
                       </th>
                     </tr>
                   </thead>
@@ -1797,12 +1837,20 @@ const Dashboard = () => {
                           </td>
 
                           <td className="px-6 py-4 align-top text-right">
-                            <button
-                              onClick={() => setSelectedApplicant(application)}
-                              className="text-blue-600 hover:underline text-sm"
-                            >
-                              Details
-                            </button>
+                            <div className="flex items-center justify-end gap-3">
+                              <button
+                                onClick={() => setSelectedApplicant(application)}
+                                className="text-blue-600 hover:underline text-sm"
+                              >
+                                Details
+                              </button>
+                              <button
+                                onClick={() => handleDeleteApplication(application._id)}
+                                className="text-red-600 hover:underline text-sm"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </td>
                         </motion.tr>
                       ))}
@@ -2015,6 +2063,15 @@ const Dashboard = () => {
                                   </motion.button>
                                 </div>
                               )}
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handleDeleteAbuseReport(report._id)}
+                                className="h-8 w-8 text-red-600 hover:bg-red-50 rounded-lg inline-flex items-center justify-center"
+                                title="Delete Report"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </motion.button>
                             </div>
                           </td>
                         </motion.tr>

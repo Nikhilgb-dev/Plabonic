@@ -273,6 +273,29 @@ export const updateApplicationStatus = async (req, res) => {
   }
 };
 
+export const deleteApplication = async (req, res) => {
+  try {
+    const application = await Application.findByIdAndDelete(req.params.id);
+    if (!application) {
+      return res.status(404).json({ message: "We could not find that application." });
+    }
+
+    if (application.job) {
+      await Job.findByIdAndUpdate(application.job, {
+        $inc: { applicantsCount: -1 },
+      });
+      await Job.updateOne(
+        { _id: application.job, applicantsCount: { $lt: 0 } },
+        { $set: { applicantsCount: 0 } }
+      );
+    }
+
+    res.json({ message: "Application deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
+  }
+};
+
 export const updateJob = async (req, res) => {
   try {
     const job = await Job.findByIdAndUpdate(req.params.id, req.body, {
@@ -489,6 +512,20 @@ export const updateAbuseReportStatus = async (req, res) => {
     await report.save();
 
     res.json({ message: "Abuse report status updated", report });
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong on our side. Please try again." });
+  }
+};
+
+export const deleteAbuseReport = async (req, res) => {
+  try {
+    const report = await AbuseReport.findByIdAndDelete(req.params.id);
+
+    if (!report) {
+      return res.status(404).json({ message: "We could not find that abuse report." });
+    }
+
+    res.json({ message: "Abuse report deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: "Something went wrong on our side. Please try again." });
   }

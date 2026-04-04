@@ -21,12 +21,14 @@ import {
   deletePost,
   getAllApplications,
   updateApplicationStatus,
+  deleteApplication,
   getAdminJobStats,
   getAllFreelancers,
   verifyFreelancer,
   deleteFreelancer,
   getAllAbuseReports,
   updateAbuseReportStatus,
+  deleteAbuseReport,
   blockCompany,
   reviewCompanyResponse,
   blockJob,
@@ -68,6 +70,7 @@ router.put(
   adminOnly,
   updateApplicationStatus
 );
+router.delete("/applications/:id", protect, adminOnly, deleteApplication);
 
 router.get("/jobs/stats", protect, adminOnly, getAdminJobStats);
 router.get("/export/jobs", protect, adminOnly, exportJobsExcel);
@@ -96,6 +99,7 @@ router.get("/export/freelancers", protect, adminOnly, exportFreelancersExcel);
 router.get("/abuse-reports", protect, adminOnly, getAllAbuseReports);
 router.put("/abuse-reports/:id/status", protect, adminOnly, updateAbuseReportStatus);
 router.put("/abuse-reports/:id/review", protect, adminOnly, reviewCompanyResponse);
+router.delete("/abuse-reports/:id", protect, adminOnly, deleteAbuseReport);
 
 // COMPANIES
 router.put("/companies/:id/block", protect, adminOnly, blockCompany);
