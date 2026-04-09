@@ -54,12 +54,12 @@ export const createFreelancer = async (req, res) => {
       termsAccepted: acceptTerms,
     };
 
-    // If request comes from an authenticated admin and admin included a password (or we generate one),
-    // create a User account for this freelancer and return a token so the frontend can "log them in".
+    // Create / link a login user depending on who is creating the freelancer.
     let createdUser = null;
     let token = null;
 
     const isAdminCreating = req.user && req.user.role === "admin";
+    const isPublicSelfRegistration = !req.user;
     if (isAdminCreating) {
       // If a user already exists with this email, link that user (or optionally error out)
       const existing = await User.findOne({ email });
@@ -90,6 +90,26 @@ export const createFreelancer = async (req, res) => {
         // NOTE: for security, you might want to email the generated password to freelancer instead of returning in API.
         // Returning the plain password is acceptable only if your admin UI is secure and you understand the risks.
       }
+    } else if (isPublicSelfRegistration) {
+      if (!password || String(password).length < 6) {
+        return res.status(400).json({ message: "Please set a password with at least 6 characters." });
+      }
+
+      const existing = await User.findOne({ email });
+      if (existing) {
+        return res.status(400).json({ message: "That email is already in use. Try another or sign in." });
+      }
+
+      const hashed = await bcrypt.hash(password, 10);
+      createdUser = await User.create({
+        name,
+        email,
+        password: hashed,
+        role: "freelancer",
+        profilePhoto: photoUrl || "",
+      });
+
+      freelancerData.createdBy = createdUser._id;
     } else {
       // If not admin-created, but logged-in user exists, set createdBy
       if (req.user) {
