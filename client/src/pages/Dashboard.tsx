@@ -12,6 +12,7 @@ import FreelancerList from "./FreelancerList";
 import MarketingAdminPanel from "@/components/MarketingAdminPanel";
 import AdminJobDetailsModal from "@/components/AdminJobDetailsModal";
 import Avatar from "@/components/Avatar";
+import SkillsInput from "@/components/SkillsInput";
 
 import {
   Briefcase,
@@ -87,6 +88,9 @@ const Dashboard = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
+    roleAndResponsibility: "",
+    skillsRequired: "",
+    preferredQualifications: "",
     location: "",
     employmentType: "Full-time",
     minSalary: undefined as number | undefined,
@@ -101,6 +105,12 @@ const Dashboard = () => {
     return new Intl.NumberFormat("en-IN").format(Number(digits));
   };
   const salaryOptions: Array<"Monthly" | "LPA" | "CTC"> = ["Monthly", "LPA", "CTC"];
+  const parseSkills = (value?: string) =>
+    (value || "")
+      .split(/[,\n]/)
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
+  const skillsList = useMemo(() => parseSkills(form.skillsRequired), [form.skillsRequired]);
 
   const navigate = useNavigate();
 
@@ -340,6 +350,9 @@ const Dashboard = () => {
       setForm({
         title: "",
         description: "",
+        roleAndResponsibility: "",
+        skillsRequired: "",
+        preferredQualifications: "",
         location: "",
         employmentType: "Full-time",
         minSalary: undefined,
@@ -1645,6 +1658,43 @@ const Dashboard = () => {
                               onChange={handleChange}
                               className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 resize-none"
                               rows={5}
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Role and Responsibility
+                            </label>
+                            <textarea
+                              name="roleAndResponsibility"
+                              value={form.roleAndResponsibility}
+                              onChange={handleChange}
+                              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 resize-none"
+                              rows={4}
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Skills Required
+                            </label>
+                            <SkillsInput
+                              value={skillsList}
+                              onChange={(next) => setForm({ ...form, skillsRequired: next.join(", ") })}
+                              inputClassName="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Preferred Qualifications
+                            </label>
+                            <textarea
+                              name="preferredQualifications"
+                              value={form.preferredQualifications}
+                              onChange={handleChange}
+                              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 resize-none"
+                              rows={3}
                             />
                           </div>
 
